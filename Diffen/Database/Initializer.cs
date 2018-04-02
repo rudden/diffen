@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
+using Diffen.Helpers.Business;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -345,97 +345,10 @@ namespace Diffen.Database
 		{
 			if (!dbContext.Positions.Any())
 			{
-				var positions = new List<Position>
+				var positions = PositionList.All().Select(position => new Position
 				{
-					new Position
-					{
-						Name = "MV"
-					},
-					new Position
-					{
-						Name = "HB"
-					},
-					new Position
-					{
-						Name = "HYB"
-					},
-					new Position
-					{
-						Name = "HMB"
-					},
-					new Position
-					{
-						Name = "CMB"
-					},
-					new Position
-					{
-						Name = "VMB"
-					},
-					new Position
-					{
-						Name = "VYB"
-					},
-					new Position
-					{
-						Name = "VB"
-					},
-					new Position
-					{
-						Name = "HY"
-					},
-					new Position
-					{
-						Name = "HM"
-					},
-					new Position
-					{
-						Name = "HCDM"
-					},
-					new Position
-					{
-						Name = "HCM"
-					},
-					new Position
-					{
-						Name = "CM"
-					},
-					new Position
-					{
-						Name = "COM"
-					},
-					new Position
-					{
-						Name = "CDM"
-					},
-					new Position
-					{
-						Name = "VCDM"
-					},
-					new Position
-					{
-						Name = "VCM"
-					},
-					new Position
-					{
-						Name = "VM"
-					},
-					new Position
-					{
-						Name = "VY"
-					},
-					new Position
-					{
-						Name = "HANF"
-					},
-					new Position
-					{
-						Name = "CANF"
-					},
-					new Position
-					{
-						Name = "VANF"
-					}
-				};
+					Name = position
+				});
 				dbContext.Positions.AddRange(positions);
 				await dbContext.SaveChangesAsync();
 			}
@@ -493,73 +406,10 @@ namespace Diffen.Database
 		{
 			if (!dbContext.Formations.Any())
 			{
-				var formations = new List<Formation>
+				var formations = FormationList.All().Select(f => new Formation
 				{
-					new Formation
-					{
-						Name = "3-5-2"
-					},
-					new Formation
-					{
-						Name = "3-1-4-2"
-					},
-					new Formation
-					{
-						Name = "3-4-1-2"
-					},
-					new Formation
-					{
-						Name = "3-4-3"
-					},
-					new Formation
-					{
-						Name = "4-4-2"
-					},
-					new Formation
-					{
-						Name = "4-4-1-1"
-					},
-					new Formation
-					{
-						Name = "4-2-3-1"
-					},
-					new Formation
-					{
-						Name = "4-3-2-1"
-					},
-					new Formation
-					{
-						Name = "4-3-3"
-					},
-					new Formation
-					{
-						Name = "4-1-2-1-2"
-					},
-					new Formation
-					{
-						Name = "4-3-1-2"
-					},
-					new Formation
-					{
-						Name = "4-1-4-1"
-					},
-					new Formation
-					{
-						Name = "4-5-1"
-					},
-					new Formation
-					{
-						Name = "5-3-2"
-					},
-					new Formation
-					{
-						Name = "5-4-1"
-					},
-					new Formation
-					{
-						Name = "5-2-1-2"
-					}
-				};
+					Name = f.Name
+				});
 				dbContext.Formations.AddRange(formations);
 				await dbContext.SaveChangesAsync();
 			}
