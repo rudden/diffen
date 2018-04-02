@@ -24,5 +24,9 @@ namespace Diffen.Database.Entities.Forum
 
 		// Linked Tables
 		public ICollection<Vote> Votes { get; set; }
+		public UrlTip UrlTip { get; set; }
+		public PostToLineup Lineup { get; set; }
+		public PostToPost Conversation { get; set; }
+		public Scissored Scissored { get; set; }
 	}
 }

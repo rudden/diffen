@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Diffen.Database.Entities.User
 {
+	using Forum;
+	using Squad;
+
 	public class AppUser : IdentityUser
 	{
 		public string Bio { get; set; }
@@ -12,6 +15,14 @@ namespace Diffen.Database.Entities.User
 		public DateTime Joined { get; set; }
 		public DateTime SecludedUntil { get; set; }
 
+		// Linked Tables
+		public Filter Filter { get; set; }
+		public FavoritePlayer FavoritePlayer { get; set; }
+		public ICollection<Vote> Votes { get; set; }
 		public ICollection<NickName> NickNames { get; set; }
+		public ICollection<Post> Posts { get; set; }
+		public ICollection<SavedPost> SavedPosts { get; set; }
+		public ICollection<Lineup> Lineups { get; set; }
+		public ICollection<IdentityRole> Roles { get; set; }
 	}
 }
