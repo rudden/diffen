@@ -17,7 +17,6 @@ namespace Diffen.Models.Forum
 
 		public bool HasLineup { get; set; }
 		public bool IsPartOfConversation { get; set; }
-		public bool IsSaved { get; set; }
 		public bool IsScissored { get; set; }
 		public bool LoggedInUserCanVote { get; set; }
 

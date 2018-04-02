@@ -19,7 +19,6 @@ namespace Diffen.Models.User
 
 		public string SecludedUntil { get; set; }
 
-		public bool HasSavedPosts { get; set; }
 		public bool HasCreatedPosts { get; set; }
 		public bool HasCreatedLineups { get; set; }
 	}
