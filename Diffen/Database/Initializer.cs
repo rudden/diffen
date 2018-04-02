@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Diffen.Helpers.Business;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,11 +11,14 @@ namespace Diffen.Database
 {
 	using Helpers;
 	using Helpers.Enum;
+	using Helpers.Business;
 	using Helpers.Extensions;
 
 	using Entities.User;
 	using Entities.Squad;
 	using Entities.Forum;
+
+	using DateTime = DateTime;
 
 	public class Initializer
 	{
@@ -42,6 +45,7 @@ namespace Diffen.Database
 			await SeedSavedPostsAsync(dbContext);
 			await SeedVotesOnPostsAsync(dbContext);
 			await SeedUserFiltersAsync(dbContext);
+			await SeedScissoredPostsAsync(dbContext);
 		}
 
 		private static async Task SeedUsersAndNickNamesAsync(DiffenDbContext dbContext, UserManager<AppUser> userManager)
@@ -598,6 +602,21 @@ namespace Diffen.Database
 					};
 					dbContext.UserFilters.Add(filter);
 				}
+				await dbContext.SaveChangesAsync();
+			}
+		}
+
+		private static async Task SeedScissoredPostsAsync(DiffenDbContext dbContext)
+		{
+			if (!dbContext.ScissoredPosts.Any())
+			{
+				var posts = dbContext.Posts.ToList().PickRandom(7);
+				var scissoredPosts = posts.Select(p => new Scissored
+				{
+					PostId = p.Id,
+					Created = RandomDateTime.Get(p.Created, new DateTime(2018, 6, 1))
+				});
+				dbContext.ScissoredPosts.AddRange(scissoredPosts);
 				await dbContext.SaveChangesAsync();
 			}
 		}
