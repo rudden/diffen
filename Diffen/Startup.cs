@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using AutoMapper;
+
 namespace Diffen
 {
 	using Database;
@@ -36,6 +38,8 @@ namespace Diffen
 				c.User.RequireUniqueEmail = true;
 				c.Password.RequiredLength = 8;
 			}).AddEntityFrameworkStores<DiffenDbContext>();
+
+			services.AddAutoMapper();
 
 			services.AddMvc()
 				.AddJsonOptions(o =>
