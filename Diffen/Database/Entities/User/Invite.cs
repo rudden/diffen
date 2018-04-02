@@ -14,7 +14,7 @@ namespace Diffen.Database.Entities.User
 		public bool AccountIsCreated { get; set; }
 
 		[ForeignKey("InvitedByUserId")]
-		public AppUser User { get; set; }
+		public AppUser InvitedByUser { get; set; }
 		public string InvitedByUserId { get; set; }
 
 		public DateTime InviteSent { get; set; }
