@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Diffen
 {
+	using Database;
+	using Database.Entities.User;
+
 	public class Startup
 	{
 		public IConfigurationRoot Configuration { get; }
@@ -24,6 +28,14 @@ namespace Diffen
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddSingleton(Configuration);
+
+			services.AddDbContext<DiffenDbContext>();
+
+			services.AddIdentity<AppUser, IdentityRole>(c =>
+			{
+				c.User.RequireUniqueEmail = true;
+				c.Password.RequiredLength = 8;
+			}).AddEntityFrameworkStores<DiffenDbContext>();
 
 			services.AddMvc()
 				.AddJsonOptions(o =>

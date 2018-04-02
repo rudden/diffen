@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>Diffen</AssemblyName>
+    <RootNamespace>Diffen</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
