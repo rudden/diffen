@@ -30,7 +30,7 @@ namespace Diffen.Repositories
 			return await _dbContext.Posts.IncludeAll().OrderByCreated().ToListAsync();
 		}
 
-		public async Task<IEnumerable<Post>> GetPagedPostsAsync(int pageSize, int pageNumber)
+		public async Task<IEnumerable<Post>> GetPagedPostsAsync(int pageNumber, int pageSize)
 		{
 			return await _dbContext.Posts.IncludeAll()
 				.OrderByCreated().Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
@@ -97,12 +97,14 @@ namespace Diffen.Repositories
 
 		public async Task<bool> AddPostAsync(Post post)
 		{
+			post.Created = DateTime.Now;
 			_dbContext.Posts.Add(post);
 			return await _dbContext.SaveChangesAsync() >= 0;
 		}
 
 		public async Task<bool> UpdatePostAsync(Post post)
 		{
+			post.Edited = DateTime.Now;
 			_dbContext.Posts.Update(post);
 
 			_dbContext.Entry(post).State = EntityState.Modified;
@@ -143,6 +145,12 @@ namespace Diffen.Repositories
 		public async Task<bool> PostToLineupExistsAsync(int postId)
 		{
 			return await _dbContext.LineupsOnPosts.CountAsync(x => x.PostId == postId) > 0;
+		}
+
+		public async Task<bool> AddConversationAsync(PostToPost postToPost)
+		{
+			_dbContext.Conversations.Add(postToPost);
+			return await _dbContext.SaveChangesAsync() >= 0;
 		}
 
 		public async Task<IEnumerable<UrlTip>> GetUrlTipsAsync()

@@ -11,7 +11,7 @@ namespace Diffen.Repositories.Contracts
 	public interface IPostRepository
 	{
 		Task<IEnumerable<Post>> GetPostsAsync();
-		Task<IEnumerable<Post>> GetPagedPostsAsync(int pageSize, int pageNumber);
+		Task<IEnumerable<Post>> GetPagedPostsAsync(int pageNumber, int pageSize);
 		Task<int> CountAllPostsAsync();
 		Task<IEnumerable<Post>> GetPostsOnUserIdAsync(string userId);
 		Task<Post> GetPostOnIdAsync(int id);
@@ -24,6 +24,7 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> AddLineupToPostAsync(PostToLineup postToLineup);
 		Task<bool> RemovePostToLineupAsync(int postId);
 		Task<bool> PostToLineupExistsAsync(int postId);
+		Task<bool> AddConversationAsync(PostToPost postToPost);
 		Task<IEnumerable<UrlTip>> GetUrlTipsAsync();
 		Task<UrlTip> GetUrlOnPostIdAsync(int postId);
 		Task<bool> PostToUrlExistsAsync(int postId);
