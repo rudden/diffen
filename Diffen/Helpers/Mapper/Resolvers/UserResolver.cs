@@ -3,10 +3,13 @@ using System.Collections.Generic;
 
 using AutoMapper;
 
+using Microsoft.AspNetCore.Identity;
+
 namespace Diffen.Helpers.Mapper.Resolvers
 {
 	using Extensions;
 	using Models.User;
+	using Repositories.Contracts;
 
 	using DbUser = Database.Entities.User.AppUser;
 	using DbPersonalMessage = Database.Entities.User.PersonalMessage;
@@ -27,6 +30,15 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<DbFilter, ModelFilter>, 
 		ITypeConverter<DbInvite, ModelInvite>
 	{
+		private readonly UserManager<DbUser> _userManager;
+		private readonly IUserRepository _userRepository;
+
+		public UserResolver(UserManager<DbUser> userManager, IUserRepository userRepository)
+		{
+			_userManager = userManager;
+			_userRepository = userRepository;
+		}
+
 		public ModelUser Convert(DbUser source, ModelUser destination, ResolutionContext context)
 		{
 			return new ModelUser
@@ -38,7 +50,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Filter = context.Mapper.Map<ModelFilter>(source.Filter),
 				FavoritePlayer = context.Mapper.Map<ModelPlayer>(source.FavoritePlayer),
 				SavedPostsIds = source.SavedPosts?.Select(p => p.Id),
-				InRoles = source.Roles.Select(r => r.Name),
+				InRoles = _userManager.GetRolesAsync(source).Result,
 				SecludedUntil = source.SecludedUntil.GetSecluded(),
 				HasCreatedPosts = source.Posts != null,
 				HasCreatedLineups = source.Lineups != null
@@ -67,7 +79,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Id = source.Id,
 				NickName = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
 				Avatar = "",
-				IsAdmin = source.Roles.Any(r => r.Name == "Admin" || r.Name == "Sax"),
+				IsAdmin = _userManager.GetRolesAsync(source).Result.Any(role => role.Equals("Admin") || role.Equals("Sax")),
 				SecludedUntil = source.SecludedUntil.GetSecluded()
 			};
 		}
@@ -79,7 +91,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				UserId = source.UserId,
 				PostsPerPage = source.PostsPerPage,
 				ExcludedUsers = source.ExcludedUserIds.Split(",")
-					.Select(userId => new KeyValuePair<string, string>(userId, "GetNickFromRepositoryOnUserId"))
+					.Select(userId => new KeyValuePair<string, string>(userId, _userRepository.GetCurrentNickOnUserIdAsync(userId).Result))
 			};
 		}
 

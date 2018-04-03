@@ -11,7 +11,6 @@ namespace Diffen.Helpers.Mapper.Resolvers
 	using Extensions;
 
 	using DbPost = Database.Entities.Forum.Post;
-	using DbPostToPost = Database.Entities.Forum.PostToPost;
 	using DbVote = Database.Entities.Forum.Vote;
 	using DbUser = Database.Entities.User.AppUser;
 
@@ -22,7 +21,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 
 	public class PostResolver : 
 		ITypeConverter<DbPost, ModelPost>,
-		ITypeConverter<DbPostToPost, ModelParentPost>, 
+		ITypeConverter<DbPost, ModelParentPost>, 
 		ITypeConverter<DbVote, ModelVote>
 	{
 		private readonly string _loggedInUserId;
@@ -50,17 +49,14 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			};
 		}
 
-		public ModelParentPost Convert(DbPostToPost source, ModelParentPost destination, ResolutionContext context)
+		public ModelParentPost Convert(DbPost source, ModelParentPost destination, ResolutionContext context)
 		{
-			if (source.ParentPostId == null)
-				return null;
-
 			return new ModelParentPost
 			{
-				Id = (int) source.ParentPostId,
-				Message = source.ParentPost.Message,
-				User = context.Mapper.Map<ModelUser>(source.ParentPost.User),
-				Since = source.ParentPost.Created.GetSinceStamp()
+				Id = source.Id,
+				Message = source.Message,
+				User = context.Mapper.Map<ModelUser>(source.User),
+				Since = source.Created.GetSinceStamp()
 			};
 		}
 
