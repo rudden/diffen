@@ -10,6 +10,8 @@ namespace Diffen
 {
 	using Database;
 	using Database.Entities.User;
+	using Repositories;
+	using Repositories.Contracts;
 
 	public class Startup
 	{
@@ -46,6 +48,10 @@ namespace Diffen
 				{
 					o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 				});
+
+			services.AddScoped<IPostRepository, PostRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<ISquadRepository, SquadRepository>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
