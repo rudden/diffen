@@ -104,7 +104,7 @@ namespace Diffen.Database
 				await userManager.AddToRoleAsync(administrator, "Admin");
 			}
 
-			var scissors = await userManager.GetUsersInRoleAsync("Admin");
+			var scissors = await userManager.GetUsersInRoleAsync("Sax");
 			if (!scissors.Any())
 			{
 				var newScissors = userManager.Users.ToList().PickRandom(10);
@@ -451,7 +451,7 @@ namespace Diffen.Database
 						var randomUserId = users.PickRandom().Id;
 						var vote = new Vote
 						{
-							Type = (VoteType)new Random().Next(0, 1),
+							Type = (VoteType)new Random().Next(0, 2),
 							PostId = post.Id,
 							CreatedByUserId = randomUserId,
 							Created = RandomDateTime.Get(post.Created, new DateTime(2018, 6, 1))
