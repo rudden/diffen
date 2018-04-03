@@ -598,7 +598,7 @@ namespace Diffen.Database
 					{
 						UserId = user.Id,
 						PostsPerPage = new Random().Next(1, 50),
-						ExcludedUserIds = string.Join(",", excludedUsers)
+						ExcludedUserIds = string.Join(",", excludedUsers.Select(x => x.Id))
 					};
 					dbContext.UserFilters.Add(filter);
 				}
