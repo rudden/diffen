@@ -8,7 +8,7 @@ namespace Diffen.Helpers.Extensions
 	using Database.Entities.Forum;
 	using Database.Entities.Squad;
 
-	public static class Queryable
+	public static class QueryableExtensions
 	{
 		public static IQueryable<Post> IncludeAll(this DbSet<Post> source)
 		{
@@ -47,6 +47,13 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.Posts).ThenInclude(x => x.Lineup)
 				.Include(x => x.Lineups)
 				.AsNoTracking();
+		}
+
+		public static IQueryable<PersonalMessage> IncludeAll(this DbSet<PersonalMessage> source)
+		{
+			return source
+				.Include(x => x.FromUser).ThenInclude(x => x.NickNames)
+				.Include(x => x.ToUser).ThenInclude(x => x.NickNames);
 		}
 	}
 }

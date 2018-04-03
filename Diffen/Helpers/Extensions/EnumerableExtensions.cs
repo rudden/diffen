@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Diffen.Helpers.Extensions
 {
-	public static class Enumerable
+	public static class EnumerableExtensions
 	{
 		public static T PickRandom<T>(this IEnumerable<T> source)
 		{

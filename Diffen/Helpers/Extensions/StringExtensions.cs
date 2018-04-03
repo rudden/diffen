@@ -2,7 +2,7 @@
 
 namespace Diffen.Helpers.Extensions
 {
-	public static class String
+	public static class StringExtensions
 	{
 		public static string TrimStartAndEnd(this string str)
 		{

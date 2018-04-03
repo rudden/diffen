@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Diffen.Helpers.Extensions
 {
-	public static class DateTime
+	public static class DateTimeExtensions
 	{
 		public static string GetSinceStamp(this System.DateTime dt)
 		{
