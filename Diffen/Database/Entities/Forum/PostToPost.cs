@@ -10,11 +10,9 @@ namespace Diffen.Database.Entities.Forum
 		public int Id { get; set; }
 
 		[ForeignKey("PostId")]
-		public virtual Post Post { get; set; }
-		public int? PostId { get; set; }
+		public int PostId { get; set; }
 
 		[ForeignKey("ParentPostId")]
-		public virtual Post ParentPost { get; set; }
-		public int? ParentPostId { get; set; }
+		public int ParentPostId { get; set; }
 	}
 }

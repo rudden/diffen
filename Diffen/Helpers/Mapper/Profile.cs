@@ -3,7 +3,6 @@
 	using Resolvers;
 
 	using DbPost = Database.Entities.Forum.Post;
-	using DbPostToPost = Database.Entities.Forum.PostToPost;
 	using DbVote = Database.Entities.Forum.Vote;
 	using DbUser = Database.Entities.User.AppUser;
 	using DbPersonalMessage = Database.Entities.User.PersonalMessage;
@@ -31,7 +30,7 @@
 		{
 			CreateMap<DbPost, ModelPost>().ConvertUsing<PostResolver>();
 			CreateMap<DbVote, ModelVote>().ConvertUsing<PostResolver>();
-			CreateMap<DbPostToPost, ModelParentPost>().ConvertUsing<PostResolver>();
+			CreateMap<DbPost, ModelParentPost>().ConvertUsing<PostResolver>();
 			CreateMap<DbUser, ModelUser>().ConvertUsing<UserResolver>();
 			CreateMap<DbUser, ModelPostUser>().ConvertUsing<UserResolver>();
 			CreateMap<DbPersonalMessage, ModelPersonalMessage>().ConvertUsing<UserResolver>();

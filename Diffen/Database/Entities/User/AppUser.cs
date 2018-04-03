@@ -23,6 +23,5 @@ namespace Diffen.Database.Entities.User
 		public ICollection<Post> Posts { get; set; }
 		public ICollection<SavedPost> SavedPosts { get; set; }
 		public ICollection<Lineup> Lineups { get; set; }
-		public ICollection<IdentityRole> Roles { get; set; }
 	}
 }
