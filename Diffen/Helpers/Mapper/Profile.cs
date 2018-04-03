@@ -2,43 +2,27 @@
 {
 	using Resolvers;
 
-	using DbPost = Database.Entities.Forum.Post;
-	using DbVote = Database.Entities.Forum.Vote;
-	using DbUser = Database.Entities.User.AppUser;
-	using DbPersonalMessage = Database.Entities.User.PersonalMessage;
-	using DbFilter = Database.Entities.User.Filter;
-	using DbInvite = Database.Entities.User.Invite;
-	using DbPlayer = Database.Entities.Squad.Player;
-	using DbLineup = Database.Entities.Squad.Lineup;
-	using DbPlayerToLineup = Database.Entities.Squad.PlayerToLineup;
-
-	using ModelPost = Models.Forum.Post;
-	using ModelParentPost = Models.Forum.ParentPost;
-	using ModelVote = Models.Forum.Vote;
-	using ModelPostUser = Models.Forum.User;
-	using ModelUser = Models.User.User;
-	using ModelPersonalMessage = Models.User.PersonalMessage;
-	using ModelFilter = Models.User.Filter;
-	using ModelInvite = Models.User.Invite;
-	using ModelPlayer = Models.Squad.Player;
-	using ModelLineup = Models.Squad.Lineup;
-	using ModelPlayerToLineup = Models.Squad.PlayerToLineup;
-
 	public class Profile : AutoMapper.Profile
 	{
 		public Profile()
 		{
-			CreateMap<DbPost, ModelPost>().ConvertUsing<PostResolver>();
-			CreateMap<DbVote, ModelVote>().ConvertUsing<PostResolver>();
-			CreateMap<DbPost, ModelParentPost>().ConvertUsing<PostResolver>();
-			CreateMap<DbUser, ModelUser>().ConvertUsing<UserResolver>();
-			CreateMap<DbUser, ModelPostUser>().ConvertUsing<UserResolver>();
-			CreateMap<DbPersonalMessage, ModelPersonalMessage>().ConvertUsing<UserResolver>();
-			CreateMap<DbFilter, ModelFilter>().ConvertUsing<UserResolver>();
-			CreateMap<DbInvite, ModelInvite>().ConvertUsing<UserResolver>();
-			CreateMap<DbPlayer, ModelPlayer>().ConvertUsing<SquadResolver>();
-			CreateMap<DbLineup, ModelLineup>().ConvertUsing<SquadResolver>();
-			CreateMap<DbPlayerToLineup, ModelPlayerToLineup>().ConvertUsing<SquadResolver>();
+			CreateMap<Database.Entities.Forum.Post, Models.Forum.Post>().ConvertUsing<PostResolver>();
+			CreateMap<Database.Entities.Forum.Vote, Models.Forum.Vote>().ConvertUsing<PostResolver>();
+			CreateMap<Database.Entities.Forum.Post, Models.Forum.ParentPost>().ConvertUsing<PostResolver>();
+			CreateMap<Database.Entities.User.AppUser, Models.User.User>().ConvertUsing<UserResolver>();
+			CreateMap<Database.Entities.User.AppUser, Models.Forum.User>().ConvertUsing<UserResolver>();
+			CreateMap<Database.Entities.User.PersonalMessage, Models.User.PersonalMessage>().ConvertUsing<UserResolver>();
+			CreateMap<Database.Entities.User.Filter, Models.User.Filter>().ConvertUsing<UserResolver>();
+			CreateMap<Database.Entities.User.Invite, Models.User.Invite>().ConvertUsing<UserResolver>();
+			CreateMap<Database.Entities.Squad.Player, Models.Squad.Player>().ConvertUsing<SquadResolver>();
+			CreateMap<Database.Entities.Squad.Lineup, Models.Squad.Lineup>().ConvertUsing<SquadResolver>();
+			CreateMap<Database.Entities.Squad.PlayerToLineup, Models.Squad.PlayerToLineup>().ConvertUsing<SquadResolver>();
+			CreateMap<Database.Entities.User.FavoritePlayer, Models.Squad.Player>().ConvertUsing<SquadResolver>();
+			CreateMap<Models.Forum.CRUD.Post, Database.Entities.Forum.Post>().ConvertUsing<PostResolver>();
+			CreateMap<Models.Forum.CRUD.Vote, Database.Entities.Forum.Vote>().ConvertUsing<PostResolver>();
+			CreateMap<Models.Squad.CRUD.Lineup, Database.Entities.Squad.Lineup>().ConvertUsing<SquadResolver>();
+			CreateMap<Models.Squad.CRUD.Player, Database.Entities.Squad.Player>().ConvertUsing<SquadResolver>();
+			CreateMap<Database.Entities.User.AppUser, ViewModels.LoggedInUser>().ConvertUsing<UserResolver>();
 		}
 	}
 }

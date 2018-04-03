@@ -10,36 +10,29 @@ namespace Diffen.Helpers.Mapper.Resolvers
 {
 	using Extensions;
 
-	using DbPost = Database.Entities.Forum.Post;
-	using DbVote = Database.Entities.Forum.Vote;
-	using DbUser = Database.Entities.User.AppUser;
-
-	using ModelPost = Models.Forum.Post;
-	using ModelVote = Models.Forum.Vote;
-	using ModelUser = Models.Forum.User;
-	using ModelParentPost = Models.Forum.ParentPost;
-
 	public class PostResolver : 
-		ITypeConverter<DbPost, ModelPost>,
-		ITypeConverter<DbPost, ModelParentPost>, 
-		ITypeConverter<DbVote, ModelVote>
+		ITypeConverter<Database.Entities.Forum.Post, Models.Forum.Post>,
+		ITypeConverter<Database.Entities.Forum.Post, Models.Forum.ParentPost>, 
+		ITypeConverter<Database.Entities.Forum.Vote, Models.Forum.Vote>, 
+		ITypeConverter<Models.Forum.CRUD.Post, Database.Entities.Forum.Post>, 
+		ITypeConverter<Models.Forum.CRUD.Vote, Database.Entities.Forum.Vote>
 	{
 		private readonly string _loggedInUserId;
 
-		public PostResolver(UserManager<DbUser> userManager, IHttpContextAccessor httpContextAccessor)
+		public PostResolver(UserManager<Database.Entities.User.AppUser> userManager, IHttpContextAccessor httpContextAccessor)
 		{
 			_loggedInUserId = userManager.GetUserId(httpContextAccessor.HttpContext.User);
 		}
 
-		public ModelPost Convert(DbPost source, ModelPost destination, ResolutionContext context)
+		public Models.Forum.Post Convert(Database.Entities.Forum.Post source, Models.Forum.Post destination, ResolutionContext context)
 		{
-			return new ModelPost
+			return new Models.Forum.Post
 			{
 				Id = source.Id,
 				Message = source.Message,
-				User = context.Mapper.Map<ModelUser>(source.User),
+				User = context.Mapper.Map<Models.Forum.User>(source.User),
 				UrlTipHref = source.UrlTip?.Href,
-				Votes = context.Mapper.Map<IEnumerable<ModelVote>>(source.Votes),
+				Votes = context.Mapper.Map<IEnumerable<Models.Forum.Vote>>(source.Votes),
 				Since = source.Created.GetSinceStamp(),
 				Edited = source.Edited.GetSinceStamp(),
 				HasLineup = source.Lineup != null,
@@ -49,23 +42,44 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			};
 		}
 
-		public ModelParentPost Convert(DbPost source, ModelParentPost destination, ResolutionContext context)
+		public Models.Forum.ParentPost Convert(Database.Entities.Forum.Post source, Models.Forum.ParentPost destination, ResolutionContext context)
 		{
-			return new ModelParentPost
+			return new Models.Forum.ParentPost
 			{
 				Id = source.Id,
 				Message = source.Message,
-				User = context.Mapper.Map<ModelUser>(source.User),
+				User = context.Mapper.Map<Models.Forum.User>(source.User),
 				Since = source.Created.GetSinceStamp()
 			};
 		}
 
-		public ModelVote Convert(DbVote source, ModelVote destination, ResolutionContext context)
+		public Models.Forum.Vote Convert(Database.Entities.Forum.Vote source, Models.Forum.Vote destination, ResolutionContext context)
 		{
-			return new ModelVote
+			return new Models.Forum.Vote
 			{
 				Type = source.Type,
 				ByNickName = source.User.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous"
+			};
+		}
+
+		public Database.Entities.Forum.Post Convert(Models.Forum.CRUD.Post source, Database.Entities.Forum.Post destination, ResolutionContext context)
+		{
+			return new Database.Entities.Forum.Post
+			{
+				Id = source.Id,
+				Message = source.Message,
+				CreatedByUserId = source.CreatedByUserId,
+			};
+		}
+
+		public Database.Entities.Forum.Vote Convert(Models.Forum.CRUD.Vote source, Database.Entities.Forum.Vote destination, ResolutionContext context)
+		{
+			return new Database.Entities.Forum.Vote
+			{
+				Type = source.Type,
+				PostId = source.PostId,
+				CreatedByUserId = source.CreatedByUserId,
+				Created = System.DateTime.Now
 			};
 		}
 	}

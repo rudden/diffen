@@ -1,65 +1,63 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 
+using Microsoft.AspNetCore.Identity;
+
 using AutoMapper;
 
-using Microsoft.AspNetCore.Identity;
 
 namespace Diffen.Helpers.Mapper.Resolvers
 {
+	using Enum;
 	using Extensions;
 	using Models.User;
 	using Repositories.Contracts;
 
-	using DbUser = Database.Entities.User.AppUser;
-	using DbPersonalMessage = Database.Entities.User.PersonalMessage;
-	using DbFilter = Database.Entities.User.Filter;
-	using DbInvite = Database.Entities.User.Invite;
-
-	using ModelUser = Models.User.User;
-	using ModelFilter = Models.User.Filter;
-	using ModelInvite = Models.User.Invite;
-	using ModelPersonalMessage = Models.User.PersonalMessage;
-	using ModelPlayer = Models.Squad.Player;
-	using ModelPostUser = Models.Forum.User;
-
-	public class UserResolver : 
-		ITypeConverter<DbUser, ModelUser>, 
-		ITypeConverter<DbPersonalMessage, ModelPersonalMessage>, 
-		ITypeConverter<DbUser, ModelPostUser>, 
-		ITypeConverter<DbFilter, ModelFilter>, 
-		ITypeConverter<DbInvite, ModelInvite>
+	public class UserResolver :
+		ITypeConverter<Database.Entities.User.AppUser, User>,
+		ITypeConverter<Database.Entities.User.PersonalMessage, PersonalMessage>,
+		ITypeConverter<Database.Entities.User.AppUser, Models.Forum.User>,
+		ITypeConverter<Database.Entities.User.Filter, Filter>,
+		ITypeConverter<Database.Entities.User.Invite, Invite>, 
+		ITypeConverter<Database.Entities.User.AppUser, ViewModels.LoggedInUser>
 	{
-		private readonly UserManager<DbUser> _userManager;
+		private readonly UserManager<Database.Entities.User.AppUser> _userManager;
 		private readonly IUserRepository _userRepository;
 
-		public UserResolver(UserManager<DbUser> userManager, IUserRepository userRepository)
+		public UserResolver(UserManager<Database.Entities.User.AppUser> userManager, IUserRepository userRepository)
 		{
 			_userManager = userManager;
 			_userRepository = userRepository;
 		}
 
-		public ModelUser Convert(DbUser source, ModelUser destination, ResolutionContext context)
+		public User Convert(Database.Entities.User.AppUser source, User destination, ResolutionContext context)
 		{
-			return new ModelUser
+			return new User
 			{
 				Id = source.Id,
 				Bio = source.Bio,
 				NickName = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
 				Avatar = "",
-				Filter = context.Mapper.Map<ModelFilter>(source.Filter),
-				FavoritePlayer = context.Mapper.Map<ModelPlayer>(source.FavoritePlayer),
+				Filter = context.Mapper.Map<Filter>(source.Filter),
+				FavoritePlayer = context.Mapper.Map<Models.Squad.Player>(source.FavoritePlayer),
 				SavedPostsIds = source.SavedPosts?.Select(p => p.Id),
 				InRoles = _userManager.GetRolesAsync(source).Result,
+				Votes = source.Votes != null
+					? new VoteStatistics
+					{
+						UpVotes = source.Votes.Count(x => x.Type == VoteType.Up),
+						DownVotes = source.Votes.Count(x => x.Type == VoteType.Down)
+					}
+					: null,
 				SecludedUntil = source.SecludedUntil.GetSecluded(),
 				HasCreatedPosts = source.Posts != null,
 				HasCreatedLineups = source.Lineups != null
 			};
 		}
 
-		public ModelPersonalMessage Convert(DbPersonalMessage source, ModelPersonalMessage destination, ResolutionContext context)
+		public PersonalMessage Convert(Database.Entities.User.PersonalMessage source, PersonalMessage destination, ResolutionContext context)
 		{
-			return new ModelPersonalMessage
+			return new PersonalMessage
 			{
 				Id = source.Id,
 				From = new From
@@ -72,9 +70,9 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			};
 		}
 
-		public ModelPostUser Convert(DbUser source, ModelPostUser destination, ResolutionContext context)
+		public Models.Forum.User Convert(Database.Entities.User.AppUser source, Models.Forum.User destination, ResolutionContext context)
 		{
-			return new ModelPostUser
+			return new Models.Forum.User
 			{
 				Id = source.Id,
 				NickName = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
@@ -84,20 +82,20 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			};
 		}
 
-		public ModelFilter Convert(DbFilter source, ModelFilter destination, ResolutionContext context)
+		public Filter Convert(Database.Entities.User.Filter source, Filter destination, ResolutionContext context)
 		{
-			return new ModelFilter
+			return new Filter
 			{
 				UserId = source.UserId,
 				PostsPerPage = source.PostsPerPage,
-				ExcludedUsers = source.ExcludedUserIds.Split(",")
+				ExcludedUsers = source.ExcludedUserIds?.Split(",")
 					.Select(userId => new KeyValuePair<string, string>(userId, _userRepository.GetCurrentNickOnUserIdAsync(userId).Result))
 			};
 		}
 
-		public ModelInvite Convert(DbInvite source, ModelInvite destination, ResolutionContext context)
+		public Invite Convert(Database.Entities.User.Invite source, Invite destination, ResolutionContext context)
 		{
-			return new ModelInvite
+			return new Invite
 			{
 				Email = source.Email,
 				InvitedBy = new InvitedBy
@@ -110,6 +108,18 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				AccountCreated = source.AccountCreated != null
 					? System.Convert.ToDateTime(source.AccountCreated).ToString("yyyy-MM-dd")
 					: string.Empty
+			};
+		}
+
+		public ViewModels.LoggedInUser Convert(Database.Entities.User.AppUser source, ViewModels.LoggedInUser destination, ResolutionContext context)
+		{
+			return new ViewModels.LoggedInUser
+			{
+				Id = source.Id,
+				Name = source.UserName,
+				Nick = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
+				InRoles = _userManager.GetRolesAsync(source).Result,
+				Filter = context.Mapper.Map<Models.User.Filter>(source.Filter) ?? new Models.User.Filter(source)
 			};
 		}
 	}
