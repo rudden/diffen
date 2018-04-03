@@ -49,6 +49,7 @@ namespace Diffen
 					o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 				});
 
+			services.AddScoped<IPmRepository, PmRepository>();
 			services.AddScoped<IPostRepository, PostRepository>();
 			services.AddScoped<IUserRepository, UserRepository>();
 			services.AddScoped<ISquadRepository, SquadRepository>();
