@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -53,6 +54,7 @@ namespace Diffen.Repositories
 
 		public async Task<bool> AddLineupAsync(Lineup lineup)
 		{
+			lineup.Created = DateTime.Now;
 			_dbContext.Lineups.Add(lineup);
 			return await _dbContext.SaveChangesAsync() >= 0;
 		}
@@ -73,6 +75,16 @@ namespace Diffen.Repositories
 		{
 			_dbContext.FavoritePlayers.RemoveRange(_dbContext.FavoritePlayers.Where(x => x.PlayerId == playerId));
 			return await _dbContext.SaveChangesAsync() >= 0;
+		}
+
+		public async Task<IEnumerable<Formation>> GetFormationsAsync()
+		{
+			return await _dbContext.Formations.ToListAsync();
+		}
+
+		public async Task<IEnumerable<Position>> GetPositionsAsync()
+		{
+			return await _dbContext.Positions.ToListAsync();
 		}
 	}
 }

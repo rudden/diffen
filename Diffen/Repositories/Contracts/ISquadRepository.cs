@@ -17,5 +17,7 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> AddPlayerAsync(Player player);
 		Task<bool> UpdatePlayerAsync(Player player);
 		Task<bool> RemoveAllPlayerToUserForSpecificPlayer(int playerId);
+		Task<IEnumerable<Formation>> GetFormationsAsync();
+		Task<IEnumerable<Position>> GetPositionsAsync();
 	}
 }
