@@ -2,13 +2,15 @@
 
 namespace Diffen.Models.User
 {
+	using Database.Entities.User;
+
 	public class Filter
 	{
 		public Filter() {}
 
-		public Filter(User mappedUser)
+		public Filter(AppUser user)
 		{
-			UserId = mappedUser.Id;
+			UserId = user.Id;
 			PostsPerPage = 5;
 			ExcludedUsers = new List<KeyValuePair<string, string>>();
 		}
