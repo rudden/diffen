@@ -46,6 +46,16 @@ namespace Diffen
 				c.Password.RequiredLength = 8;
 			}).AddEntityFrameworkStores<DiffenDbContext>();
 
+			services.ConfigureApplicationCookie(options =>
+			{
+				options.AccessDeniedPath = "/auth/login";
+				options.Cookie.Name = "DiffenKaka";
+				options.Cookie.HttpOnly = true;
+				options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+				options.LoginPath = "/auth/login";
+				options.SlidingExpiration = true;
+			});
+
 			services.AddAutoMapper();
 
 			services.AddMvc()
