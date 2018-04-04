@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.IO;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.DependencyInjection;
 
 using AutoMapper;
@@ -66,6 +71,14 @@ namespace Diffen
 			{
 				app.UseExceptionHandler("Home/Error");
 			}
+
+			app.UseStaticFiles();
+			app.UseFileServer(new FileServerOptions
+			{
+				FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"dist")),
+				RequestPath = new PathString("/dist"),
+				EnableDirectoryBrowsing = true
+			});
 
 			app.UseMvc(r =>
 			{
