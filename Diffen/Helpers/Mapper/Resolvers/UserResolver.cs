@@ -119,6 +119,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Name = source.UserName,
 				Nick = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
 				InRoles = _userManager.GetRolesAsync(source).Result,
+				SecludedUntil = source.SecludedUntil.ToString("yyyy-MM-dd"),
 				Filter = context.Mapper.Map<Models.User.Filter>(source.Filter) ?? new Models.User.Filter(source)
 			};
 		}
