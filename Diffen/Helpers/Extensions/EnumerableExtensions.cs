@@ -20,5 +20,10 @@ namespace Diffen.Helpers.Extensions
 		{
 			return source.OrderBy(x => Guid.NewGuid());
 		}
+
+		public static IEnumerable<T> Page<T>(this IEnumerable<T> source, int pageNumber, int pageSize)
+		{
+			return source.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+		}
 	}
 }
