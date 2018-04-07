@@ -48,9 +48,10 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.SavedPosts).ThenInclude(x => x.Post)
 				.Include(x => x.FavoritePlayer).ThenInclude(x => x.Player)
 				.Include(x => x.Filter)
-				.Include(x => x.Votes)
+				.Include(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.Posts).ThenInclude(x => x.UrlTip)
 				.Include(x => x.Posts).ThenInclude(x => x.Lineup)
+				.Include(x => x.Posts).ThenInclude(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.Lineups)
 				.AsNoTracking();
 		}
