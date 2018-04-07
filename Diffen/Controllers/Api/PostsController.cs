@@ -244,7 +244,26 @@ namespace Diffen.Controllers.Api
 			}
 		}
 
-		private async Task ComplementPostWithPotentialUrlTipAndLineupAsync(Models.Forum.CRUD.Post post, ICollection<Result> results)
+		[HttpPost("{postId}/bookmark")]
+		public async Task<IActionResult> Bookmark(int postId, string userId)
+		{
+			try
+			{
+				return Json(await _postRepository.SavePostAsync(new Database.Entities.User.SavedPost
+				{
+					PostId = postId,
+					SavedByUserId = userId,
+					Created = DateTime.Now
+				}));
+			}
+			catch (Exception e)
+			{
+				_logger.Warning(e.Message, "Bookmark: An unexpected error occured when bookmarking a post with id {postId}", postId);
+				return BadRequest();
+			}
+		}
+
+		private async Task ComplementPostWithPotentialUrlTipAndLineupAsync(int postId, Models.Forum.CRUD.Post post, ICollection<Result> results)
 		{
 			if (!string.IsNullOrEmpty(post.UrlTip?.Href))
 			{
