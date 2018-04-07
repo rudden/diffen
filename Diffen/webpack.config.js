@@ -8,7 +8,8 @@ const extractSass = new ExtractTextPlugin({ filename: "css/[name].css" })
 
 module.exports = {
 	entry: {
-		'bundles': './src/scripts/vendor.ts',
+		'theme': './src/scripts/javascript/theme.js',
+		
 		'forum': './src/scripts/pages/forum',
 		'squad': './src/scripts/pages/squad',
 		'profile': './src/scripts/pages/profile',
@@ -17,11 +18,11 @@ module.exports = {
 	output: {
 		path: path.join(__dirname, './dist'),
 		publicPath: '/dist/',
-		filename: 'script/[name].js'
+		filename: 'js/[name].js'
 	},
 	resolve: {
 		extensions: ['.ts', '.js', '.json', 'scss'],
-		modules: ['node_modules']
+		modules: ['node_modules'],
 	},
 	module: {
 		rules: [
@@ -30,7 +31,7 @@ module.exports = {
 				loader: 'vue-loader'
 			},
 			{
-				test: /\.tsx$/,
+				test: /\.ts$/,
 				loader: 'ts-loader',
 				options: {
 					appendTsSuffixTo: [/\.vue$/],
@@ -51,11 +52,22 @@ module.exports = {
 				})
 			},
 			{
-				test: /\.(png|jpg|gif|svg)$/,
-				loader: 'file-loader',
+				test: /\.(png|jpe?g|gif|svg|ico)$/,
+				loader: 'url-loader',
 				options: {
-					name: '[name].[ext]?[hash]'
-				}
+					limit: 10000,
+					name: 'img/[name].[ext]'
+				},
+				exclude: /fonts/
+			},
+			{
+				test: /\.(woff|woff2|ttf|eot|svg)$/,
+				loader: 'url-loader',
+				options: {
+					limit: 5000,
+					name: 'fonts/[name].[ext]'
+				},
+				exclude: /img/
 			}
 		]
 	},

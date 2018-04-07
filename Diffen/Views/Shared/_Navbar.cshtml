@@ -1,25 +1,32 @@
-﻿<header>
-	<!-- Fixed navbar -->
-		<a class="navbar-brand" href="#">Diffen!</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarCollapse">
-			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active">
-					<a class="nav-link" href="/forum">forum <span class="sr-only">(current)</span></a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/squad">trupp</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/profile">profil</a>
-				</li>
-			</ul>
-			<form class="form-inline mt-2 mt-md-0">
-				<input class="form-control mr-sm-2" type="text" placeholder="sök efter en användare" aria-label="sök efter en användare">
-				<a href="/auth/logout" class="btn btn-outline-danger my-2 my-sm-0">logga ut</a>
-			</form>
-		</div>
-	</nav>
-</header>
+﻿<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-primary app-navbar">
+	@*<a class="navbar-brand" href="index.html">
+		DIFFEN
+	</a>*@
+	<button class="navbar-toggler navbar-toggler-right d-md-none" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse container" id="navbarResponsive">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+				<a class="nav-link" href="/forum">forum <span class="sr-only">(current)</span></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/squad">trupp</a>
+			</li>
+		</ul>
+		<form class="form-inline float-right d-none d-md-flex">
+			<input class="form-control" type="text" data-action="grow" placeholder="sök efter en användare">
+		</form>
+		<ul id="#js-popoverContent" class="nav navbar-nav float-right mr-0 d-none d-md-flex">
+			<li class="nav-item ml-2">
+				<button class="btn btn-default navbar-btn navbar-btn-avatar" data-toggle="popover">
+					<img class="rounded-circle" src="~/uploads/avatars/generic/logo.png">
+				</button>
+			</li>
+		</ul>
+		<ul class="nav navbar-nav d-none" id="js-popoverContent">
+			<li class="nav-item"><a class="nav-link" href="/profile">visa profil</a></li>
+			<li class="nav-item"><a class="nav-link" href="/auth/logout">logga ut</a></li>
+		</ul>
+	</div>
+</nav>

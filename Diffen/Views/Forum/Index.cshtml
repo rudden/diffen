@@ -1,1 +1,6 @@
-﻿
+﻿@using Diffen.Helpers.Extensions
+@model Diffen.ViewModels.PageViewModel
+
+<div id="forum"></div>
+
+<script src="~/dist/js/forum.js" id="forum-script" view-model="@Model.AsJson()"></script>

@@ -1,42 +1,99 @@
-/* Sticky footer styles */
-html {
-    position: relative;
-    min-height: 100%;
+/* modal */
+.modal {
+	background: rgba(0,0,0,0.5);
 }
-body {
-    /* Margin bottom by footer height */
-    margin-bottom: 60px;
-}
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    /* Set the fixed height of the footer here */
-    height: 60px;
-    line-height: 60px; /* Vertically center the text there */
-    background-color: #f5f5f5;
+.modal-backdrop {
+	/* bug fix - no overlay */    
+	display: none;    
 }
 
-
-/* Custom page CSS */
-body > .container {
-    padding: 60px 15px 0;
+/* tweet */
+.twitter-tweet {
+	width: inherit !important;
 }
 
-.footer > .container {
-    padding-right: 15px;
-    padding-left: 15px;
+@media (max-width: 768px) {
+	.twitter-tweet {
+		display: none !important;
+	}
 }
 
-.wrapper {
-    margin-top: 80px;
-    margin-bottom: 80px;
+/* popover */
+.fade.in {
+	opacity: 1;
+}
+.popover.top {
+	margin-top: -10px;
+}
+.popover.top > .arrow {
+	left: 50%;
+	margin-left: -11px;
+	border-bottom-width: 0;
+	border-top-color: rgba(0,0,0,.25);
+	bottom: -11px;
+	border-width: 11px;
+	position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+}
+.popover.top > .arrow:after {
+	content: " ";
+	bottom: 1px;
+	margin-left: -10px;
+	border-bottom-width: 0;
+	border-top-color: #fff;
+}
+.popover-title {
+	margin: 0;
+	padding: 8px 14px;
+	font-size: 14px;
+	background-color: #f7f7f7;
+	border-bottom: 1px solid #ebebeb;
+	border-radius: 5px 5px 0 0;
+}
+.popover-content {
+	padding: 9px 14px;
+	.votes {
+		display: flow-root;
+		.icon {
+			float: right;
+		}
+	}
 }
 
-/* Navbar */
-nav .form-inline {
-    margin-bottom: 0;
+/* typeahead */
+.open > .dropdown-menu {
+	// width: 100%;
+	display: block;
 }
-nav .navbar-brand {
-    position: absolute;
+.dropdown-menu > li > a {
+	display: block;
+	padding: 3px 20px;
+	clear: both;
+	font-weight: 400;
+	line-height: 1.42857143;
+	color: #333;
+	white-space: nowrap;
+}
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:focus, .dropdown-menu > .active > a:hover {
+	color: #fff;
+	text-decoration: none;
+	outline: 0;
+	background-color: #337ab7;
+}
+
+/* post */
+.message-footer {
+	div.wrap {
+		display: initial;
+	}
+}
+
+/* datetimepicker */
+.bootstrap-datetimepicker-widget.dropdown-menu {
+	padding: 7px !important;
+	width: max-content !important;
 }
