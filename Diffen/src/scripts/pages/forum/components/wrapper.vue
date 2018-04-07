@@ -1,8 +1,10 @@
 <template>
-	<div class="row">
-		<left-sidebar />
-		<posts />
-		<right-sidebar />
+	<div class="container pt-4 pb-5">
+		<div class="row">
+			<left-sidebar />
+			<posts />
+			<right-sidebar />
+		</div>
 	</div>
 </template>
 

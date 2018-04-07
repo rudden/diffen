@@ -16,9 +16,7 @@
 	{
 		@await Html.PartialAsync("_Navbar")
 	}
-	<div class="container pt-4 pb-5">
-		@RenderBody()
-	</div>
+	@RenderBody()
 	@if (User.Identity.IsAuthenticated)
 	{
 		@await Html.PartialAsync("_Footer")
