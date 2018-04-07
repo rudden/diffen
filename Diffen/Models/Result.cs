@@ -8,7 +8,7 @@
 
 	public enum ResultType
 	{
-		Success, Failure
+		Failure, Success
 	}
 
 	public static class ResultMessages
@@ -23,12 +23,6 @@
 		{
 			Success = "Inlägget uppdaterades",
 			Failure = "Kunde inte uppdatera	 inlägget"
-		};
-
-		public static Message CreateConversation { get; } = new Message
-		{
-			Success = "",
-			Failure = "Kunde inte skapa en konversationskedja"
 		};
 
 		public static Message CreateUrlTip { get; } = new Message
