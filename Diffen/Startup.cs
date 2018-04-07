@@ -53,7 +53,7 @@ namespace Diffen
 				options.AccessDeniedPath = "/auth/login";
 				options.Cookie.Name = "DiffenKaka";
 				options.Cookie.HttpOnly = true;
-				options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+				options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 				options.LoginPath = "/auth/login";
 				options.SlidingExpiration = true;
 			});
