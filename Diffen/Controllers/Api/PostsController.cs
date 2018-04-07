@@ -206,7 +206,7 @@ namespace Diffen.Controllers.Api
 			}
 		}
 
-		[HttpPost("{postId}/vote/{type}")]
+		[HttpPost("vote")]
 		public async Task<IActionResult> Vote([FromBody] Models.Forum.CRUD.Vote vote)
 		{
 			try
