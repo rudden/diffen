@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
 using Serilog;
 using AutoMapper;
+using Newtonsoft.Json;
 
 namespace Diffen.Controllers.Api
 {
@@ -63,19 +64,38 @@ namespace Diffen.Controllers.Api
 		}
 
 		[HttpGet("page/{pageNumber}/{pageSize}")]
-		public async Task<IActionResult> GetPage(int pageNumber, int pageSize)
+		public async Task<IActionResult> GetPage(int pageNumber, int pageSize, string filter)
 		{
 			try
 			{
-				var posts = _mapper.Map<List<Post>>(await _postRepository.GetPagedPostsAsync(pageNumber, pageSize));
-				var numberOfPosts = await _postRepository.CountAllPostsAsync();
-				return Json(new Paging<Post>
+				var paging = new Paging<Post>
 				{
-					Data = posts,
-					CurrentPage = pageNumber,
-					NumberOfPages = Convert.ToInt32(Math.Ceiling((double)numberOfPosts / pageSize)),
-					Total = numberOfPosts
-				});
+					CurrentPage = pageNumber
+				};
+
+				var serializedFilter = JsonConvert.DeserializeObject<Models.Forum.Filter>(filter);
+				if (serializedFilter == null)
+				{
+					var unfiltered = _mapper.Map<List<Post>>(await _postRepository.GetPagedPostsAsync(pageNumber, pageSize));
+					var numberOfPosts = await _postRepository.CountAllPostsAsync();
+					paging.Data = unfiltered;
+					paging.NumberOfPages = Convert.ToInt32(Math.Ceiling((double) numberOfPosts / pageSize));
+					paging.Total = numberOfPosts;
+				}
+				else
+				{
+					var filtered = await _postRepository.GetPostsOnFilterAsync(serializedFilter);
+
+					var filteredToList = filtered as IList<Database.Entities.Forum.Post> ?? filtered.ToList();
+
+					var paged = filteredToList.OrderByDescending(x => x.Created).Page(pageNumber, pageSize).ToList();
+					var mapped = _mapper.Map<List<Post>>(paged);
+					paging.Data = mapped;
+					paging.NumberOfPages = Convert.ToInt32(Math.Ceiling((double)filteredToList.Count / pageSize));
+					paging.Total = filteredToList.Count;
+				}
+
+				return Json(paging);
 			}
 			catch (Exception e)
 			{
