@@ -26,7 +26,7 @@ namespace Diffen.Controllers.Pages
 		[Route("{id}")]
 		public IActionResult Index(string id)
 		{
-			Model.LoggedInUser.SelectedId = id;
+			Model.SelectedUserId = id;
 			return View("index", Model);
 		}
 	}
