@@ -33,7 +33,7 @@ namespace Diffen.Controllers
 				Model = new PageViewModel
 				{
 					Api = _configuration["Api:Url"],
-					LoggedInUser = _mapper.Map<LoggedInUser>(_userRepository.GetUserOnEmailAsync(User.Identity.Name).Result),
+					LoggedInUser = _mapper.Map<Models.User.User>(_userRepository.GetUserOnEmailAsync(User.Identity.Name).Result),
 					Page = controller.ControllerContext.ActionDescriptor.ControllerName.ToLower()
 				};
 			}
