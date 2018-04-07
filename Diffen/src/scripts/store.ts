@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex, { Module } from 'vuex'
 
 import Forum from './modules/forum'
+import Profile from './modules/profile'
 
 import { ViewModel } from './model/common'
 
@@ -17,7 +18,8 @@ const state: State = {
 const store = new Vuex.Store({
 	state: state,
 	modules: {
-		forum: <Module<any, State>> Forum
+		forum: <Module<any, State>> Forum,
+		profile: <Module<any, State>> Profile
 	}
 })
 

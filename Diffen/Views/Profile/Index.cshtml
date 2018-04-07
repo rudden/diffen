@@ -1,1 +1,6 @@
-﻿
+﻿@using Diffen.Helpers.Extensions
+@model Diffen.ViewModels.PageViewModel
+
+<div id="profile"></div>
+
+<script src="~/dist/js/profile.js" id="profile-script" view-model="@Model.AsJson()"></script>
