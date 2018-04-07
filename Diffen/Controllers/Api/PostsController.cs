@@ -273,7 +273,7 @@ namespace Diffen.Controllers.Api
 				}
 				await _postRepository.AddUrlToPostAsync(new UrlTip
 				{
-					PostId = post.Id,
+					PostId = postId,
 					Clicks = 0,
 					Href = post.UrlTip.Href,
 					Created = DateTime.Now
@@ -290,7 +290,7 @@ namespace Diffen.Controllers.Api
 					}
 					await _postRepository.AddLineupToPostAsync(new PostToLineup
 					{
-						PostId = post.Id,
+						PostId = postId,
 						LineupId = post.Lineup.Id
 					}).ContinueWith(task => task.UpdateResults(ResultMessages.CreateLineupToPost, results));
 				}
@@ -303,7 +303,7 @@ namespace Diffen.Controllers.Api
 
 					await _postRepository.AddLineupToPostAsync(new PostToLineup
 					{
-						PostId = post.Id,
+						PostId = postId,
 						LineupId = newLineup.Id
 					}).ContinueWith(task => task.UpdateResults(ResultMessages.CreateLineupToPost, results));
 				}
