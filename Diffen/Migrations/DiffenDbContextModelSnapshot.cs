@@ -34,9 +34,13 @@ namespace Diffen.Migrations
 
                     b.Property<string>("Message");
 
+                    b.Property<int?>("ParentPostId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("ParentPostId");
 
                     b.ToTable("Posts");
                 });
@@ -60,31 +64,12 @@ namespace Diffen.Migrations
                     b.ToTable("LineupsOnPosts");
                 });
 
-            modelBuilder.Entity("Diffen.Database.Entities.Forum.PostToPost", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ParentPostId");
-
-                    b.Property<int>("PostId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId")
-                        .IsUnique();
-
-                    b.ToTable("Conversations");
-                });
-
             modelBuilder.Entity("Diffen.Database.Entities.Forum.Scissored", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Created");
-
-                    b.Property<string>("Message");
 
                     b.Property<int>("PostId");
 
@@ -414,8 +399,6 @@ namespace Diffen.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AppUserId");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
@@ -426,8 +409,6 @@ namespace Diffen.Migrations
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
@@ -526,6 +507,10 @@ namespace Diffen.Migrations
                     b.HasOne("Diffen.Database.Entities.User.AppUser", "User")
                         .WithMany("Posts")
                         .HasForeignKey("CreatedByUserId");
+
+                    b.HasOne("Diffen.Database.Entities.Forum.Post", "ParentPost")
+                        .WithMany()
+                        .HasForeignKey("ParentPostId");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Forum.PostToLineup", b =>
@@ -538,14 +523,6 @@ namespace Diffen.Migrations
                     b.HasOne("Diffen.Database.Entities.Forum.Post", "Post")
                         .WithOne("Lineup")
                         .HasForeignKey("Diffen.Database.Entities.Forum.PostToLineup", "PostId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Diffen.Database.Entities.Forum.PostToPost", b =>
-                {
-                    b.HasOne("Diffen.Database.Entities.Forum.Post")
-                        .WithOne("Conversation")
-                        .HasForeignKey("Diffen.Database.Entities.Forum.PostToPost", "PostId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -660,13 +637,6 @@ namespace Diffen.Migrations
                     b.HasOne("Diffen.Database.Entities.User.AppUser", "User")
                         .WithMany("SavedPosts")
                         .HasForeignKey("SavedByUserId");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.HasOne("Diffen.Database.Entities.User.AppUser")
-                        .WithMany("Roles")
-                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

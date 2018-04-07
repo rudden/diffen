@@ -113,16 +113,7 @@ namespace Diffen.Controllers.Api
 				await _postRepository.AddPostAsync(newPost)
 					.ContinueWith(task => task.UpdateResults(ResultMessages.CreatePost, results));
 
-				if (post.ParentId > 0)
-				{
-					await _postRepository.AddConversationAsync(new PostToPost
-					{
-						PostId = newPost.Id,
-						ParentPostId = post.ParentId
-					}).ContinueWith(task => task.UpdateResults(ResultMessages.CreateConversation, results));
-				}
-
-				await ComplementPostWithPotentialUrlTipAndLineupAsync(post, results);
+				await ComplementPostWithPotentialUrlTipAndLineupAsync(newPost.Id, post, results);
 
 				return Json(results);
 			}
@@ -148,7 +139,7 @@ namespace Diffen.Controllers.Api
 				await _postRepository.UpdatePostAsync(updatePost)
 					.ContinueWith(task => task.UpdateResults(ResultMessages.UpdatePost, results));
 
-				await ComplementPostWithPotentialUrlTipAndLineupAsync(post, results);
+				await ComplementPostWithPotentialUrlTipAndLineupAsync(updatePost.Id, post, results);
 
 				return Json(results);
 			}

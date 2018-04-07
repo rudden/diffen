@@ -380,7 +380,7 @@ namespace Diffen.Database
 
 		private static async Task SeedConversationsAsync(DiffenDbContext dbContext)
 		{
-			if (!dbContext.Conversations.Any())
+			if (dbContext.Posts.All(x => x.ParentPost == null))
 			{
 				var posts = dbContext.Posts.ToList().PickRandom(20);
 				foreach (var post in posts)
@@ -390,17 +390,11 @@ namespace Diffen.Database
 					{
 						Message = $"Autogenererat svar till inlägg {post.Id}. Scrolla vidare! \n\nMvh Admin",
 						CreatedByUserId = randomUser.Id,
+						ParentPostId = post.Id,
 						Created = RandomDateTime.Get(post.Created, new DateTime(2018, 06, 1))
 					};
 					dbContext.Posts.Add(answer);
 					await dbContext.SaveChangesAsync();
-
-					var conversationEntry = new PostToPost
-					{
-						PostId = answer.Id,
-						ParentPostId = post.Id
-					};
-					dbContext.Conversations.Add(conversationEntry);
 				}
 				await dbContext.SaveChangesAsync();
 			}

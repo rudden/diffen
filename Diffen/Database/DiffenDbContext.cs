@@ -15,7 +15,6 @@ namespace Diffen.Database
 		public DbSet<Post> Posts { get; set; }
 		public DbSet<UrlTip> UrlTips { get; set; }
 		public DbSet<Vote> Votes { get; set; }
-		public DbSet<PostToPost> Conversations { get; set; }
 		public DbSet<PostToLineup> LineupsOnPosts { get; set; }
 		public DbSet<Scissored> ScissoredPosts { get; set; }
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Diffen.Models.Forum.CRUD
+﻿namespace Diffen.Models.Forum.CRUD
 {
 	using Squad.CRUD;
 
@@ -9,7 +7,7 @@ namespace Diffen.Models.Forum.CRUD
 		public int Id { get; set; }
 		public string Message { get; set; }
 		public string CreatedByUserId { get; set; }
-		public int ParentId { get; set; }
+		public int? ParentPostId { get; set; }
 		public UrlTip UrlTip { get; set; }
 		public Lineup Lineup { get; set; }
 	}

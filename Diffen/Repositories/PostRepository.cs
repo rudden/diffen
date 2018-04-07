@@ -147,12 +147,6 @@ namespace Diffen.Repositories
 			return await _dbContext.LineupsOnPosts.CountAsync(x => x.PostId == postId) > 0;
 		}
 
-		public async Task<bool> AddConversationAsync(PostToPost postToPost)
-		{
-			_dbContext.Conversations.Add(postToPost);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
 		public async Task<IEnumerable<UrlTip>> GetUrlTipsAsync()
 		{
 			return await _dbContext.UrlTips.ToListAsync();

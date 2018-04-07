@@ -24,7 +24,6 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> AddLineupToPostAsync(PostToLineup postToLineup);
 		Task<bool> RemovePostToLineupAsync(int postId);
 		Task<bool> PostToLineupExistsAsync(int postId);
-		Task<bool> AddConversationAsync(PostToPost postToPost);
 		Task<IEnumerable<UrlTip>> GetUrlTipsAsync();
 		Task<UrlTip> GetUrlOnPostIdAsync(int postId);
 		Task<bool> PostToUrlExistsAsync(int postId);

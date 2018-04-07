@@ -22,11 +22,15 @@ namespace Diffen.Database.Entities.Forum
 		public DateTime Created { get; set; }
 		public DateTime? Edited { get; set; }
 
+		[ForeignKey("ParentPostId")]
+		public virtual Post ParentPost { get; set; }
+		public int? ParentPostId { get; set; }
+
 		// Linked Tables
 		public ICollection<Vote> Votes { get; set; }
 		public UrlTip UrlTip { get; set; }
 		public PostToLineup Lineup { get; set; }
-		public PostToPost Conversation { get; set; }
+		//public PostToPost Conversation { get; set; }
 		public Scissored Scissored { get; set; }
 	}
 }

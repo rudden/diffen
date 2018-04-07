@@ -18,7 +18,13 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.Lineup)
 				.Include(x => x.UrlTip)
+				.Include(x => x.ParentPost).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.AsNoTracking();
+		}
+
+		public static IQueryable<Post> ExceptScissored(this IQueryable<Post> source)
+		{
+			return source.Where(x => x.Scissored == null);
 		}
 
 		public static IOrderedQueryable<Post> OrderByCreated(this IQueryable<Post> source)

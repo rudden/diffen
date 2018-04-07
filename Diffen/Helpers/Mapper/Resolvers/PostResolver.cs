@@ -33,10 +33,10 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				User = context.Mapper.Map<Models.Forum.User>(source.User),
 				UrlTipHref = source.UrlTip?.Href,
 				Votes = context.Mapper.Map<IEnumerable<Models.Forum.Vote>>(source.Votes),
+				ParentPost = source.ParentPost != null ? context.Mapper.Map<Models.Forum.ParentPost>(source.ParentPost) : null,
 				Since = source.Created.GetSinceStamp(),
 				Edited = source.Edited.GetSinceStamp(),
 				HasLineup = source.Lineup != null,
-				IsPartOfConversation = source.Conversation != null,
 				IsScissored = source.Scissored != null,
 				LoggedInUserCanVote = source.User.Id != _loggedInUserId && source.Votes.All(v => v.CreatedByUserId != _loggedInUserId)
 			};
@@ -68,6 +68,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				Id = source.Id,
 				Message = source.Message,
+				ParentPostId = source.ParentPostId,
 				CreatedByUserId = source.CreatedByUserId,
 			};
 		}
