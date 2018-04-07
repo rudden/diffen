@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 
 using AutoMapper;
-
 
 namespace Diffen.Helpers.Mapper.Resolvers
 {
@@ -24,10 +25,15 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		private readonly UserManager<Database.Entities.User.AppUser> _userManager;
 		private readonly IUserRepository _userRepository;
 
-		public UserResolver(UserManager<Database.Entities.User.AppUser> userManager, IUserRepository userRepository)
+		private readonly IHostingEnvironment _environment;
+
+		private const string GenericAvatarPath = "/uploads/avatars/generic/logo.png";
+
+		public UserResolver(UserManager<Database.Entities.User.AppUser> userManager, IUserRepository userRepository, IHostingEnvironment environment)
 		{
 			_userManager = userManager;
 			_userRepository = userRepository;
+			_environment = environment;
 		}
 
 		public User Convert(Database.Entities.User.AppUser source, User destination, ResolutionContext context)
@@ -37,21 +43,19 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Id = source.Id,
 				Bio = source.Bio,
 				NickName = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
-				Avatar = "",
-				Filter = context.Mapper.Map<Filter>(source.Filter),
+				Avatar = GetAvatar(source),
+				Karma = GetKarma(source.Posts),
+				NumberOfPosts = source.Posts.Count,
+				Filter = context.Mapper.Map<Filter>(source.Filter) ?? new Filter(source),
 				FavoritePlayer = context.Mapper.Map<Models.Squad.Player>(source.FavoritePlayer),
-				SavedPostsIds = source.SavedPosts?.Select(p => p.Id),
+				SavedPostsIds = source.SavedPosts?.Select(p => p.PostId),
 				InRoles = _userManager.GetRolesAsync(source).Result,
-				Votes = source.Votes != null
-					? new VoteStatistics
-					{
-						UpVotes = source.Votes.Count(x => x.Type == VoteType.Up),
-						DownVotes = source.Votes.Count(x => x.Type == VoteType.Down)
-					}
-					: null,
+				VoteStatistics = new VoteStatistics
+				{
+					UpVotes = source.Votes.Count(x => x.Type == VoteType.Up),
+					DownVotes = source.Votes.Count(x => x.Type == VoteType.Down)
+				},
 				SecludedUntil = source.SecludedUntil.GetSecluded(),
-				HasCreatedPosts = source.Posts != null,
-				HasCreatedLineups = source.Lineups != null
 			};
 		}
 
@@ -62,7 +66,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Id = source.Id,
 				From = new From
 				{
-					Avatar = "",
+					Avatar = GetAvatar(source.FromUser),
 					NickName = source.FromUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous"
 				},
 				Message = source.Message,
@@ -76,7 +80,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				Id = source.Id,
 				NickName = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
-				Avatar = "",
+				Avatar = GetAvatar(source),
 				IsAdmin = _userManager.GetRolesAsync(source).Result.Any(role => role.Equals("Admin") || role.Equals("Sax")),
 				SecludedUntil = source.SecludedUntil.GetSecluded()
 			};
@@ -118,10 +122,53 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Id = source.Id,
 				Name = source.UserName,
 				Nick = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
+				AvatarFileName = GetAvatar(source),
+				Bio = source.Bio,
 				InRoles = _userManager.GetRolesAsync(source).Result,
 				SecludedUntil = source.SecludedUntil.ToString("yyyy-MM-dd"),
 				Filter = context.Mapper.Map<Models.User.Filter>(source.Filter) ?? new Models.User.Filter(source)
 			};
+		}
+
+		private static int GetKarma(IEnumerable<Database.Entities.Forum.Post> posts)
+		{
+			var karma = 0;
+			foreach (var post in posts)
+			{
+				foreach (var vote in post.Votes)
+				{
+					switch (vote.Type)
+					{
+						case VoteType.Up:
+							karma++;
+							break;
+						case VoteType.Down:
+							karma--;
+							break;
+					}
+				}
+			}
+			return karma;
+		}
+
+		private string GetAvatar(Database.Entities.User.AppUser source)
+		{
+			if (string.IsNullOrEmpty(source.AvatarFileName))
+			{
+				return GenericAvatarPath;
+			}
+			var userPath = $"uploads\\avatars\\{source.Id}";
+			var path = Path.Combine(_environment.WebRootPath, userPath);
+			if (!Directory.Exists(path))
+			{
+				return GenericAvatarPath;
+			}
+			var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, userPath));
+			if (files == null || !files.Any())
+			{
+				return GenericAvatarPath;
+			}
+			return $"/uploads/avatars/{source.Id}/{source.AvatarFileName}";
 		}
 	}
 }
