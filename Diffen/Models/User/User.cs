@@ -11,15 +11,15 @@ namespace Diffen.Models.User
 		public string NickName { get; set; }
 		public string Avatar { get; set; }
 
+		public int Karma { get; set; }
+		public int NumberOfPosts { get; set; }
+
 		public Filter Filter { get; set; }
-		public VoteStatistics Votes { get; set; }
+		public VoteStatistics VoteStatistics { get; set; }
 		public Player FavoritePlayer { get; set; }
 		public IEnumerable<int> SavedPostsIds { get; set; }
 		public IEnumerable<string> InRoles { get; set; }
 
 		public string SecludedUntil { get; set; }
-
-		public bool HasCreatedPosts { get; set; }
-		public bool HasCreatedLineups { get; set; }
 	}
 }
