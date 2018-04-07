@@ -36,6 +36,8 @@ namespace Diffen
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddAuthentication();
+
 			services.AddSingleton(Configuration);
 
 			services.AddDbContext<DiffenDbContext>();
@@ -83,6 +85,9 @@ namespace Diffen
 			}
 
 			app.UseStaticFiles();
+
+			app.UseAuthentication();
+
 			app.UseFileServer(new FileServerOptions
 			{
 				FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"dist")),
