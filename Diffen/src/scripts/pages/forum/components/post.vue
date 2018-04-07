@@ -18,14 +18,14 @@
                 <template v-if="post.inEdit">
                     <new-post :post="post" />
                 </template>
-                <template v-else-if="post.inReply">
-                    <div style="padding-top: 1rem">
-                        <new-post :parent-id="post.id" />
-                    </div>
-                </template>
                 <template v-else>
                     <p>{{ post.message }}</p>
                     <embeds :href="post.urlTipHref" />
+                </template>
+                <template v-if="post.inReply">
+                    <div style="padding-top: 1rem">
+                        <new-post :parent-id="post.id" />
+                    </div>
                 </template>
 
                 <template v-if="showFooter">
