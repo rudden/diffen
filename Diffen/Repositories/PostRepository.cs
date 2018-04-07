@@ -27,23 +27,23 @@ namespace Diffen.Repositories
 
 		public async Task<IEnumerable<Post>> GetPostsAsync()
 		{
-			return await _dbContext.Posts.IncludeAll().OrderByCreated().ToListAsync();
+			return await _dbContext.Posts.IncludeAll().ExceptScissored().OrderByCreated().ToListAsync();
 		}
 
 		public async Task<IEnumerable<Post>> GetPagedPostsAsync(int pageNumber, int pageSize)
 		{
-			return await _dbContext.Posts.IncludeAll()
+			return await _dbContext.Posts.IncludeAll().ExceptScissored()
 				.OrderByCreated().Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
 		}
 
 		public async Task<int> CountAllPostsAsync()
 		{
-			return await _dbContext.Posts.CountAsync();
+			return await _dbContext.Posts.ExceptScissored().CountAsync();
 		}
 
 		public async Task<IEnumerable<Post>> GetPostsOnUserIdAsync(string userId)
 		{
-			return await _dbContext.Posts.IncludeAll()
+			return await _dbContext.Posts.IncludeAll().ExceptScissored()
 				.Where(post => post.CreatedByUserId == userId).OrderByCreated().ToListAsync();
 		}
 
@@ -54,7 +54,7 @@ namespace Diffen.Repositories
 
 		public async Task<IEnumerable<Post>> GetPostsOnFilterAsync(Filter filter)
 		{
-			var posts = _dbContext.Posts.IncludeAll();
+			var posts = _dbContext.Posts.IncludeAll().ExceptScissored();
 			if (filter == null)
 			{
 				return await posts.ToListAsync();
