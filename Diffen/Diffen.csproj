@@ -4,12 +4,11 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>Diffen</AssemblyName>
     <RootNamespace>Diffen</RootNamespace>
-    <TypeScriptToolsVersion>2.6</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="dist\" />
-    <Folder Include="wwwroot\uploads\avatars\" />
   </ItemGroup>
 
   <ItemGroup>
