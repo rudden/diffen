@@ -18,8 +18,6 @@ namespace Diffen.Database
 	using Entities.Squad;
 	using Entities.Forum;
 
-	using DateTime = DateTime;
-
 	public class Initializer
 	{
 		public static async Task SeedAsync(IServiceProvider services)
@@ -59,7 +57,7 @@ namespace Diffen.Database
 				{
 					Email = $"seeded_user_{i}@diffen.se",
 					UserName = $"seeded_user_{i}@diffen.se",
-					Joined = DateTime.Now
+					Joined = RandomDateTime.Get(new DateTime(2017, 12, 1), DateTime.Now)
 				};
 				await userManager.CreateAsync(user, "P@ssw0rd!");
 				await dbContext.SaveChangesAsync();
@@ -68,7 +66,7 @@ namespace Diffen.Database
 				{
 					UserId = user.Id,
 					Nick = $"seeded_user_{i}",
-					Created = DateTime.Now
+					Created = user.Joined
 				};
 				dbContext.NickNames.Add(nickName);
 				await dbContext.SaveChangesAsync();
