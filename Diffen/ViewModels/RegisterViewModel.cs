@@ -18,7 +18,6 @@ namespace Diffen.ViewModels
 		[Required]
 		public string ConfirmPassword { get; set; }
 
-		//[Required]
 		[MaxLength(100, ErrorMessage = "får max vara 100 tecken")]
 		public string Bio { get; set; }
 
