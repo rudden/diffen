@@ -7,10 +7,11 @@ namespace Diffen.ViewModels
 	public class PageViewModel
 	{
 		public string Api { get; set; }
-		public LoggedInUser LoggedInUser { get; set; }
+		public Models.User.User LoggedInUser { get; set; }
 		public string Page { get; set; }
 		public int PostId { get; set; }
 		public int PageNumber { get; set; }
+		public string SelectedUserId { get; set; }
 	}
 
 	public class LoggedInUser
@@ -18,6 +19,8 @@ namespace Diffen.ViewModels
 		public string Id { get; set; }
 		public string Name { get; set; }
 		public string Nick { get; set; }
+		public string AvatarFileName { get; set; }
+		public string Bio { get; set; }
 		public string SelectedId { get; set; }
 		public string SecludedUntil { get; set; }
 		public IEnumerable<string> InRoles { get; set; }
