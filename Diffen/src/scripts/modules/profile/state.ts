@@ -1,7 +1,9 @@
-import { KeyValuePair } from '../../model/common'
+import { KeyValuePair, Paging } from '../../model/common'
 import { User } from '../../model/profile'
+import { Post } from '../../model/forum'
 
 export default class State {
     user: User = new User()
-    users: KeyValuePair[] = []
+    createdPosts: Paging<Post> = new Paging<Post>()
+    savedPosts: Paging<Post> = new Paging<Post>()
 }
