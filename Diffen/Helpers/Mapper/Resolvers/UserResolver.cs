@@ -64,10 +64,17 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			return new PersonalMessage
 			{
 				Id = source.Id,
-				From = new From
+				From = new PmUser
 				{
+					Id = source.FromUserId,
 					Avatar = GetAvatar(source.FromUser),
 					NickName = source.FromUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous"
+				},
+				To = new PmUser
+				{
+					Id = source.ToUserId,
+					Avatar = GetAvatar(source.ToUser),
+					NickName = source.ToUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous"
 				},
 				Message = source.Message,
 				Since = source.Created.GetSinceStamp()
