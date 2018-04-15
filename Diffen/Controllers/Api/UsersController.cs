@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 using Serilog;
 using AutoMapper;
@@ -181,7 +183,87 @@ namespace Diffen.Controllers.Api
 			}
 		}
 
-		[HttpPost("{userId}/nick/add")]
+		[HttpPost("{userId}/update")]
+		public async Task<IActionResult> UpdateUser(string userId, [FromBody] Models.User.CRUD.User user)
+		{
+			try
+			{
+				if (user == null)
+					return BadRequest();
+
+				var currentUser = await _userManager.Users.Include(x => x.NickNames).Include(x => x.FavoritePlayer).FirstOrDefaultAsync(u => u.Id == userId);
+				var currentNick = currentUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick;
+
+				var results = new List<Result>();
+				if (!string.IsNullOrEmpty(currentNick) && !currentNick.Equals(user.NickName))
+				{
+					if (!await _userRepository.NickExistsAsync(user.NickName))
+					{
+						await _userRepository.AddNickNameAsync(new NickName
+						{
+							UserId = userId,
+							Nick = user.NickName,
+							Created = DateTime.Now
+						}).ContinueWith(task => task.UpdateResults(ResultMessages.CreateNick, results));
+					}
+				}
+				if (currentUser.Bio == null && !string.IsNullOrEmpty(user.Bio) || currentUser.Bio != null && !currentUser.Bio.Equals(user.Bio))
+				{
+					currentUser.Bio = user.Bio;
+					await _userRepository.UpdateUserAsync(currentUser)
+						.ContinueWith(task => task.UpdateResults(ResultMessages.UpdateBio, results));
+				}
+
+				var currentRoles = await _userManager.GetRolesAsync(currentUser);
+				if (!currentRoles.Equals(user.Roles))
+				{
+					await _userManager.RemoveFromRolesAsync(currentUser, currentRoles);
+					await _userManager.AddToRolesAsync(currentUser, user.Roles);
+				}
+
+				if (currentUser.FavoritePlayer != null)
+				{
+					if (currentUser.FavoritePlayer.PlayerId == user.FavoritePlayerId)
+					{
+						return Json(results);
+					}
+					if (await _userRepository.FavoritePlayerExistsAsync(userId))
+					{
+						await _userRepository.RemovePlayerToUserAsync(userId)
+							.ContinueWith(task => task.UpdateResults(ResultMessages.RemovedFavoritePlayer, results));
+					}
+
+					if (user.FavoritePlayerId > 0)
+					{
+						await _userRepository.AddFavoritePlayerAsync(new FavoritePlayer
+						{
+							PlayerId = user.FavoritePlayerId,
+							UserId = userId
+						}).ContinueWith(task => task.UpdateResults(ResultMessages.CreateFavoritePlayer, results));
+					}
+				}
+				else
+				{
+					if (user.FavoritePlayerId > 0)
+					{
+						await _userRepository.AddFavoritePlayerAsync(new FavoritePlayer
+						{
+							PlayerId = user.FavoritePlayerId,
+							UserId = userId
+						}).ContinueWith(task => task.UpdateResults(ResultMessages.CreateFavoritePlayer, results));
+					}
+				}
+
+				return Json(results);
+			}
+			catch (Exception e)
+			{
+				_logger.Warning(e.Message, "UpdateUser: An unexpected error occured when updating a user with id {userId}", userId);
+				return BadRequest();
+			}
+		}
+
+		[HttpPost("{userId}/nick/create")]
 		public async Task<IActionResult> AddNickToUser(string userId, string nick)
 		{
 			try
@@ -233,16 +315,14 @@ namespace Diffen.Controllers.Api
 		{
 			try
 			{
-				var user = await _userRepository.GetUserOnIdAsync(userId);
-				var mappedUser = _mapper.Map<User>(user);
-				foreach (var role in mappedUser.InRoles)
+				var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+				await Task.WhenAll(new Task[]
 				{
-					await _userManager.RemoveFromRoleAsync(user, role);
-				}
-				foreach (var role in JsonConvert.DeserializeObject<List<string>>(roles))
-				{
-					await _userManager.AddToRoleAsync(user, role);
-				}
+					_userManager.RemoveFromRolesAsync(user, await _userManager.GetRolesAsync(user)),
+					_userManager.AddToRolesAsync(user, JsonConvert.DeserializeObject<List<string>>(roles))
+				});
+
 				return Ok();
 			}
 			catch (Exception e)
