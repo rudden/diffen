@@ -1,9 +1,9 @@
 export class Lineup {
-    id: number
+    id?: number
     formationId: number
-    players: PlayerToLineup[]
+    players: PlayerToLineup[] = []
     createdByUserId: string
-    created: string
+    created?: string
 }
 
 export class PlayerToLineup {

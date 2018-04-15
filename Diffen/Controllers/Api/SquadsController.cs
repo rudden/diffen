@@ -128,6 +128,20 @@ namespace Diffen.Controllers.Api
 			}
 		}
 
+		[HttpGet("lineups/post/{postId}")]
+		public async Task<IActionResult> GetLineupOnPostId(int postId)
+		{
+			try
+			{
+				return Json(_mapper.Map<Lineup>(await _squadRepository.GetLineupOnPostIdAsync(postId)));
+			}
+			catch (Exception e)
+			{
+				_logger.Warning(e.Message, "GetLineupOnPostId: An unexpected error occured when trying to fetch lineup for post with id {postId}", postId);
+				return BadRequest();
+			}
+		}
+
 		[HttpGet("lineups/user/{userId}")]
 		public async Task<IActionResult> GetLineupsOnUser(string userId)
 		{
@@ -153,7 +167,7 @@ namespace Diffen.Controllers.Api
 				}
 
 				var allFormations = await _squadRepository.GetFormationsAsync();
-				_cache.Set("formations", allFormations.OrderBy(x => x.Name).Select(x => x.Name));
+				_cache.Set("formations", allFormations.OrderBy(x => x.Name));
 				return Json(allFormations);
 			}
 			catch (Exception e)
@@ -174,7 +188,7 @@ namespace Diffen.Controllers.Api
 				}
 
 				var allPositions = await _squadRepository.GetPositionsAsync();
-				_cache.Set("positions", allPositions.OrderBy(x => x.Name).Select(x => x.Name));
+				_cache.Set("positions", allPositions.OrderBy(x => x.Name));
 				return Json(allPositions);
 			}
 			catch (Exception e)

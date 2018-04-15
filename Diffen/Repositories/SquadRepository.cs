@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Diffen.Repositories
 {
-	using Contracts;
 	using Database;
 	using Database.Entities.Squad;
+	using Contracts;
 	using Helpers.Extensions;
 
 	public class SquadRepository : ISquadRepository
@@ -28,18 +28,18 @@ namespace Diffen.Repositories
 
 		public async Task<Lineup> GetLineupOnPostIdAsync(int postId)
 		{
-			return await _dbContext.Lineups.IncludeAll()
-				.FirstOrDefaultAsync(l => _dbContext.LineupsOnPosts.Select(x => x.PostId).Contains(postId));
+			var lineupToPost = await _dbContext.LineupsOnPosts.FirstOrDefaultAsync(x => x.PostId == postId);
+			return await _dbContext.Lineups.IncludeAll().FirstOrDefaultAsync(l => l.Id == lineupToPost.LineupId);
 		}
 
 		public async Task<IEnumerable<Player>> GetPlayersAsync()
 		{
-			return await _dbContext.Players.Where(x => !x.IsSold).OrderBy(x => x.LastName).ToListAsync();
+			return await _dbContext.Players.Include(x => x.AvailablePositions).ThenInclude(x => x.Position).Where(x => !x.IsSold).OrderBy(x => x.LastName).ToListAsync();
 		}
 
 		public async Task<Player> GetPlayerOnIdAsync(int playerId)
 		{
-			return await _dbContext.Players.FindAsync(playerId);
+			return await _dbContext.Players.Include(x => x.AvailablePositions).ThenInclude(x => x.Position).FirstOrDefaultAsync(x => x.Id == playerId);
 		}
 
 		public async Task<IEnumerable<Lineup>> GetLineupsOnUserAsync(string userId)

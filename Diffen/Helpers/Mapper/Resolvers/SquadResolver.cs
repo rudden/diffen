@@ -26,7 +26,12 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				IsOutOnLoan = source.IsOutOnLoan,
 				IsHereOnLoan = source.IsHereOnLoan,
 				IsCaptain = source.IsCaptain,
-				IsSold = source.IsSold
+				IsSold = source.IsSold,
+				AvailablePositions = source.AvailablePositions.Select(x => new Models.Squad.Position
+				{
+					Id = x.Position.Id,
+					Name = x.Position.Name
+				})
 			};
 		}
 
@@ -35,7 +40,12 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			return new Models.Squad.Lineup
 			{
 				Id = source.Id,
-				ComponentName = FormationList.All().FirstOrDefault(f => f.Name == source.Formation.Name)?.ComponentName,
+				Formation = new Models.Squad.Formation
+				{
+					Id = source.FormationId,
+					Name = source.Formation.Name,
+					ComponentName = FormationList.All().FirstOrDefault(f => f.Name == source.Formation.Name)?.ComponentName
+				},
 				Players = context.Mapper.Map<List<Models.Squad.PlayerToLineup>>(source.Players),
 				Created = source.Created.ToString("yyyy-MM-dd")
 			};
@@ -47,7 +57,11 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				Id = source.Id,
 				Player = context.Mapper.Map<Models.Squad.Player>(source.Player),
-				Position = source.Position.Name
+				Position = new Models.Squad.Position
+				{
+					Id = source.Position.Id,
+					Name = source.Position.Name
+				}
 			};
 		}
 
@@ -71,7 +85,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		{
 			return new Models.Squad.Player
 			{
-				Id = source.Id,
+				Id = source.PlayerId,
 				FirstName = source.Player.FirstName,
 				LastName = source.Player.LastName,
 				KitNumber = source.Player.KitNumber,

@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace Diffen.Models.Squad
 {
 	using Helpers.Extensions;
@@ -13,6 +15,7 @@ namespace Diffen.Models.Squad
 		public bool IsOutOnLoan { get; set; }
 		public bool IsHereOnLoan { get; set; }
 		public bool IsSold { get; set; }
+		public IEnumerable<Position> AvailablePositions { get; set; }
 
 		public int InNumberOfStartingElevens { get; set; }
 
