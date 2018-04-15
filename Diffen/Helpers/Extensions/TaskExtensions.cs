@@ -12,7 +12,7 @@ namespace Diffen.Helpers.Extensions
 		{
 			var result = new Result
 			{
-				Type = (ResultType)Convert.ToInt32(task.Result)
+				Type = task.IsFaulted ? ResultType.Failure : (ResultType)Convert.ToInt32(task.Result)
 			};
 			switch (result.Type)
 			{
