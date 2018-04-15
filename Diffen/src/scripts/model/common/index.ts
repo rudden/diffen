@@ -5,6 +5,7 @@ export class ViewModel {
 	page: string
 	postId: number
 	pageNumber: number
+	selectedUserId: string
 	loggedInUser: User = new User()
 }
 
