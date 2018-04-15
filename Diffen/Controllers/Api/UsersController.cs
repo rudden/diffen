@@ -90,9 +90,9 @@ namespace Diffen.Controllers.Api
 				var allPosts = await _postRepository.GetPostsOnUserIdAsync(userId);
 				var posts = allPosts as IList<Post> ?? allPosts.ToList();
 
-				return Json(new Paging<Post>
+				return Json(new Paging<Models.Forum.Post>
 				{
-					Data = _mapper.Map<List<Post>>(posts.Skip(PageSize * (pageId - 1)).Take(PageSize)),
+					Data = _mapper.Map<List<Models.Forum.Post>>(posts.Skip(PageSize * (pageId - 1)).Take(PageSize)),
 					CurrentPage = pageId,
 					NumberOfPages = Convert.ToInt32(Math.Ceiling((double)posts.Count / PageSize)),
 					Total = posts.Count
@@ -113,9 +113,9 @@ namespace Diffen.Controllers.Api
 				var allPosts = await _postRepository.GetSavedPosts(userId);
 				var posts = allPosts as IList<Post> ?? allPosts.ToList();
 
-				return Json(new Paging<Post>
+				return Json(new Paging<Models.Forum.Post>
 				{
-					Data = _mapper.Map<List<Post>>(posts.Skip(PageSize * (pageId - 1)).Take(PageSize)),
+					Data = _mapper.Map<List<Models.Forum.Post>>(posts.Skip(PageSize * (pageId - 1)).Take(PageSize)),
 					CurrentPage = pageId,
 					NumberOfPages = Convert.ToInt32(Math.Ceiling((double)posts.Count / PageSize)),
 					Total = posts.Count
