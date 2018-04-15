@@ -1,0 +1,9 @@
+.twitter-tweet {
+	width: inherit !important;
+}
+
+@media (max-width: 768px) {
+	.twitter-tweet {
+		display: none !important;
+	}
+}
