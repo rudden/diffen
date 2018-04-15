@@ -1,3 +1,4 @@
+import { Lineup as CrudLineup } from '../squad/crud'
 import { Player } from '../squad'
 import { KeyValuePair } from '../common'
 
@@ -26,6 +27,33 @@ export class Filter {
 }
 
 export class VoteStatistics {
-    upvotes: number
-    downvotes: number
+    upVotes: number
+    downVotes: number
+}
+
+export class PersonalMessage {
+    id: number
+    from: PmUser
+    to: PmUser
+    message: string
+    since: string
+}
+
+export class PmUser {
+    id: string
+    avatar: string
+    nickName: string
+}
+
+export class Invite {
+    email: string
+    invitedBy: InvitedBy
+    accountIsCreated: boolean
+    inviteSent: string
+    accountCreated: string
+}
+
+export class InvitedBy {
+    id: string
+    nickName: string
 }
