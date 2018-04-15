@@ -174,7 +174,11 @@ namespace Diffen.Controllers.Api
 			{
 				var user = await _userRepository.GetUserOnIdAsync(userId);
 				user.SecludedUntil = Convert.ToDateTime(to);
-				return Json(await _userRepository.UpdateUserAsync(user));
+
+				var results = new List<Result>();
+				await _userRepository.UpdateUserAsync(user)
+					.ContinueWith(task => task.UpdateResults(ResultMessages.CreateSeclude, results));
+				return Json(results);
 			}
 			catch (Exception e)
 			{
