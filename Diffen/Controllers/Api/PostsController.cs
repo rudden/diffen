@@ -182,8 +182,7 @@ namespace Diffen.Controllers.Api
 
 				return Json(await _postRepository.ScissorPostAsync(new Scissored
 				{
-					PostId = postId,
-					Created = DateTime.Now
+					PostId = postId
 				}));
 			}
 			catch (Exception e)
