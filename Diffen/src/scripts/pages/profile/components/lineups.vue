@@ -1,6 +1,6 @@
 <template>
-	<div>
-		<h6>startelvor</h6>
+	<div class="container container__profile mt-3 mb-5">
+		<lineup-component />
 	</div>
 </template>
 
@@ -15,9 +15,13 @@ const ModuleMutation = namespace('profile', Mutation)
 
 import { ViewModel } from '../../../model/common'
 
-import { GET_USER, FETCH_USER } from '../../../modules/profile/types'
+import LineupComponent from '../../../components/lineups/lineups.vue'
 
-@Component({})
+@Component({
+	components: {
+		LineupComponent
+	}
+})
 export default class Lineups extends Vue {
 	@State(state => state.vm) vm: ViewModel
 }
