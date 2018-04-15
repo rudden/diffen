@@ -91,7 +91,7 @@ namespace Diffen.Repositories
 
 		public async Task<IEnumerable<Post>> GetSavedPosts(string userId)
 		{
-			return await _dbContext.SavedPosts.Include(x => x.Post)
+			return await _dbContext.SavedPosts.IncludeAll()
 				.Where(post => post.SavedByUserId == userId).Select(x => x.Post).ToListAsync();
 		}
 
