@@ -2,15 +2,14 @@ import Vue from 'vue'
 import store from './store'
 
 import { ViewModel } from './model/common'
+import { Component as VueComponent } from 'vue/types/options'
 
 export default class VueInstance {
     el: string = ''
-    scriptId: string = ''
-    component: any
+    component: VueComponent
 
-    constructor(el: string, scriptId: string, component: any) {
+    constructor(el: string, component: VueComponent) {
         this.el = el
-        this.scriptId = scriptId
         this.component = component
     }
 
@@ -19,14 +18,14 @@ export default class VueInstance {
         
         new Vue({ 
             store,
-            el: this.el,
+            el: `#${this.el}`,
             render: h => h(this.component)
         })
     }
 
     vm(): ViewModel {
         let dm: any = ''
-        var el = document.getElementById(this.scriptId)
+        var el = document.getElementById(this.el)
         if (el) dm = el.getAttribute('view-model')
         return JSON.parse(dm)
     }
