@@ -230,16 +230,38 @@ namespace Diffen.Controllers.Api
 			}
 		}
 
-		[HttpPost("url/click/{tipId}")]
-		public async Task<IActionResult> UrlTipClickCount(int tipId)
+		[HttpPost("{postId}/url/click")]
+		public async Task<IActionResult> UrlTipClickCount(int postId)
 		{
 			try
 			{
-				return Json(await _postRepository.UpdateUrlTipClickCountAsync(tipId));
+				return Json(await _postRepository.UpdateUrlTipClickCountAsync(postId));
 			}
 			catch (Exception e)
 			{
-				_logger.Warning(e.Message, "UrlTipClickCount: An unexpected error occured when updating click count for tip {tipId}", tipId);
+				_logger.Warning(e.Message, "UrlTipClickCount: An unexpected error occured when updating click count for tip on post with id {postId}", postId);
+				return BadRequest();
+			}
+		}
+
+		[HttpGet("url/toplist")]
+		public async Task<IActionResult> UrlTipClickCountTopList()
+		{
+			try
+			{
+				var tips = await _postRepository.GetUrlTipsAsync();
+				var topList = tips.Where(x => x.Post.Created > DateTime.Now.AddMonths(-1))
+					.Select(x => new Models.Forum.UrlTip
+					{
+						Href = x.Href,
+						Clicks = x.Clicks,
+						PostId = x.PostId
+					}).OrderByDescending(x => x.Clicks).Take(10);
+				return Json(topList);
+			}
+			catch (Exception e)
+			{
+				_logger.Warning(e.Message, "UrlTipClickCountTopList: An unexpected error occured when fetching url tip click count toplist");
 				return BadRequest();
 			}
 		}
