@@ -9,6 +9,7 @@ const extractSass = new ExtractTextPlugin({ filename: "css/[name].css" })
 module.exports = {
 	entry: {
 		'theme': './src/scripts/javascript/theme.js',
+		'avatar': './src/scripts/javascript/avatar.js',
 		
 		'forum': './src/scripts/pages/forum',
 		'squad': './src/scripts/pages/squad',
