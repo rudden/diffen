@@ -58,6 +58,7 @@ namespace Diffen.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ComponentName = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -379,6 +380,32 @@ namespace Diffen.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlayersToPositions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    PlayerId = table.Column<int>(nullable: false),
+                    PositionId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayersToPositions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlayersToPositions_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlayersToPositions_Positions_PositionId",
+                        column: x => x.PositionId,
+                        principalTable: "Positions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SavedPosts",
                 columns: table => new
                 {
@@ -432,7 +459,6 @@ namespace Diffen.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Clicks = table.Column<int>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
                     Href = table.Column<string>(nullable: true),
                     PostId = table.Column<int>(nullable: false)
                 },
@@ -642,6 +668,16 @@ namespace Diffen.Migrations
                 column: "PositionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlayersToPositions_PlayerId",
+                table: "PlayersToPositions",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayersToPositions_PositionId",
+                table: "PlayersToPositions",
+                column: "PositionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Posts_CreatedByUserId",
                 table: "Posts",
                 column: "CreatedByUserId");
@@ -724,6 +760,9 @@ namespace Diffen.Migrations
 
             migrationBuilder.DropTable(
                 name: "PlayersToLineups");
+
+            migrationBuilder.DropTable(
+                name: "PlayersToPositions");
 
             migrationBuilder.DropTable(
                 name: "SavedPosts");

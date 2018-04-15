@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Diffen.Database.Entities.Squad
@@ -16,5 +17,8 @@ namespace Diffen.Database.Entities.Squad
 		public bool IsOutOnLoan { get; set; }
 		public bool IsHereOnLoan { get; set; }
 		public bool IsSold { get; set; }
+
+		// Linked Tables
+		public ICollection<PlayerToPosition> AvailablePositions { get; set; }
 	}
 }

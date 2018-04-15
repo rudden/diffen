@@ -16,7 +16,5 @@ namespace Diffen.Database.Entities.Forum
 
 		public string Href { get; set; }
 		public int Clicks { get; set; }
-
-		public DateTime Created { get; set; }
 	}
 }

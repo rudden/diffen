@@ -88,8 +88,6 @@ namespace Diffen.Migrations
 
                     b.Property<int>("Clicks");
 
-                    b.Property<DateTime>("Created");
-
                     b.Property<string>("Href");
 
                     b.Property<int>("PostId");
@@ -127,6 +125,8 @@ namespace Diffen.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ComponentName");
 
                     b.Property<string>("Name");
 
@@ -199,6 +199,24 @@ namespace Diffen.Migrations
                     b.HasIndex("PositionId");
 
                     b.ToTable("PlayersToLineups");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Squad.PlayerToPosition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("PlayerId");
+
+                    b.Property<int>("PositionId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.HasIndex("PositionId");
+
+                    b.ToTable("PlayersToPositions");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Squad.Position", b =>
@@ -574,6 +592,19 @@ namespace Diffen.Migrations
 
                     b.HasOne("Diffen.Database.Entities.Squad.Player", "Player")
                         .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Diffen.Database.Entities.Squad.Position", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Squad.PlayerToPosition", b =>
+                {
+                    b.HasOne("Diffen.Database.Entities.Squad.Player", "Player")
+                        .WithMany("AvailablePositions")
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade);
 

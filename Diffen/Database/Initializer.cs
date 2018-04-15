@@ -29,12 +29,13 @@ namespace Diffen.Database
 			await SeedUsersAndNickNamesAsync(dbContext, userManager);
 			await SeedRolesAsync(roleManager);
 			await SeedUsersToRolesAsync(userManager);
+			await SeedPositionsAsync(dbContext);
+			await SeedFormationsAsync(dbContext);
 			await SeedPlayersAsync(dbContext);
+			await SeedAvailablePositionsToPlayers(dbContext);
 			await SeedInvitesAsync(dbContext);
 			await SeedPostsAsync(dbContext);
 			await SeedConversationsAsync(dbContext);
-			await SeedPositionsAsync(dbContext);
-			await SeedFormationsAsync(dbContext);
 			await SeedLineupsAsync(dbContext);
 			await SeedUrlTipsAsync(dbContext);
 			await SeedLineupsToPostsAsync(dbContext);
@@ -182,12 +183,6 @@ namespace Diffen.Database
 						LastName = "Augustinsson",
 						KitNumber = 15
 					},
-					new Player
-					{
-						FirstName = "Johan",
-						LastName = "Andersson",
-						KitNumber = 2
-					},
 					// Midfielders
 					new Player
 					{
@@ -273,21 +268,21 @@ namespace Diffen.Database
 					{
 						FirstName = "Souleymane",
 						LastName = "Kone",
-						KitNumber = 15,
+						KitNumber = 0,
 						IsOutOnLoan = true
 					},
 					new Player
 					{
 						FirstName = "Marcus",
 						LastName = "Hansson",
-						KitNumber = 19,
+						KitNumber = 0,
 						IsOutOnLoan = true
 					},
 					new Player
 					{
 						FirstName = "Amadou",
 						LastName = "Jawo",
-						KitNumber = 11,
+						KitNumber = 0,
 						IsOutOnLoan = true
 					},
 					new Player
@@ -308,7 +303,7 @@ namespace Diffen.Database
 					{
 						FirstName = "Haruna",
 						LastName = "Garba",
-						KitNumber = 29,
+						KitNumber = 0,
 						IsOutOnLoan = true
 					},
 					// Is here on loan
@@ -321,6 +316,306 @@ namespace Diffen.Database
 					},
 				};
 				dbContext.Players.AddRange(players);
+				await dbContext.SaveChangesAsync();
+			}
+		}
+
+		private static async Task SeedAvailablePositionsToPlayers(DiffenDbContext dbContext)
+		{
+			if (!dbContext.PlayersToPositions.Any())
+			{
+				var defendingPositions = PositionList.All().Where(p => p.Types.Contains(PositionType.Defence))
+					.Select(position => dbContext.Positions.FirstOrDefault(x => x.Name == position.Name)).ToList();
+				var midfieldPositions = PositionList.All().Where(p => p.Types.Contains(PositionType.Midfield))
+					.Select(position => dbContext.Positions.FirstOrDefault(x => x.Name == position.Name)).ToList();
+				var attackingPositions = PositionList.All().Where(p => p.Types.Contains(PositionType.Attack))
+					.Select(position => dbContext.Positions.FirstOrDefault(x => x.Name == position.Name)).ToList();
+
+				var andreasIsaksson = dbContext.Players.FirstOrDefault(x => x.KitNumber == 1);
+				dbContext.PlayersToPositions.Add(new PlayerToPosition
+				{
+					PlayerId = andreasIsaksson.Id,
+					PositionId = dbContext.Positions.FirstOrDefault(p => p.Name == "MV").Id
+				});
+				var tommyVaiho = dbContext.Players.FirstOrDefault(x => x.KitNumber == 30);
+				dbContext.PlayersToPositions.Add(new PlayerToPosition
+				{
+					PlayerId = tommyVaiho.Id,
+					PositionId = dbContext.Positions.FirstOrDefault(p => p.Name == "MV").Id
+				});
+				var oscarJonsson = dbContext.Players.FirstOrDefault(x => x.KitNumber == 35);
+				dbContext.PlayersToPositions.Add(new PlayerToPosition
+				{
+					PlayerId = oscarJonsson.Id,
+					PositionId = dbContext.Positions.FirstOrDefault(p => p.Name == "MV").Id
+				});
+				var felixBeijmo = dbContext.Players.FirstOrDefault(x => x.KitNumber == 22);
+				foreach (var position in defendingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = felixBeijmo.Id,
+						PositionId = position.Id
+					});
+				}
+				var johanAndersson = dbContext.Players.FirstOrDefault(x => x.KitNumber == 2);
+				foreach (var position in defendingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = johanAndersson.Id,
+						PositionId = position.Id
+					});
+				}
+				var jacobUneLarsson = dbContext.Players.FirstOrDefault(x => x.KitNumber == 4);
+				foreach (var position in defendingPositions.Where(x => !x.Name.Contains("Y")))
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = jacobUneLarsson.Id,
+						PositionId = position.Id
+					});
+				}
+				var niclasGunnarsson = dbContext.Players.FirstOrDefault(x => x.KitNumber == 5);
+				foreach (var position in defendingPositions.Where(x => !x.Name.Contains("Y")))
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = niclasGunnarsson.Id,
+						PositionId = position.Id
+					});
+				}
+				var jonasOlsson = dbContext.Players.FirstOrDefault(x => x.KitNumber == 13);
+				foreach (var position in defendingPositions.Where(x => !x.Name.Contains("Y")))
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = jonasOlsson.Id,
+						PositionId = position.Id
+					});
+				}
+				var marcusDanielsson = dbContext.Players.FirstOrDefault(x => x.KitNumber == 3);
+				foreach (var position in defendingPositions.Where(x => !x.Name.Contains("Y")))
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = marcusDanielsson.Id,
+						PositionId = position.Id
+					});
+				}
+				var jonathanAugustinsson = dbContext.Players.FirstOrDefault(x => x.KitNumber == 15);
+				foreach (var position in defendingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = jonathanAugustinsson.Id,
+						PositionId = position.Id
+					});
+				}
+				var harisRadetinac = dbContext.Players.FirstOrDefault(x => x.KitNumber == 9);
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = harisRadetinac.Id,
+						PositionId = position.Id
+					});
+				}
+				foreach (var position in defendingPositions.Where(x => x.Name.Contains("Y")))
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = harisRadetinac.Id,
+						PositionId = position.Id
+					});
+				}
+				var jonathanRing = dbContext.Players.FirstOrDefault(x => x.KitNumber == 11);
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = jonathanRing.Id,
+						PositionId = position.Id
+					});
+				}
+				foreach (var position in defendingPositions.Where(x => x.Name.Contains("Y")))
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = jonathanRing.Id,
+						PositionId = position.Id
+					});
+				}
+				var dzenisKozica = dbContext.Players.FirstOrDefault(x => x.KitNumber == 7);
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = dzenisKozica.Id,
+						PositionId = position.Id
+					});
+				}
+				var hampusFinndell = dbContext.Players.FirstOrDefault(x => x.KitNumber == 17);
+				foreach (var position in midfieldPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = hampusFinndell.Id,
+						PositionId = position.Id
+					});
+				}
+				var kevinWalker = dbContext.Players.FirstOrDefault(x => x.KitNumber == 8);
+				foreach (var position in midfieldPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = kevinWalker.Id,
+						PositionId = position.Id
+					});
+				}
+				var jesperKarlstrom = dbContext.Players.FirstOrDefault(x => x.KitNumber == 6);
+				foreach (var position in midfieldPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = jesperKarlstrom.Id,
+						PositionId = position.Id
+					});
+				}
+				var fredrikUlvestad = dbContext.Players.FirstOrDefault(x => x.KitNumber == 23);
+				foreach (var position in midfieldPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = fredrikUlvestad.Id,
+						PositionId = position.Id
+					});
+				}
+				var besardSabovic = dbContext.Players.FirstOrDefault(x => x.KitNumber == 14);
+				foreach (var position in midfieldPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = besardSabovic.Id,
+						PositionId = position.Id
+					});
+				}
+				var edwardChilufya = dbContext.Players.FirstOrDefault(x => x.KitNumber == 18);
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = edwardChilufya.Id,
+						PositionId = position.Id
+					});
+				}
+				var tinotendaKadewere = dbContext.Players.FirstOrDefault(x => x.KitNumber == 24);
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = tinotendaKadewere.Id,
+						PositionId = position.Id
+					});
+				}
+				var aliouBadji = dbContext.Players.FirstOrDefault(x => x.KitNumber == 20);
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = aliouBadji.Id,
+						PositionId = position.Id
+					});
+				}
+				var kerimMrabti = dbContext.Players.FirstOrDefault(x => x.KitNumber == 10);
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = kerimMrabti.Id,
+						PositionId = position.Id
+					});
+				}
+				foreach (var position in midfieldPositions.Where(x => !x.Name.Contains("D")))
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = kerimMrabti.Id,
+						PositionId = position.Id
+					});
+				}
+				var julianKristoffersen = dbContext.Players.FirstOrDefault(x => x.KitNumber == 21);
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = julianKristoffersen.Id,
+						PositionId = position.Id
+					});
+				}
+				var souleymaneKone = dbContext.Players.FirstOrDefault(x => x.LastName == "Kone");
+				foreach (var position in defendingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = souleymaneKone.Id,
+						PositionId = position.Id
+					});
+				}
+				var marcusHansson = dbContext.Players.FirstOrDefault(x => x.FirstName == "Marcus" && x.LastName == "Hansson");
+				foreach (var position in defendingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = marcusHansson.Id,
+						PositionId = position.Id
+					});
+				}
+				var amadouJawo = dbContext.Players.FirstOrDefault(x => x.FirstName == "Amadou");
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = amadouJawo.Id,
+						PositionId = position.Id
+					});
+				}
+				var mihlaliMayambela = dbContext.Players.FirstOrDefault(x => x.FirstName == "Mihlali");
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = mihlaliMayambela.Id,
+						PositionId = position.Id
+					});
+				}
+				var josephCeesay = dbContext.Players.FirstOrDefault(x => x.FirstName == "Joseph");
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = josephCeesay.Id,
+						PositionId = position.Id
+					});
+				}
+				var harunaGarba = dbContext.Players.FirstOrDefault(x => x.FirstName == "Haruna");
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = harunaGarba.Id,
+						PositionId = position.Id
+					});
+				}
+				var yuraMovsisyan = dbContext.Players.FirstOrDefault(x => x.FirstName == "Yura");
+				foreach (var position in attackingPositions)
+				{
+					dbContext.PlayersToPositions.Add(new PlayerToPosition
+					{
+						PlayerId = yuraMovsisyan.Id,
+						PositionId = position.Id
+					});
+				}
 				await dbContext.SaveChangesAsync();
 			}
 		}
@@ -339,6 +634,18 @@ namespace Diffen.Database
 					};
 					dbContext.Invites.Add(invite);
 				}
+				foreach (var user in dbContext.Users)
+				{
+					var invite = new Invite
+					{
+						Email = user.Email,
+						InviteSent = user.Joined.AddDays(-new Random().Next(1, 10)),
+						AccountCreated = user.Joined,
+						AccountIsCreated = true,
+						InvitedByUserId = dbContext.Users.Where(x => x.Id != user.Id).PickRandom().Id
+					};
+					dbContext.Invites.Add(invite);
+				}
 				await dbContext.SaveChangesAsync();
 			}
 		}
@@ -349,7 +656,7 @@ namespace Diffen.Database
 			{
 				var positions = PositionList.All().Select(position => new Position
 				{
-					Name = position
+					Name = position.Name
 				});
 				dbContext.Positions.AddRange(positions);
 				await dbContext.SaveChangesAsync();
@@ -368,7 +675,7 @@ namespace Diffen.Database
 					{
 						Message = $"Autogenererat inlägg för {randomUserNick}. Scrolla vidare! \n\nMvh Admin",
 						CreatedByUserId = randomUser.Id,
-						Created = RandomDateTime.Get(randomUser.Joined, new DateTime(2018, 06, 1))
+						Created = RandomDateTime.Get(randomUser.Joined, DateTime.Now)
 					};
 					dbContext.Posts.Add(post);
 				}
@@ -389,7 +696,7 @@ namespace Diffen.Database
 						Message = $"Autogenererat svar till inlägg {post.Id}. Scrolla vidare! \n\nMvh Admin",
 						CreatedByUserId = randomUser.Id,
 						ParentPostId = post.Id,
-						Created = RandomDateTime.Get(post.Created, new DateTime(2018, 06, 1))
+						Created = RandomDateTime.Get(post.Created, post.Created.AddMinutes(30))
 					};
 					dbContext.Posts.Add(answer);
 					await dbContext.SaveChangesAsync();
@@ -404,7 +711,8 @@ namespace Diffen.Database
 			{
 				var formations = FormationList.All().Select(f => new Formation
 				{
-					Name = f.Name
+					Name = f.Name,
+					ComponentName = f.ComponentName
 				});
 				dbContext.Formations.AddRange(formations);
 				await dbContext.SaveChangesAsync();
@@ -446,7 +754,7 @@ namespace Diffen.Database
 							Type = (VoteType)new Random().Next(0, 2),
 							PostId = post.Id,
 							CreatedByUserId = randomUserId,
-							Created = RandomDateTime.Get(post.Created, new DateTime(2018, 6, 1))
+							Created = RandomDateTime.Get(post.Created, post.Created.AddMinutes(30))
 						};
 						dbContext.Votes.Add(vote);
 						await dbContext.SaveChangesAsync();
@@ -459,23 +767,36 @@ namespace Diffen.Database
 		{
 			if (!dbContext.Lineups.Any())
 			{
-				var randomUsers = dbContext.Users.PickRandom(dbContext.Users.Count() / 3);
-				foreach (var user in randomUsers)
+				for (var i = 0; i < 3; i++)
 				{
-					var randomPlayers = dbContext.Players.PickRandom(12).Select(p => new PlayerToLineup
+					var randomUsers = dbContext.Users.PickRandom(dbContext.Users.Count() / 3);
+					foreach (var user in randomUsers)
 					{
-						PlayerId = p.Id,
-						PositionId = dbContext.Positions.PickRandom().Id
-					}).ToList();
-					var randomFormationId = dbContext.Formations.PickRandom().Id;
-					var lineup = new Lineup
-					{
-						FormationId = randomFormationId,
-						Players = randomPlayers,
-						CreatedByUserId = user.Id,
-						Created = RandomDateTime.Get(user.Joined, new DateTime(2018, 6, 1))
-					};
-					dbContext.Lineups.Add(lineup);
+						var randomFormation = dbContext.Formations.PickRandom();
+						var availablePositions = FormationList.All().Find(f => f.Name == randomFormation.Name).Positions.ToList();
+
+						var playersToLineup = new List<PlayerToLineup>();
+						var playerIds = new List<int>();
+						foreach (var position in availablePositions)
+						{
+							var playerId = dbContext.Players.Include(x => x.AvailablePositions)
+								.Where(p => p.AvailablePositions.Select(ap => ap.Position.Name).Contains(position.Name) && !playerIds.Contains(p.Id)).PickRandom().Id;
+							playerIds.Add(playerId);
+							playersToLineup.Add(new PlayerToLineup
+							{
+								PositionId = dbContext.Positions.FirstOrDefault(x => x.Name == position.Name).Id,
+								PlayerId = playerId
+							});
+						}
+						var lineup = new Lineup
+						{
+							FormationId = randomFormation.Id,
+							Players = playersToLineup,
+							CreatedByUserId = user.Id,
+							Created = RandomDateTime.Get(user.Joined, DateTime.Now)
+						};
+						dbContext.Lineups.Add(lineup);
+					}
 				}
 				await dbContext.SaveChangesAsync();
 			}
@@ -510,8 +831,7 @@ namespace Diffen.Database
 					{
 						Href = href,
 						Clicks = new Random().Next(0, 100),
-						PostId = post.Id,
-						Created = post.Created
+						PostId = post.Id
 					};
 					dbContext.UrlTips.Add(urlTip);
 				}
@@ -531,7 +851,7 @@ namespace Diffen.Database
 					{
 						PostId = post.Id,
 						SavedByUserId = randomUserId,
-						Created = RandomDateTime.Get(post.Created, new DateTime(2018, 6, 1))
+						Created = RandomDateTime.Get(post.Created, DateTime.Now)
 					};
 					dbContext.SavedPosts.Add(savedPost);
 				}
@@ -558,7 +878,7 @@ namespace Diffen.Database
 		{
 			if (!dbContext.PersonalMessages.Any())
 			{
-				for (var i = 0; i < 3; i++)
+				for (var i = 0; i < 10; i++)
 				{
 					var users = dbContext.Users.PickRandom(dbContext.Users.Count() / 3);
 					foreach (var user in users)
@@ -568,8 +888,8 @@ namespace Diffen.Database
 						{
 							FromUserId = user.Id,
 							ToUserId = randomUser.Id,
-							Message = $"Ville bara säga hej {randomUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick}!\n\nMvh {user.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick}",
-							Created = RandomDateTime.Get(user.Joined, new DateTime(2018, 6, 1))
+							Message = $"Ville bara säga hej {randomUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick}!\n\nLorem ipsum dolor amet prism intelligentsia fashion axe skateboard, tilde etsy small batch distillery. Yuccie cornhole artisan taxidermy iceland raclette prism drinking vinegar truffaut health goth ennui.\n\nMvh {user.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick}",
+							Created = RandomDateTime.Get(user.Joined, DateTime.Now)
 						};
 						dbContext.PersonalMessages.Add(personalMessage);
 					}
@@ -606,7 +926,7 @@ namespace Diffen.Database
 				var scissoredPosts = posts.Select(p => new Scissored
 				{
 					PostId = p.Id,
-					Created = RandomDateTime.Get(p.Created, new DateTime(2018, 6, 1))
+					Created = RandomDateTime.Get(p.Created, p.Created.AddMinutes(30))
 				});
 				dbContext.ScissoredPosts.AddRange(scissoredPosts);
 				await dbContext.SaveChangesAsync();
