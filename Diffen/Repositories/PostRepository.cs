@@ -119,12 +119,14 @@ namespace Diffen.Repositories
 
 		public async Task<bool> ScissorPostAsync(Scissored scissoredPost)
 		{
+			scissoredPost.Created = DateTime.Now;
 			_dbContext.ScissoredPosts.Add(scissoredPost);
 			return await _dbContext.SaveChangesAsync() >= 0;
 		}
 
 		public async Task<bool> SavePostAsync(SavedPost savedPost)
 		{
+			savedPost.Created = DateTime.Now;
 			_dbContext.SavedPosts.Add(savedPost);
 			return await _dbContext.SaveChangesAsync() >= 0;
 		}
