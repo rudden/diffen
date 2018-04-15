@@ -30,7 +30,7 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> AddUrlToPostAsync(UrlTip tip);
 		Task<bool> UpdateUrlToPostAsync(UrlTip tip);
 		Task<bool> RemoveUrlToPostAsync(int postId);
-		Task<bool> UpdateUrlTipClickCountAsync(int tipId);
+		Task<bool> UpdateUrlTipClickCountAsync(int postId);
 		Task<IEnumerable<Vote>> GetVotesAsync();
 		Task<IEnumerable<Vote>> GetVotesOnUserIdAsync(string id);
 		Task<IEnumerable<Vote>> GetVotesOnPostIdAsync(int id);

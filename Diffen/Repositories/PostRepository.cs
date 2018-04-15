@@ -149,7 +149,7 @@ namespace Diffen.Repositories
 
 		public async Task<IEnumerable<UrlTip>> GetUrlTipsAsync()
 		{
-			return await _dbContext.UrlTips.ToListAsync();
+			return await _dbContext.UrlTips.Include(x => x.Post).ToListAsync();
 		}
 
 		public async Task<UrlTip> GetUrlTipOnIdAsync(int id)
@@ -190,9 +190,9 @@ namespace Diffen.Repositories
 			return await _dbContext.SaveChangesAsync() >= 0;
 		}
 
-		public async Task<bool> UpdateUrlTipClickCountAsync(int tipId)
+		public async Task<bool> UpdateUrlTipClickCountAsync(int postId)
 		{
-			var tip = await GetUrlTipOnIdAsync(tipId);
+			var tip = await _dbContext.UrlTips.FirstOrDefaultAsync(t => t.PostId == postId);
 			tip.Clicks++;
 			_dbContext.UrlTips.Update(tip);
 			return await _dbContext.SaveChangesAsync() >= 0;
