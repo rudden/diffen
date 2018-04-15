@@ -357,12 +357,12 @@ namespace Diffen.Controllers.Api
 		}
 
 		[HttpGet("invites")]
-		public async Task<IActionResult> GetInvites() => Json(_mapper.Map<List<Invite>>(await _userRepository.GetInvitesAsync()));
+		public async Task<IActionResult> GetInvites() => Json(_mapper.Map<List<Models.User.Invite>>(await _userRepository.GetInvitesAsync()));
 
 		[HttpGet, Route("invites/exist")]
 		public async Task<IActionResult> InviteExists(string email) => Ok(await _userRepository.EmailHasInvite(email));
 
-		[HttpPost("{userId}/invites/add")]
+		[HttpPost("{userId}/invites/create")]
 		public async Task<IActionResult> AddInvite(string userId, [FromBody] Models.User.CRUD.Invite invite)
 		{
 			try
@@ -370,11 +370,25 @@ namespace Diffen.Controllers.Api
 				if (invite == null)
 					return BadRequest();
 
+				var results = new List<Result>();
+				if (!new EmailAddressAttribute().IsValid(invite.Email))
+				{
+					results.Add(new Result
+					{
+						Message = "Emailen är inte giltig",
+						Type = ResultType.Failure
+					});
+					return Json(results);
+				}
 				if (await _userRepository.EmailHasInvite(invite.Email))
 				{
-					return BadRequest($"det finns redan en inbjudan på email {invite.Email}");
+					results.Add(new Result
+					{
+						Message = "Det finns redan en inbjudan på denna email",
+						Type = ResultType.Failure
+					});
+					return Json(results);
 				}
-				var results = new List<Result>();
 				await _userRepository.AddInviteAsync(new Invite
 				{
 					Email = invite.Email,
