@@ -23,6 +23,12 @@
 			<div class="form-group mb-3">
 				<input type="password" class="form-control" asp-for="Password" placeholder="lösenord" required>
 			</div>
+			@if (!ViewData.ModelState.IsValid)
+			{
+				<div class="alert alert-danger">
+					@Html.ValidationSummary(false, "", new { @class = "auth-validation" })
+				</div>
+			}
 			<div class="mb-5">
 				<button type="submit" class="btn btn-success"><span class="oi oi-account-login"></span> logga in</button>
 				<a href="/auth/register" class="btn btn-primary"> skapa konto</a>
