@@ -274,8 +274,7 @@ namespace Diffen.Controllers.Api
 				return Json(await _postRepository.SavePostAsync(new Database.Entities.User.SavedPost
 				{
 					PostId = postId,
-					SavedByUserId = userId,
-					Created = DateTime.Now
+					SavedByUserId = userId
 				}));
 			}
 			catch (Exception e)
