@@ -1,7 +1,7 @@
 <template>
     <div class="embeds" v-if="hasEmbed">
         <template v-if="videoSrc">
-            <div class="embed-responsive embed-responsive-16by9 mb-3">
+            <div class="embed-responsive embed-responsive-16by9 mt-3">
                 <iframe class="embed-responsive-item" v-bind:src="videoSrc" allowfullscreen></iframe>
             </div>
         </template>

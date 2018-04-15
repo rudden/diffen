@@ -7,11 +7,12 @@ export class Post {
     user: User
     urlTipHref: string
     votes: Vote[]
+    parentPost: ParentPost
+    lineupId?: number
 
     since: string
     edited: string
 
-    hasLineup: boolean
     isScissored: boolean
     loggedInUserCanVote: boolean
 
@@ -56,4 +57,10 @@ export class Filter {
     startingEleven?: StartingEleven = StartingEleven.All
 	includedUsers?: KeyValuePair[]
 	excludedUsers?: KeyValuePair[]
+}
+
+export class UrlTip {
+    href: string
+    clicks: number
+    postId: number
 }

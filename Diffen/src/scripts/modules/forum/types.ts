@@ -12,6 +12,9 @@ export const CREATE_VOTE = 'forum/CREATE_VOTE'
 export const BOOKMARK_POST = 'forum/BOOKMARK_POST'
 export const SCISSOR_POST = 'forum/SCISSOR_POST'
 export const FETCH_KVP_USERS = 'forum/FETCH_KVP_USERS'
+export const FETCH_LINEUP_ON_POST = 'forum/FETCH_LINEUP_ON_POST'
+export const UPDATE_URLTIP_CLICKS = 'forum/UPDATE_URLTIP_CLICKS'
+export const FETCH_URLTIP_TOPLIST = 'forum/FETCH_URLTIP_TOPLIST'
 
 // mutations
 export const SET_PAGED_POSTS = 'forum/SET_PAGED_POSTS'

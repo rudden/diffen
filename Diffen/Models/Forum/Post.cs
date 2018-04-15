@@ -12,11 +12,11 @@ namespace Diffen.Models.Forum
 		public string UrlTipHref { get; set; }
 		public IEnumerable<Vote> Votes { get; set; }
 		public ParentPost ParentPost { get; set; }
+		public int? LineupId { get; set; }
 
 		public string Since { get; set; }
 		public string Edited { get; set; }
 
-		public bool HasLineup { get; set; }
 		public bool IsScissored { get; set; }
 		public bool LoggedInUserCanVote { get; set; }
 

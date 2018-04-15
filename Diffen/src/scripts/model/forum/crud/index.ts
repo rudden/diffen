@@ -6,12 +6,8 @@ export class Post {
     message: string
     createdByUserId: string
     parentPostId?: number
-    urlTip: UrlTip = new UrlTip()
-    lineup: Lineup
-}
-
-export class UrlTip {
-    href: string
+    urlTipHref?: string
+    lineup?: Lineup
 }
 
 export class Vote {

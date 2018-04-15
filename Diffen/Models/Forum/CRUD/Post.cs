@@ -8,12 +8,7 @@
 		public string Message { get; set; }
 		public string CreatedByUserId { get; set; }
 		public int? ParentPostId { get; set; }
-		public UrlTip UrlTip { get; set; }
+		public string UrlTipHref { get; set; }
 		public Lineup Lineup { get; set; }
-	}
-
-	public class UrlTip
-	{
-		public string Href { get; set; }
 	}
 }

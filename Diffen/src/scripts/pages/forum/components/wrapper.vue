@@ -2,7 +2,7 @@
 	<div class="container pt-4 pb-5">
 		<div class="row">
 			<left-sidebar />
-			<posts />
+			<middle />
 			<right-sidebar />
 		</div>
 	</div>
@@ -13,13 +13,13 @@ import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 
 import LeftSidebar from './left-sidebar.vue'
-import Posts from './posts.vue'
+import Middle from './middle.vue'
 import RightSidebar from './right-sidebar.vue'
 
 @Component({
 	components: {
 		LeftSidebar,
-		Posts,
+		Middle,
 		RightSidebar
 	}
 })

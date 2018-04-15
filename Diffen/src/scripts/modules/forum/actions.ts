@@ -2,9 +2,10 @@ import axios from 'axios'
 import State from './state'
 import { Store, ActionTree, ActionContext } from 'vuex'
 
-import { Post, Filter } from '../../model/forum'
+import { Post, Filter, VoteType, UrlTip } from '../../model/forum'
 import { Post as CrudPost, Vote as CrudVote } from '../../model/forum/crud'
-import { Result } from '../../model/common'
+import { Result, Paging } from '../../model/common'
+import { Lineup } from '../../model/squad'
 
 import { 
 	FETCH_PAGED_POSTS, 
@@ -14,10 +15,13 @@ import {
 	BOOKMARK_POST,
 	SCISSOR_POST,
 	FETCH_KVP_USERS,
+	FETCH_LINEUP_ON_POST,
+	UPDATE_URLTIP_CLICKS,
 	SET_PAGED_POSTS, 
 	SET_POST_AFTER_VOTE,
 	SET_REMOVE_POST_FROM_LIST,
-    SET_KVP_USERS
+    SET_KVP_USERS,
+	FETCH_URLTIP_TOPLIST
 } from './types'
 
 // export everything compliant to the vuex specification for actions
@@ -45,6 +49,14 @@ export const Actions: ActionTree<State, any> = {
 		return axios.post(`${store.rootState.vm.api}/posts/vote`, payload.vote)
 			.then((res) => {
 				if (!res) return
+				switch (payload.vote.type) {
+					case VoteType.Up:
+						store.rootState.vm.loggedInUser.voteStatistics.upVotes++
+						break
+					case VoteType.Down:
+						store.rootState.vm.loggedInUser.voteStatistics.downVotes++
+						break
+				}
 				store.commit(SET_POST_AFTER_VOTE, { vote: payload.vote, nickName: store.rootState.vm.loggedInUser.nickName })
 			}).catch((error) => console.warn(error))
 	},
@@ -65,6 +77,24 @@ export const Actions: ActionTree<State, any> = {
 	[FETCH_KVP_USERS]: (store: ActionContext<State, any>): Promise<void> => {
 		return axios.get(`${store.rootState.vm.api}/users`)
 			.then((res) => store.commit(SET_KVP_USERS, res.data)).catch((error) => console.warn(error))
+	},
+	[FETCH_LINEUP_ON_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<Lineup> => {
+		return new Promise<Lineup>((resolve, reject) => {
+			return axios.get(`${store.rootState.vm.api}/squads/lineups/post/${payload.postId}`)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[UPDATE_URLTIP_CLICKS]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<boolean> => {
+		return new Promise<boolean>((resolve, reject) => {
+			return axios.post(`${store.rootState.vm.api}/posts/${payload.postId}/url/click`)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[FETCH_URLTIP_TOPLIST]: (store: ActionContext<State, any>): Promise<UrlTip[]> => {
+		return new Promise<UrlTip[]>((resolve, reject) => {
+			return axios.get(`${store.rootState.vm.api}/posts/url/toplist`)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
 	},
 }
 export default Actions

@@ -37,11 +37,11 @@ import { Action, State, namespace } from 'vuex-class'
 
 const ModuleAction = namespace('forum', Action)
 
-import { CREATE_VOTE } from '../modules/forum/types'
+import { CREATE_VOTE } from '../../modules/forum/types'
 
-import { Post, VoteType, Vote } from '../model/forum'
-import { Vote as CrudVote } from '../model/forum/crud'
-import { ViewModel } from '../model/common'
+import { Post, VoteType, Vote } from '../../model/forum'
+import { Vote as CrudVote } from '../../model/forum/crud'
+import { ViewModel } from '../../model/common'
 
 import { Popover } from 'uiv'
 
