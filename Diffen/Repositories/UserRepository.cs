@@ -94,6 +94,14 @@ namespace Diffen.Repositories
 			return await _dbContext.UserFilters.FirstOrDefaultAsync(u => u.UserId == userId);
 		}
 
+		public async Task<bool> AddAvatarToUserAsync(string userId, string fileName)
+		{
+			var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+			user.AvatarFileName = fileName;
+			_dbContext.Users.Update(user);
+			return await _dbContext.SaveChangesAsync() >= 0;
+		}
+
 		public async Task<bool> UpdateUserFilterAsync(Filter filter)
 		{
 			_dbContext.UserFilters.Update(filter);
