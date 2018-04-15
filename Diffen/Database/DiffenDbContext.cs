@@ -30,6 +30,7 @@ namespace Diffen.Database
 		public DbSet<Formation> Formations { get; set; }
 		public DbSet<Lineup> Lineups { get; set; }
 		public DbSet<PlayerToLineup> PlayersToLineups { get; set; }
+		public DbSet<PlayerToPosition> PlayersToPositions { get; set; }
 
 		public DiffenDbContext(IConfigurationRoot configuration, DbContextOptions options) : base(options)
 		{
