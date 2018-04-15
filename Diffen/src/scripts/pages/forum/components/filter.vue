@@ -1,5 +1,5 @@
 <template>
-    <div class="card mb-4 d-none d-lg-block" :class="{ 'div-disabled': isLoadingPosts }">
+    <div class="card mb-4" :class="{ 'div-disabled': isLoadingPosts }">
         <div class="card-body">
             <h6 class="mb-3">filtrera</h6>
             <hr />
@@ -156,7 +156,6 @@ export default class FilterComponent extends Vue {
     
     mounted() {
         this.loadUsers()
-        this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers }})
 	}
 
 	get excludedUsers(): any {
