@@ -336,7 +336,7 @@ namespace Diffen.Controllers.Api
 		}
 
 		[HttpGet, Route("{userId}/pm")]
-		public async Task<IActionResult> GetPmOnUser(string userId, string to)
+		public async Task<IActionResult> GetPersonalMessages(string userId, string to = null)
 		{
 			try
 			{
@@ -344,7 +344,9 @@ namespace Diffen.Controllers.Api
 				{
 					return Forbid();
 				}
-				return Json(_mapper.Map<List<Models.User.PersonalMessage>>(await _pmRepository.GetPmsSentFromUserToUserAsync(userId, to)));
+				return Json(!string.IsNullOrEmpty(to)
+					? _mapper.Map<List<Models.User.PersonalMessage>>(await _pmRepository.GetPmsSentFromUserToUserAsync(userId, to))
+					: _mapper.Map<List<Models.User.PersonalMessage>>(await _pmRepository.GetPmsAsync(userId)));
 			}
 			catch (Exception e)
 			{
@@ -353,8 +355,8 @@ namespace Diffen.Controllers.Api
 			}
 		}
 
-		[HttpPost, Route("{userId}/pm/create")]
-		public async Task<IActionResult> CreatePm(string id, [FromBody] Models.User.CRUD.PersonalMessage pm)
+		[HttpPost, Route("pm/create")]
+		public async Task<IActionResult> CreatePm([FromBody] Models.User.CRUD.PersonalMessage pm)
 		{
 			try
 			{

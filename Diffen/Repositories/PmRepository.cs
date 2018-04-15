@@ -44,5 +44,12 @@ namespace Diffen.Repositories
 			_dbContext.PersonalMessages.Add(pm);
 			return await _dbContext.SaveChangesAsync() >= 0;
 		}
+
+		public async Task<IEnumerable<PersonalMessage>> GetPmsAsync(string userId)
+		{
+			return await _dbContext.PersonalMessages.IncludeAll()
+				.Where(x => x.FromUserId == userId || x.ToUserId == userId)
+				.OrderByDescending(x => x.Created).ToListAsync();
+		}
 	}
 }
