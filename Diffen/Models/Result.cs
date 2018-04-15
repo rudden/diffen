@@ -84,6 +84,30 @@
 			Success = "Uppdaterade spelaren",
 			Failure = "Kunde inte uppdatera spelaren"
 		};
+
+		public static Message UpdateRoles { get; } = new Message
+		{
+			Success = "Uppdaterade användarens rollen",
+			Failure = "Kunde inte uppdatera användarens roller"
+		};
+
+		public static Message ChangeFilter { get; } = new Message
+		{
+			Success = "Uppdaterade filter för forumet",
+			Failure = "Kunde inte uppdatera filter för forumet"
+		};
+
+		public static Message RemovedFavoritePlayer { get; } = new Message
+		{
+			Success = "Tog bort favoritspelaren",
+			Failure = "Kunde inte ta bort favoritspelaren"
+		};
+
+		public static Message CreateSeclude { get; } = new Message
+		{
+			Success = "Spärrade användaren",
+			Failure = "Kunde inte spärra användaren"
+		};
 	}
 
 	public class Message
