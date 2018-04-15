@@ -286,28 +286,34 @@ namespace Diffen.Controllers.Api
 
 		private async Task ComplementPostWithPotentialUrlTipAndLineupAsync(int postId, Models.Forum.CRUD.Post post, ICollection<Result> results)
 		{
-			if (!string.IsNullOrEmpty(post.UrlTip?.Href))
+			if (!string.IsNullOrEmpty(post.UrlTipHref))
 			{
-				if (!(post.UrlTip.Href.StartsWith("http://") || post.UrlTip.Href.StartsWith("https://")))
+				if (!(post.UrlTipHref.StartsWith("http://") || post.UrlTipHref.StartsWith("https://")))
 				{
-					post.UrlTip.Href = post.UrlTip.Href.Insert(0, "http://");
+					post.UrlTipHref = post.UrlTipHref.Insert(0, "http://");
 				}
 				await _postRepository.AddUrlToPostAsync(new UrlTip
 				{
 					PostId = postId,
 					Clicks = 0,
-					Href = post.UrlTip.Href,
-					Created = DateTime.Now
+					Href = post.UrlTipHref
 				}).ContinueWith(task => task.UpdateResults(ResultMessages.CreateUrlTip, results));
+			}
+			else
+			{
+				if (await _postRepository.PostToUrlExistsAsync(postId))
+				{
+					await _postRepository.RemoveUrlToPostAsync(postId);
+				}
 			}
 
 			if (post.Lineup != null)
 			{
 				if (post.Lineup.Id > 0)
 				{
-					if (await _postRepository.PostToLineupExistsAsync(post.Lineup.Id))
+					if (await _postRepository.PostToLineupExistsAsync(postId))
 					{
-						await _postRepository.RemovePostToLineupAsync(post.Lineup.Id);
+						await _postRepository.RemovePostToLineupAsync(postId);
 					}
 					await _postRepository.AddLineupToPostAsync(new PostToLineup
 					{
@@ -327,6 +333,13 @@ namespace Diffen.Controllers.Api
 						PostId = postId,
 						LineupId = newLineup.Id
 					}).ContinueWith(task => task.UpdateResults(ResultMessages.CreateLineupToPost, results));
+				}
+			}
+			else
+			{
+				if (await _postRepository.PostToLineupExistsAsync(postId))
+				{
+					await _postRepository.RemovePostToLineupAsync(postId);
 				}
 			}
 		}
