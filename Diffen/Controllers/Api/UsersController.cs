@@ -412,19 +412,27 @@ namespace Diffen.Controllers.Api
 				if (filter == null)
 					return BadRequest();
 
+				var results = new List<Result>();
+
 				var currentFilter = await _userRepository.GetFiltersOnUserIdAsync(userId);
 				if (currentFilter == null)
 				{
-					return Json(await _userRepository.AddUserFilterAsync(new Filter
+					await _userRepository.AddUserFilterAsync(new Filter
 					{
 						UserId = userId,
 						PostsPerPage = filter.PostsPerPage,
 						ExcludedUserIds = string.Join(",", filter.ExcludedUsers.Select(x => x.Key))
-					}));
+					}).ContinueWith(task => task.UpdateResults(ResultMessages.ChangeFilter, results));
+					return Json(results);
 				}
+
 				currentFilter.PostsPerPage = filter.PostsPerPage;
 				currentFilter.ExcludedUserIds = string.Join(",", filter.ExcludedUsers.Select(x => x.Key));
-				return Json(await _userRepository.UpdateUserFilterAsync(currentFilter));
+
+				await _userRepository.UpdateUserFilterAsync(currentFilter)
+					.ContinueWith(task => task.UpdateResults(ResultMessages.ChangeFilter, results));
+
+				return Json(results);
 			}
 			catch (Exception e)
 			{
