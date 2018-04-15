@@ -99,20 +99,16 @@ namespace Diffen.Controllers.Pages
 			{
 				return View(vm);
 			}
-
 			if (!await _userRepository.EmailHasInvite(vm.Email))
 			{
-				_logger.Information("Register: Someone tried to register an account without an invite with email {modelEmail}", vm.Email);
 				ModelState.AddModelError("", "hittade ingen inbjudan på den valda emailen");
 				return View(vm);
 			}
-
 			if (await _userRepository.NickExistsAsync(vm.NickName))
 			{
 				ModelState.AddModelError("", "nicket finns redan registrerat");
 				return View(vm);
 			}
-
 			var user = new AppUser
 			{
 				UserName = vm.Email,
@@ -120,17 +116,15 @@ namespace Diffen.Controllers.Pages
 				Bio = vm.Bio,
 				Joined = DateTime.Now
 			};
-
 			if (string.Equals(vm.Password, vm.ConfirmPassword))
 			{
 				var result = await _userManager.CreateAsync(user, vm.Password);
 
 				if (result.Succeeded)
 				{
-					var newUser = await _userRepository.GetUserOnEmailAsync(vm.Email);
 					await _userRepository.AddNickNameAsync(new NickName
 					{
-						UserId = newUser.Id,
+						UserId = user.Id,
 						Nick = vm.NickName,
 						Created = DateTime.Now
 					});
@@ -140,11 +134,9 @@ namespace Diffen.Controllers.Pages
 					invite.AccountIsCreated = true;
 					await _userRepository.UpdateInviteAsync(invite);
 
-					_logger.Information("Register: Invite for email {inviteEmail} has now been registered as used", invite.Email);
-
 					if (vm.Avatar != null)
 					{
-						var uploads = Path.Combine(_environment.WebRootPath, $"uploads\\avatars\\{newUser.Id}");
+						var uploads = Path.Combine(_environment.WebRootPath, $"uploads\\avatars\\{user.Id}");
 						Directory.CreateDirectory(uploads);
 						if (vm.Avatar.Length > 0)
 						{
@@ -152,10 +144,8 @@ namespace Diffen.Controllers.Pages
 							using (var fileStream = new FileStream(path, FileMode.Create))
 							{
 								await vm.Avatar.CopyToAsync(fileStream);
-								newUser.AvatarFileName = vm.Avatar.FileName;
+								await _userRepository.AddAvatarToUserAsync(user.Id, vm.Avatar.FileName);
 							}
-							_logger.Information("Register: Stored avatar with filename {avatarFileName} for user {userName}", newUser.AvatarFileName, newUser.UserName);
-							await _userRepository.UpdateUserAsync(newUser);
 						}
 					}
 
@@ -165,6 +155,7 @@ namespace Diffen.Controllers.Pages
 					{
 						return RedirectToAction("index", "forum");
 					}
+
 					return Redirect(returnUrl);
 				}
 				if (result.Errors.Any(x => x.Code == "DuplicateUserName"))
