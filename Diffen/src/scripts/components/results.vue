@@ -31,13 +31,19 @@ import { Result, ResultType } from '../model/common'
 
 @Component({
     props: {
-        items: Array
+        items: Array,
+        dismiss: Function
     }
 })
 export default class Results extends Vue {
     items: Result[]
+    dismiss: (type: ResultType) => void
 
     results: Result[] = []
+
+    created() {
+        this.results = this.items
+    }
 
     @Watch('items')
         change() {
@@ -54,18 +60,20 @@ export default class Results extends Vue {
     get failures(): Result[] {
         return this.results.filter((r: Result) => r.message != '' && r.type == ResultType.Failure)
     }
-
-    dismiss(type: ResultType) {
-        this.results = this.results.filter((r: Result) => r.type != type)
-    }
 }
 </script>
 
 <style lang="scss" scoped>
 .results {
-    padding-top: 1.5rem;
     .alert:last-child {
         margin-bottom: 0;
+    }
+    ul {
+        padding-left: 0;
+        margin-bottom: 0;
+        li {
+            list-style: none;
+        }
     }
 }
 </style>
