@@ -22,6 +22,17 @@ namespace Diffen.Helpers.Extensions
 				.AsNoTracking();
 		}
 
+		public static IQueryable<SavedPost> IncludeAll(this DbSet<SavedPost> source)
+		{
+			return source
+				.Include(x => x.Post).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
+				.Include(x => x.Post).ThenInclude(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
+				.Include(x => x.Post).ThenInclude(x => x.Lineup)
+				.Include(x => x.Post).ThenInclude(x => x.UrlTip)
+				.Include(x => x.Post).ThenInclude(x => x.ParentPost).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
+				.AsNoTracking();
+		}
+
 		public static IQueryable<Post> ExceptScissored(this IQueryable<Post> source)
 		{
 			return source.Where(x => x.Scissored == null);
@@ -35,8 +46,8 @@ namespace Diffen.Helpers.Extensions
 		public static IQueryable<Lineup> IncludeAll(this DbSet<Lineup> source)
 		{
 			return source
-				.Include(x => x.Players).ThenInclude(x => x.Player)
 				.Include(x => x.Players).ThenInclude(x => x.Position)
+				.Include(x => x.Players).ThenInclude(x => x.Player).ThenInclude(x => x.AvailablePositions).ThenInclude(x => x.Position)
 				.Include(x => x.Formation)
 				.AsNoTracking();
 		}
@@ -60,7 +71,8 @@ namespace Diffen.Helpers.Extensions
 		{
 			return source
 				.Include(x => x.FromUser).ThenInclude(x => x.NickNames)
-				.Include(x => x.ToUser).ThenInclude(x => x.NickNames);
+				.Include(x => x.ToUser).ThenInclude(x => x.NickNames)
+				.AsNoTracking();
 		}
 	}
 }
