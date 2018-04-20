@@ -110,19 +110,8 @@ export default class FilterComponent extends Vue {
 			}
 		}
 
-	removeUser(kvp: KeyValuePair) {
-		let index: number = 0
-		for (let i = 0; i < this.excludedUsers.length; i++) {
-			if (this.excludedUsers[i].key !== kvp.key)
-				continue
-			
-			index = this.excludedUsers.indexOf(this.excludedUsers[i])
-			break
-		}
-		if (index > -1)
-		{
-			this.excludedUsers.splice(index, 1)
-		}
+	removeUser(selected: KeyValuePair) {
+		this.excludedUsers = this.excludedUsers.filter((kvp: KeyValuePair) => kvp.key !== selected.key)
 	}
 
 	save() {
