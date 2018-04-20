@@ -1,90 +1,109 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+
+using AutoMapper;
 
 namespace Diffen.Repositories
 {
-	using Database;
-	using Database.Entities.Squad;
 	using Contracts;
+	using Models;
+	using Models.Squad;
 	using Helpers.Extensions;
+	using Database.Clients.Contracts;
 
 	public class SquadRepository : ISquadRepository
 	{
-		private readonly DiffenDbContext _dbContext;
+		private readonly IMapper _mapper;
+		private readonly IMemoryCache _cache;
+		private readonly IDiffenDbClient _dbClient;
 
-		public SquadRepository(DiffenDbContext dbContext)
+		public SquadRepository(IMapper mapper, IMemoryCache cache, IDiffenDbClient dbClient)
 		{
-			_dbContext = dbContext;
+			_mapper = mapper;
+			_cache = cache;
+			_dbClient = dbClient;
 		}
 
 		public async Task<Lineup> GetLineupOnIdAsync(int lineupId)
 		{
-			return await _dbContext.Lineups.IncludeAll().FirstOrDefaultAsync(l => l.Id == lineupId);
+			var lineup = await _dbClient.GetLineupOnIdAsync(lineupId);
+			return _mapper.Map<Lineup>(lineup);
 		}
 
 		public async Task<Lineup> GetLineupOnPostIdAsync(int postId)
 		{
-			var lineupToPost = await _dbContext.LineupsOnPosts.FirstOrDefaultAsync(x => x.PostId == postId);
-			return await _dbContext.Lineups.IncludeAll().FirstOrDefaultAsync(l => l.Id == lineupToPost.LineupId);
+			var lineup = await _dbClient.GetLineupOnPostIdAsync(postId);
+			return _mapper.Map<Lineup>(lineup);
 		}
 
-		public async Task<IEnumerable<Player>> GetPlayersAsync()
+		public async Task<List<Player>> GetPlayersAsync()
 		{
-			return await _dbContext.Players.Include(x => x.AvailablePositions).ThenInclude(x => x.Position).Where(x => !x.IsSold).OrderBy(x => x.LastName).ToListAsync();
+			var players = await _dbClient.GetPlayersAsync();
+			return _mapper.Map<List<Player>>(players);
 		}
 
 		public async Task<Player> GetPlayerOnIdAsync(int playerId)
 		{
-			return await _dbContext.Players.Include(x => x.AvailablePositions).ThenInclude(x => x.Position).FirstOrDefaultAsync(x => x.Id == playerId);
+			var player = await _dbClient.GetPlayerOnIdAsync(playerId);
+			return _mapper.Map<Player>(player);
 		}
 
-		public async Task<IEnumerable<Lineup>> GetLineupsOnUserAsync(string userId)
+		public async Task<List<Lineup>> GetLineupsOnUserAsync(string userId)
 		{
-			return await _dbContext.Lineups.IncludeAll().Where(l => l.CreatedByUserId == userId).ToListAsync();
+			var lineups = await _dbClient.GetLineupsCreatedByUserIdAsync(userId);
+			return _mapper.Map<List<Lineup>>(lineups);
 		}
 
-		public async Task<int> GetNumberOfLineupsOnPlayerIdAsync(int playerId)
+		public Task<List<Result>> CreateLineupAsync(Models.Squad.CRUD.Lineup lineup)
 		{
-			return await _dbContext.PlayersToLineups.CountAsync(x => x.PlayerId == playerId);
+			var newLineup = _mapper.Map<Database.Entities.Squad.Lineup>(lineup);
+			return new List<Result>().Get(_dbClient.CreateLineupAsync(newLineup), ResultMessages.CreateLineup);
 		}
 
-		public async Task<bool> AddLineupAsync(Lineup lineup)
+		public async Task<List<Result>> CreatePlayerAsync(Models.Squad.CRUD.Player player)
 		{
-			lineup.Created = DateTime.Now;
-			_dbContext.Lineups.Add(lineup);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			var newPlayer = _mapper.Map<Database.Entities.Squad.Player>(player);
+			await _dbClient.UpdateAvailablePositionsForPlayerAsync(player.Id, player.AvailablePositionsIds);
+			return await new List<Result>().Get(_dbClient.CreatePlayerAsync(newPlayer), ResultMessages.CreatePlayer);
 		}
 
-		public async Task<bool> AddPlayerAsync(Player player)
+		public async Task<List<Result>> UpdatePlayerAsync(Models.Squad.CRUD.Player player)
 		{
-			_dbContext.Players.Add(player);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			var updatePlayer = _mapper.Map<Database.Entities.Squad.Player>(player);
+			if (updatePlayer.IsSold)
+			{
+				updatePlayer.KitNumber = 0;
+				await _dbClient.DeleteFavoritePlayerRelationToUserForPlayerAsync(player.Id);
+			}
+			await _dbClient.UpdateAvailablePositionsForPlayerAsync(player.Id, player.AvailablePositionsIds);
+			return await new List<Result>().Get(_dbClient.UpdatePlayerAsync(updatePlayer), ResultMessages.UpdatePlayer);
 		}
 
-		public async Task<bool> UpdatePlayerAsync(Player player)
+		public async Task<List<Formation>> GetFormationsAsync()
 		{
-			_dbContext.Players.Update(player);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			if (_cache.TryGetValue("formations", out List<Formation> formations))
+			{
+				return formations;
+			}
+
+			var allFormations = await _dbClient.GetFormationsAsync();
+			_cache.Set("formations", _mapper.Map<List<Formation>>(allFormations.OrderBy(x => x.Name)));
+			return _cache.Get<List<Formation>>("formations");
 		}
 
-		public async Task<bool> RemoveAllPlayerToUserForSpecificPlayer(int playerId)
+		public async Task<List<Position>> GetPositionsAsync()
 		{
-			_dbContext.FavoritePlayers.RemoveRange(_dbContext.FavoritePlayers.Where(x => x.PlayerId == playerId));
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
+			if (_cache.TryGetValue("positions", out List<Position> positions))
+			{
+				return positions;
+			}
 
-		public async Task<IEnumerable<Formation>> GetFormationsAsync()
-		{
-			return await _dbContext.Formations.ToListAsync();
-		}
-
-		public async Task<IEnumerable<Position>> GetPositionsAsync()
-		{
-			return await _dbContext.Positions.ToListAsync();
+			var allPositions = await _dbClient.GetPositionsAsync();
+			_cache.Set("positions", _mapper.Map<List<Position>>(allPositions.OrderBy(x => x.Name)));
+			return _cache.Get<List<Position>>("positions");
 		}
 	}
 }

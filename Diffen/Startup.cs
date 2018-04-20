@@ -11,10 +11,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 using AutoMapper;
 
+using Serilog;
+
 namespace Diffen
 {
 	using Database;
 	using Database.Entities.User;
+	using Database.Clients;
+	using Database.Clients.Contracts;
 	using Repositories;
 	using Repositories.Contracts;
 
@@ -60,12 +64,9 @@ namespace Diffen
 
 			services.AddAutoMapper();
 
-			services.AddMvc()
-				.AddJsonOptions(o =>
-				{
-					o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-				});
+			services.AddMvc();
 
+			services.AddScoped<IDiffenDbClient, DiffenDbClient>();
 			services.AddScoped<IPmRepository, PmRepository>();
 			services.AddScoped<IPostRepository, PostRepository>();
 			services.AddScoped<IUserRepository, UserRepository>();

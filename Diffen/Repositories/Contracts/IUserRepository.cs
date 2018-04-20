@@ -3,30 +3,28 @@ using System.Collections.Generic;
 
 namespace Diffen.Repositories.Contracts
 {
-	using Database.Entities.User;
+	using Models;
+	using Models.User;
+	using Models.Squad;
 	
 	public interface IUserRepository
 	{
-		Task<IEnumerable<AppUser>> GetUsersAsync();
-		Task<AppUser> GetUserOnIdAsync(string id);
-		Task<AppUser> GetUserOnEmailAsync(string email);
-		Task<bool> UpdateUserAsync(AppUser user);
-		Task<FavoritePlayer> GetFavoritePlayerAsync(string userId);
-		Task<bool> FavoritePlayerExistsAsync(string userId);
-		Task<bool> AddFavoritePlayerAsync(FavoritePlayer favoritePlayer);
-		Task<bool> RemovePlayerToUserAsync(string userId);
-		Task<bool> AddNickNameAsync(NickName nickname);
+		Task<List<KeyValuePair<string, string>>> GetUsersAsKeyValuePairAsync();
+		Task<User> GetUserOnIdAsync(string userId);
+		Task<User> GetUserOnEmailAsync(string email);
+		Task<List<Result>> UpdateUserAsync(string userId, Models.User.CRUD.User user);
+		Task<Player> GetFavoritePlayerAsync(string userId);
 		Task<string> GetCurrentNickOnUserIdAsync(string userId);
-		Task<bool> NickExistsAsync(string nick);
-		Task<Filter> GetFiltersOnUserIdAsync(string userId);
-		Task<bool> AddAvatarToUserAsync(string userId, string fileName);
-		Task<bool> UpdateUserFilterAsync(Filter filter);
-		Task<bool> AddUserFilterAsync(Filter filter);
+		Task<bool> NickExistsAsync(string nickName);
+		Task<bool> CreateNewNickNameAsync(string userId, string nickName);
+		Task<bool> SetSelectedAvatarForUserAsync(string userId, string fileName);
+		Task<List<Result>> UpdateUserFilterAsync(string userId, Filter filter);
 		Task<bool> EmailHasInvite(string email);
 		Task<Invite> GetInviteOnEmailAsync(string email);
-		Task<IEnumerable<Invite>> GetInvitesAsync();
-		Task<bool> AddInviteAsync(Invite invite);
-		Task<bool> UpdateInviteAsync(Invite invite);
-		Task<bool> RemoveInviteAsync(Invite invite);
+		Task<List<Invite>> GetInvitesAsync();
+		Task<List<Result>> CreateInviteAsync(Models.User.CRUD.Invite invite);
+		Task<bool> SetInviteAsAccountCreatedAsync(string userEmail);
+		Task<List<Result>> SecludeUserAsync(string userId, string toDate);
+		Task<List<KeyValuePair<string, string>>> GetUsersInRoleAsKeyValuePairAsync(string roleName);
 	}
 }

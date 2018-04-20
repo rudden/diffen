@@ -57,10 +57,10 @@ namespace Diffen.Controllers.Pages
 				ModelState.AddModelError("All", "kontot existerar inte. var god skapa ett nytt!");
 				return View();
 			}
-			if (attempt.SecludedUntil > DateTime.Now)
+			if (!string.IsNullOrEmpty(attempt.SecludedUntil) && Convert.ToDateTime(attempt.SecludedUntil) > DateTime.Now)
 			{
-				_logger.Information("Login: User with email {userEmail} tried to login even though he or she is secluded until {secludedUntil}", attempt.Email, attempt.SecludedUntil.ToString("yyyy-MM-dd"));
-				ModelState.AddModelError("All", $"du är spärrad till och med {attempt.SecludedUntil:yyyy-MM-dd}");
+				_logger.Information("Login: User with email {userEmail} tried to login even though he or she is secluded until {secludedUntil}", attempt.Email, attempt.SecludedUntil);
+				ModelState.AddModelError("All", $"du är spärrad till och med {attempt.SecludedUntil}");
 				return View();
 			}
 
@@ -122,17 +122,8 @@ namespace Diffen.Controllers.Pages
 
 				if (result.Succeeded)
 				{
-					await _userRepository.AddNickNameAsync(new NickName
-					{
-						UserId = user.Id,
-						Nick = vm.NickName,
-						Created = DateTime.Now
-					});
-
-					var invite = await _userRepository.GetInviteOnEmailAsync(vm.Email);
-					invite.AccountCreated = DateTime.Now;
-					invite.AccountIsCreated = true;
-					await _userRepository.UpdateInviteAsync(invite);
+					await _userRepository.CreateNewNickNameAsync(user.Id, vm.NickName);
+					await _userRepository.SetInviteAsAccountCreatedAsync(vm.Email);
 
 					if (vm.Avatar != null)
 					{
@@ -144,7 +135,7 @@ namespace Diffen.Controllers.Pages
 							using (var fileStream = new FileStream(path, FileMode.Create))
 							{
 								await vm.Avatar.CopyToAsync(fileStream);
-								await _userRepository.AddAvatarToUserAsync(user.Id, vm.Avatar.FileName);
+								await _userRepository.SetSelectedAvatarForUserAsync(user.Id, vm.Avatar.FileName);
 							}
 						}
 					}

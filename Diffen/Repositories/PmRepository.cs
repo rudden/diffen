@@ -2,54 +2,44 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Diffen.Helpers.Extensions;
 
 namespace Diffen.Repositories
 {
-	using Database;
 	using Contracts;
-	using Helpers.Extensions;
-	using Database.Entities.User;
+	using Models;
+	using Models.User;
+	using Database.Clients.Contracts;
 
 	public class PmRepository : IPmRepository
 	{
-		private readonly DiffenDbContext _dbContext;
+		private readonly IMapper _mapper;
+		private readonly IDiffenDbClient _dbClient;
 
-		public PmRepository(DiffenDbContext dbContext)
+		public PmRepository(IMapper mapper, IDiffenDbClient dbClient)
 		{
-			_dbContext = dbContext;
+			_mapper = mapper;
+			_dbClient = dbClient;
 		}
 
-		public async Task<IEnumerable<PersonalMessage>> GetPmsSentFromUserToUserAsync(string fromUserId, string toUserId)
+		public async Task<List<PersonalMessage>> GetPmsSentFromUserToUserAsync(string fromUserId, string toUserId)
 		{
-			return await _dbContext.PersonalMessages.IncludeAll()
-				.Where(x => (x.FromUserId == fromUserId || x.FromUserId == toUserId) && (x.ToUserId == toUserId || x.ToUserId == fromUserId))
-				.OrderByDescending(x => x.Created).ToListAsync();
+			var personalMessages = await _dbClient.GetPmsSentFromUserToUserAsync(fromUserId, toUserId);
+			return _mapper.Map<List<PersonalMessage>>(personalMessages);
 		}
 
-		public async Task<IEnumerable<AppUser>> GetUsersWithConversationForUserAsync(string userId)
+		public async Task<List<KeyValuePair<string, string>>> GetUsersWithConversationForUserAsKeyValuePairAsync(string userId)
 		{
-			var all = await _dbContext.PersonalMessages.IncludeAll()
-				.Where(x => x.FromUserId == userId || x.ToUserId == userId).ToListAsync();
-			var from = all.Select(x => x.FromUser);
-			var to = all.Select(x => x.ToUser);
-
-			var users = from.Distinct().Union(to.Distinct()).ToList();
-			users.RemoveAll(x => x.Id == userId);
-			return users;
+			var users = await _dbClient.GetUsersThatUserHasOngoingConversationWithAsync(userId);
+			return users.Select(user =>
+				new KeyValuePair<string, string>(user.Id,
+					user.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick)).ToList();
 		}
 
-		public async Task<bool> AddPmAsync(PersonalMessage pm)
+		public Task<List<Result>> CreatePersonalMessageAsync(Models.User.CRUD.PersonalMessage pm)
 		{
-			_dbContext.PersonalMessages.Add(pm);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<IEnumerable<PersonalMessage>> GetPmsAsync(string userId)
-		{
-			return await _dbContext.PersonalMessages.IncludeAll()
-				.Where(x => x.FromUserId == userId || x.ToUserId == userId)
-				.OrderByDescending(x => x.Created).ToListAsync();
+			return new List<Result>().Get(_dbClient.CreatePersonalMessageAsync(_mapper.Map<Database.Entities.User.PersonalMessage>(pm)), ResultMessages.CreatePm);
 		}
 	}
 }

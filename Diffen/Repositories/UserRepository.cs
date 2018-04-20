@@ -1,150 +1,249 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-using Microsoft.AspNetCore.Http;
+using AutoMapper;
+using Diffen.Database.Entities.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Diffen.Repositories
 {
-	using Database;
 	using Contracts;
+	using Models;
+	using Models.User;
+	using Models.Squad;
 	using Helpers.Extensions;
-	using Database.Entities.User;
+	using Database.Clients.Contracts;
+
+	using AppUser = Database.Entities.User.AppUser;
 
 	public class UserRepository : IUserRepository
 	{
-		private readonly DiffenDbContext _dbContext;
-		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly IMapper _mapper;
+		private readonly IDiffenDbClient _dbClient;
+		private readonly UserManager<AppUser> _userManager;
 
-		public UserRepository(DiffenDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+		public UserRepository(IMapper mapper, IDiffenDbClient dbClient, UserManager<AppUser> userManager)
 		{
-			_dbContext = dbContext;
-			_httpContextAccessor = httpContextAccessor;
+			_mapper = mapper;
+			_dbClient = dbClient;
+			_userManager = userManager;
 		}
 
-		public async Task<IEnumerable<AppUser>> GetUsersAsync()
+		public async Task<List<KeyValuePair<string, string>>> GetUsersAsKeyValuePairAsync()
 		{
-			return await _dbContext.Users
-				.Include(x => x.NickNames)
-				.Where(x => x.UserName != _httpContextAccessor.HttpContext.User.Identity.Name)
-				.OrderByDescending(x => x.Joined)
-				.ToListAsync();
+			var users = await _dbClient.GetUsersExceptForLoggedInUserAsync();
+			return users.Select(user =>
+					new KeyValuePair<string, string>(user.Id,
+						user.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick)).ToList();
 		}
 
-		public async Task<AppUser> GetUserOnIdAsync(string id)
+		public async Task<User> GetUserOnIdAsync(string userId)
 		{
-			return await _dbContext.Users.IncludeAll().FirstOrDefaultAsync(user => user.Id == id);
+			var user = await _dbClient.GetUserOnIdAsync(userId);
+			return _mapper.Map<User>(user);
 		}
 
-		public async Task<AppUser> GetUserOnEmailAsync(string email)
+		public async Task<User> GetUserOnEmailAsync(string email)
 		{
-			return await _dbContext.Users.IncludeAll().FirstOrDefaultAsync(user => user.Email == email);
+			var user = await _dbClient.GetUserOnEmailAsync(email);
+			return _mapper.Map<User>(user);
 		}
 
-		public async Task<bool> UpdateUserAsync(AppUser user)
+		public async Task<List<Result>> UpdateUserAsync(string userId, Models.User.CRUD.User user)
 		{
-			_dbContext.Users.Update(user);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			// user is fetched with user manager due to issue with entity framework (entity is already being tracked...)
+			var currentUser = await _userManager.Users.Include(x => x.NickNames).Include(x => x.FavoritePlayer).FirstOrDefaultAsync(x => x.Id == userId);
+			var currentNick = currentUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick;
+
+			var results = new List<Result>();
+			if (!string.IsNullOrEmpty(currentNick) && !currentNick.Equals(user.NickName))
+			{
+				if (!await _dbClient.NickNameIsAlreadyTakenByOtherUserAsync(user.NickName))
+				{
+					var nickName = new NickName
+					{
+						UserId = userId,
+						Nick = user.NickName,
+						Created = DateTime.Now
+					};
+					results.Update(await _dbClient.CreateNewNickNameForUserAsync(nickName), ResultMessages.CreateNick);
+				}
+			}
+			if (currentUser.Bio == null && !string.IsNullOrEmpty(user.Bio) || currentUser.Bio != null && !currentUser.Bio.Equals(user.Bio))
+			{
+				results.Update(await _dbClient.UpdateUserBioAsync(userId, user.Bio), ResultMessages.UpdateBio);
+			}
+
+			var currentRoles = await _userManager.GetRolesAsync(currentUser);
+			if (!currentRoles.Equals(user.Roles))
+			{
+				await _userManager.RemoveFromRolesAsync(currentUser, currentRoles);
+				await _userManager.AddToRolesAsync(currentUser, user.Roles);
+			}
+
+			if (currentUser.FavoritePlayer != null)
+			{
+				if (currentUser.FavoritePlayer.PlayerId == user.FavoritePlayerId)
+				{
+					return results;
+				}
+				if (await _dbClient.UserHasAFavoritePlayerSelectedAsync(userId))
+				{
+					results.Update(await _dbClient.DeleteFavoritePlayerConnectionToUserAsync(userId), ResultMessages.RemovedFavoritePlayer);
+				}
+
+				if (user.FavoritePlayerId <= 0)
+				{
+					return results;
+				}
+				var favoritePlayer = new FavoritePlayer
+				{
+					PlayerId = user.FavoritePlayerId,
+					UserId = userId
+				};
+				results.Update(await _dbClient.ConnectFavoritePlayerToUserAsync(favoritePlayer), ResultMessages.CreateFavoritePlayer);
+			}
+			else
+			{
+				if (user.FavoritePlayerId <= 0)
+				{
+					return results;
+				}
+				var favoritePlayer = new FavoritePlayer
+				{
+					PlayerId = user.FavoritePlayerId,
+					UserId = userId
+				};
+				results.Update(await _dbClient.ConnectFavoritePlayerToUserAsync(favoritePlayer), ResultMessages.CreateFavoritePlayer);
+			}
+			return results;
 		}
 
-		public async Task<FavoritePlayer> GetFavoritePlayerAsync(string userId)
+		public async Task<Player> GetFavoritePlayerAsync(string userId)
 		{
-			return await _dbContext.FavoritePlayers.Include(x => x.Player).FirstOrDefaultAsync(x => x.UserId == userId);
+			var favoritePlayer = await _dbClient.GetFavoritePlayerOnUserIdAsync(userId);
+			return _mapper.Map<Player>(favoritePlayer);
 		}
 
-		public async Task<bool> FavoritePlayerExistsAsync(string userId)
+		public Task<string> GetCurrentNickOnUserIdAsync(string userId)
 		{
-			return await _dbContext.FavoritePlayers.CountAsync(x => x.UserId == userId) > 0;
+			return _dbClient.GetCurrentNickNameOnUserIdAsync(userId);
 		}
 
-		public async Task<bool> AddFavoritePlayerAsync(FavoritePlayer favoritePlayer)
+		public Task<bool> NickExistsAsync(string nickName)
 		{
-			_dbContext.FavoritePlayers.Add(favoritePlayer);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			return _dbClient.NickNameIsAlreadyTakenByOtherUserAsync(nickName);
 		}
 
-		public async Task<bool> RemovePlayerToUserAsync(string userId)
+		public Task<bool> CreateNewNickNameAsync(string userId, string nickName)
 		{
-			var item = _dbContext.FavoritePlayers.FirstOrDefault(x => x.UserId == userId);
-			_dbContext.FavoritePlayers.Remove(item);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			var newNickName = new Database.Entities.User.NickName
+			{
+				UserId = userId,
+				Nick = nickName,
+				Created = DateTime.Now
+			};
+			return _dbClient.CreateNewNickNameForUserAsync(newNickName);
 		}
 
-		public async Task<bool> AddNickNameAsync(NickName nickname)
+		public Task<bool> SetSelectedAvatarForUserAsync(string userId, string fileName)
 		{
-			_dbContext.NickNames.Add(nickname);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			return _dbClient.SetSelectedAvatarFileNameForUserAsync(userId, fileName);
 		}
 
-		public async Task<string> GetCurrentNickOnUserIdAsync(string userId)
+		public async Task<List<Result>> UpdateUserFilterAsync(string userId, Filter filter)
 		{
-			var activeNick = await _dbContext.NickNames.Where(x => x.UserId == userId).OrderByDescending(x => x.Created).FirstOrDefaultAsync();
-			return activeNick.Nick;
+			var currentFilter = await _dbClient.GetBaseFilterForForumOnUserIdAsync(userId);
+			if (currentFilter == null)
+			{
+				var newFilter = new Database.Entities.User.Filter
+				{
+					UserId = userId,
+					PostsPerPage = filter.PostsPerPage,
+					ExcludedUserIds = string.Join(",", filter.ExcludedUsers.Select(x => x.Key))
+				};
+				return await new List<Result>().Get(_dbClient.CreateBaseFilterForForumOnUserAsync(newFilter),
+					ResultMessages.ChangeFilter);
+			}
+
+			currentFilter.PostsPerPage = filter.PostsPerPage;
+			currentFilter.ExcludedUserIds = string.Join(",", filter.ExcludedUsers.Select(x => x.Key));
+
+			return await new List<Result>().Get(_dbClient.UpdateBaseFilterForForumOnUserAsync(currentFilter),
+				ResultMessages.ChangeFilter);
 		}
 
-		public async Task<bool> NickExistsAsync(string nick)
+		public Task<bool> EmailHasInvite(string email)
 		{
-			var activeNicks = _dbContext.NickNames.OrderByDescending(x => x.Created).GroupBy(x => x.UserId).Select(x => x.FirstOrDefault().Nick);
-			return await activeNicks.CountAsync(x => x == nick) > 0;
-		}
-
-		public async Task<Filter> GetFiltersOnUserIdAsync(string userId)
-		{
-			return await _dbContext.UserFilters.FirstOrDefaultAsync(u => u.UserId == userId);
-		}
-
-		public async Task<bool> AddAvatarToUserAsync(string userId, string fileName)
-		{
-			var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-			user.AvatarFileName = fileName;
-			_dbContext.Users.Update(user);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> UpdateUserFilterAsync(Filter filter)
-		{
-			_dbContext.UserFilters.Update(filter);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> AddUserFilterAsync(Filter filter)
-		{
-			_dbContext.UserFilters.Add(filter);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> EmailHasInvite(string email)
-		{
-			return await _dbContext.Invites.CountAsync(x => x.Email.Equals(email)) > 0;
+			return _dbClient.AnActiveInviteExistsOnSelectedEmailAsync(email);
 		}
 
 		public async Task<Invite> GetInviteOnEmailAsync(string email)
 		{
-			return await _dbContext.Invites.FirstOrDefaultAsync(x => x.Email.Equals(email));
+			var invite = await _dbClient.GetInviteOnUserEmailAsync(email);
+			return _mapper.Map<Invite>(invite);
 		}
 
-		public async Task<IEnumerable<Invite>> GetInvitesAsync()
+		public async Task<List<Invite>> GetInvitesAsync()
 		{
-			return await _dbContext.Invites.Include(x => x.InvitedByUser).ThenInclude(x => x.NickNames).OrderByDescending(x => x.InviteSent).ToListAsync();
+			var invites = await _dbClient.GetInvitesAsync();
+			return _mapper.Map<List<Invite>>(invites);
 		}
 
-		public async Task<bool> AddInviteAsync(Invite invite)
+		public async Task<List<Result>> CreateInviteAsync(Models.User.CRUD.Invite invite)
 		{
-			_dbContext.Invites.Add(invite);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			if (!new EmailAddressAttribute().IsValid(invite.Email))
+			{
+				return new List<Result>
+				{
+					new Result
+					{
+						Message = "Emailen är inte giltig",
+						Type = ResultType.Failure
+					}
+				};
+			}
+			if (await EmailHasInvite(invite.Email))
+			{
+				return new List<Result>
+				{
+					new Result
+					{
+						Message = "Det finns redan en inbjudan på denna email",
+						Type = ResultType.Failure
+					}
+				};
+			}
+
+			return await new List<Result>().Get(_dbClient.CreateInviteAsync(_mapper.Map<Database.Entities.User.Invite>(invite)),
+				ResultMessages.CreateInvite);
 		}
 
-		public async Task<bool> UpdateInviteAsync(Invite invite)
+		public async Task<bool> SetInviteAsAccountCreatedAsync(string userEmail)
 		{
-			_dbContext.Invites.Update(invite);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			var invite = await _dbClient.GetInviteOnUserEmailAsync(userEmail);
+			invite.AccountCreated = DateTime.Now;
+			invite.AccountIsCreated = true;
+			return await _dbClient.UpdateInviteAsync(invite);
 		}
 
-		public async Task<bool> RemoveInviteAsync(Invite invite)
+		public async Task<List<Result>> SecludeUserAsync(string userId, string toDate)
 		{
-			_dbContext.Invites.Remove(invite);
-			return await _dbContext.SaveChangesAsync() >= 0;
+			var user = await _dbClient.GetUserOnIdAsync(userId);
+			user.SecludedUntil = Convert.ToDateTime(toDate);
+			return await new List<Result>().Get(_dbClient.UpdateUserAsync(user), ResultMessages.CreateSeclude);
+		}
+
+		public async Task<List<KeyValuePair<string, string>>> GetUsersInRoleAsKeyValuePairAsync(string roleName)
+		{
+			var users = await _userManager.GetUsersInRoleAsync(roleName);
+			return users.Select(user =>
+				new KeyValuePair<string, string>(user.Id,
+					user.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick)).ToList();
 		}
 	}
 }

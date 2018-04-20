@@ -3,21 +3,20 @@ using System.Collections.Generic;
 
 namespace Diffen.Repositories.Contracts
 {
-	using Database.Entities.Squad;
+	using Models;
+	using Models.Squad;
 
 	public interface ISquadRepository
 	{
 		Task<Lineup> GetLineupOnIdAsync(int lineupId);
 		Task<Lineup> GetLineupOnPostIdAsync(int postId);
-		Task<IEnumerable<Player>> GetPlayersAsync();
+		Task<List<Player>> GetPlayersAsync();
 		Task<Player> GetPlayerOnIdAsync(int playerId);
-		Task<IEnumerable<Lineup>> GetLineupsOnUserAsync(string userId);
-		Task<int> GetNumberOfLineupsOnPlayerIdAsync(int playerId);
-		Task<bool> AddLineupAsync(Lineup lineup);
-		Task<bool> AddPlayerAsync(Player player);
-		Task<bool> UpdatePlayerAsync(Player player);
-		Task<bool> RemoveAllPlayerToUserForSpecificPlayer(int playerId);
-		Task<IEnumerable<Formation>> GetFormationsAsync();
-		Task<IEnumerable<Position>> GetPositionsAsync();
+		Task<List<Lineup>> GetLineupsOnUserAsync(string userId);
+		Task<List<Result>> CreateLineupAsync(Models.Squad.CRUD.Lineup lineup);
+		Task<List<Result>> CreatePlayerAsync(Models.Squad.CRUD.Player player);
+		Task<List<Result>> UpdatePlayerAsync(Models.Squad.CRUD.Player player);
+		Task<List<Position>> GetPositionsAsync();
+		Task<List<Formation>> GetFormationsAsync();
 	}
 }

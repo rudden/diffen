@@ -3,228 +3,248 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace Diffen.Repositories
 {
-	using Database;
 	using Contracts;
+	using Models;
+	using Models.Forum;
+	using Helpers;
 	using Helpers.Extensions;
-	using Database.Entities.User;
-	using Database.Entities.Forum;
-
-	using Filter = Models.Forum.Filter;
-	using StartingEleven = Models.Forum.StartingEleven;
+	using Database.Clients.Contracts;
 
 	public class PostRepository : IPostRepository
 	{
-		private readonly DiffenDbContext _dbContext;
+		private readonly IMapper _mapper;
+		private readonly IDiffenDbClient _dbClient;
 
-		public PostRepository(DiffenDbContext dbContext)
+		public PostRepository(IMapper mapper, IDiffenDbClient dbClient)
 		{
-			_dbContext = dbContext;
+			_mapper = mapper;
+			_dbClient = dbClient;
 		}
 
-		public async Task<IEnumerable<Post>> GetPostsAsync()
+		public async Task<List<Post>> GetPostsAsync()
 		{
-			return await _dbContext.Posts.IncludeAll().ExceptScissored().OrderByCreated().ToListAsync();
+			var posts = await _dbClient.GetPostsAsync();
+			return _mapper.Map<List<Post>>(posts);
 		}
 
-		public async Task<IEnumerable<Post>> GetPagedPostsAsync(int pageNumber, int pageSize)
+		public async Task<Paging<Post>> GetPagedPostsAsync(int pageNumber, int pageSize)
 		{
-			return await _dbContext.Posts.IncludeAll().ExceptScissored()
-				.OrderByCreated().Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
+			var posts = await _dbClient.GetPagedPostsAsync(pageNumber, pageSize);
+			var pagedPosts = posts.OrderByDescending(x => x.Created).Page(pageNumber, pageSize).ToList();
+
+			return new Paging<Post>
+			{
+				Data = _mapper.Map<List<Post>>(pagedPosts),
+				NumberOfPages = Convert.ToInt32(Math.Ceiling((double)posts.Count / pageSize)),
+				CurrentPage = pageNumber,
+				Total = posts.Count
+			};
 		}
 
-		public async Task<int> CountAllPostsAsync()
+		public Task<int> CountAllPostsAsync()
 		{
-			return await _dbContext.Posts.ExceptScissored().CountAsync();
+			return _dbClient.CountPostsAsync();
 		}
 
-		public async Task<IEnumerable<Post>> GetPostsOnUserIdAsync(string userId)
+		public async Task<Paging<Post>> GetPagedPostsOnUserIdAsync(string userId, int pageNumber, int pageSize = 5)
 		{
-			return await _dbContext.Posts.IncludeAll().ExceptScissored()
-				.Where(post => post.CreatedByUserId == userId).OrderByCreated().ToListAsync();
+			var posts = await _dbClient.GetPostsOnUserIdAsync(userId);
+			var pagedPosts = posts.OrderByDescending(x => x.Created).Page(pageNumber, pageSize).ToList();
+
+			return new Paging<Post>
+			{
+				Data = _mapper.Map<List<Post>>(pagedPosts),
+				NumberOfPages = Convert.ToInt32(Math.Ceiling((double)posts.Count / pageSize)),
+				CurrentPage = pageNumber,
+				Total = posts.Count
+			};
 		}
 
 		public async Task<Post> GetPostOnIdAsync(int id)
 		{
-			return await _dbContext.Posts.IncludeAll().FirstOrDefaultAsync(post => post.Id == id);
+			var post = await _dbClient.GetPostOnIdAsync(id);
+			return _mapper.Map<Post>(post);
 		}
 
-		public async Task<IEnumerable<Post>> GetPostsOnFilterAsync(Filter filter)
+		public async Task<Paging<Post>> GetPagedPostsOnFilterAsync(int pageNumber, int pageSize, Filter filter)
 		{
-			var posts = _dbContext.Posts.IncludeAll().ExceptScissored();
-			if (filter == null)
+			var posts = await _dbClient.GetPostsOnFilterAsync(filter);
+			var pagedPosts = posts.OrderByDescending(x => x.Created).Page(pageNumber, pageSize).ToList();
+
+			return new Paging<Post>
 			{
-				return await posts.ToListAsync();
-			}
-			if (filter.ExcludedUsers != null && filter.ExcludedUsers.Any())
+				Data = _mapper.Map<List<Post>>(pagedPosts),
+				NumberOfPages = Convert.ToInt32(Math.Ceiling((double) posts.Count / pageSize)),
+				CurrentPage = pageNumber,
+				Total = posts.Count
+			};
+		}
+
+		public async Task<Paging<Post>> GetPagedSavedPostsAsync(string userId, int pageNumber, int pageSize = 5)
+		{
+			var posts = await _dbClient.GetSavedPostsOnUserIdAsync(userId);
+			var pagedPosts = posts.OrderByDescending(x => x.Created).Page(pageNumber, pageSize).ToList();
+
+			return new Paging<Post>
 			{
-				posts = posts.Where(x => !filter.ExcludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
-			}
-			if (filter.FromDate != null)
+				Data = _mapper.Map<List<Post>>(pagedPosts),
+				NumberOfPages = Convert.ToInt32(Math.Ceiling((double)posts.Count / pageSize)),
+				CurrentPage = pageNumber,
+				Total = posts.Count
+			};
+		}
+
+		public async Task<List<Result>> CreatePostAsync(Models.Forum.CRUD.Post post)
+		{
+			var newPost = _mapper.Map<Database.Entities.Forum.Post>(post);
+			newPost.Created = DateTime.Now;
+
+			var isCreated = _dbClient.CreatePostAsync(newPost);
+			var results = await new List<Result>().Get(isCreated, ResultMessages.CreatePost);
+
+			if (await isCreated)
 			{
-				posts = posts.Where(p => p.Created.Date >= Convert.ToDateTime(filter.FromDate).Date);
+				await ComplementPostWithPotentialUrlTipAndLineupAsync(newPost.Id, post, results);
 			}
-			if (filter.ToDate != null)
+
+			return results;
+		}
+
+		public async Task<List<Result>> UpdatePostAsync(Models.Forum.CRUD.Post post)
+		{
+			var updatePost = _mapper.Map<Database.Entities.Forum.Post>(post);
+			updatePost.Edited = DateTime.Now;
+
+			var isUpdated = _dbClient.UpdatePostAsync(updatePost);
+			var results = await new List<Result>().Get(isUpdated, ResultMessages.UpdatePost);
+
+			if (await isUpdated)
 			{
-				posts = posts.Where(p => p.Created.Date <= Convert.ToDateTime(filter.ToDate).Date);
+				await ComplementPostWithPotentialUrlTipAndLineupAsync(updatePost.Id, post, results);
 			}
-			switch (filter.StartingEleven)
+
+			return results;
+		}
+
+		public Task<bool> ScissorPostAsync(int postId)
+		{
+			var scissored = new Database.Entities.Forum.Scissored
 			{
-				case StartingEleven.With:
-					posts = posts.Where(x => x.Lineup != null);
-					break;
-				case StartingEleven.Without:
-					posts = posts.Where(x => x.Lineup == null);
-					break;
-				case StartingEleven.All:
-					break;
-			}
-			if (filter.IncludedUsers != null && filter.IncludedUsers.Any())
+				PostId = postId,
+				Created = DateTime.Now
+			};
+			return _dbClient.ScissorPostAsync(scissored);
+		}
+
+		public Task<bool> SavePostAsync(int postId, string userId)
+		{
+			var savedPost = new Database.Entities.User.SavedPost
 			{
-				posts = posts.Where(x => filter.IncludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
+				PostId = postId,
+				SavedByUserId = userId,
+				Created = DateTime.Now
+			};
+			return _dbClient.SavePostForUserAsync(savedPost);
+		}
+
+		public async Task<List<UrlTip>> GetLastMonthsMostClickedUrlTipsAsync()
+		{
+			var urlTips = await _dbClient.GetUrlTipsAsync();
+			var topList = urlTips.Where(x => x.Post.Created > DateTime.Now.AddMonths(-1))
+				.Select(x => new UrlTip
+				{
+					Href = x.Href,
+					Clicks = x.Clicks,
+					PostId = x.PostId
+				}).OrderByDescending(x => x.Clicks).Take(10).ToList();
+			return topList;
+		}
+
+		public Task<bool> UpdateUrlTipClickCountAsync(int postId)
+		{
+			return _dbClient.IncrementUrlTipClickCounterAsync(postId);
+		}
+
+		public async Task<List<Vote>> GetVotesOnPostIdAsync(int postId)
+		{
+			var votes = await _dbClient.GetVotesOnPostIdAsync(postId);
+			return _mapper.Map<List<Vote>>(votes);
+		}
+
+		public async Task<bool> CreateVoteAsync(Models.Forum.CRUD.Vote vote)
+		{
+			if (await _dbClient.UserHasAlreadyVotedOnPostAsync(vote.PostId, vote.CreatedByUserId))
+			{
+				return false;
 			}
-			return await posts.ToListAsync();
+			var newVote = _mapper.Map<Database.Entities.Forum.Vote>(vote);
+			return await _dbClient.CreateVoteAsync(newVote);
 		}
 
-		public async Task<IEnumerable<Post>> GetSavedPosts(string userId)
+		private async Task ComplementPostWithPotentialUrlTipAndLineupAsync(int postId, Models.Forum.CRUD.Post post, List<Result> results)
 		{
-			return await _dbContext.SavedPosts.IncludeAll()
-				.Where(post => post.SavedByUserId == userId).Select(x => x.Post).ToListAsync();
-		}
+			if (!string.IsNullOrEmpty(post.UrlTipHref))
+			{
+				if (!(post.UrlTipHref.StartsWith("http://") || post.UrlTipHref.StartsWith("https://")))
+				{
+					post.UrlTipHref = post.UrlTipHref.Insert(0, "http://");
+				}
+				var urlTip = new Database.Entities.Forum.UrlTip
+				{
+					PostId = postId,
+					Clicks = 0,
+					Href = post.UrlTipHref
+				};
+				results.Update(await _dbClient.CreateUrlTipAsync(urlTip), ResultMessages.CreateUrlTip);
+			}
+			else
+			{
+				if (await _dbClient.PostHasAnUrlTipConnectedToItAsync(postId))
+				{
+					await _dbClient.DeleteUrlTipAsync(postId);
+				}
+			}
 
-		public async Task<bool> AddPostAsync(Post post)
-		{
-			post.Created = DateTime.Now;
-			_dbContext.Posts.Add(post);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
+			if (post.Lineup != null)
+			{
+				if (post.Lineup.Id > 0)
+				{
+					if (await _dbClient.PostHasALineupConnectedToItAsync(postId))
+					{
+						await _dbClient.DeleteLineupConnectionToPostAsync(postId);
+					}
+					var postToLineup = new Database.Entities.Forum.PostToLineup
+					{
+						PostId = postId,
+						LineupId = post.Lineup.Id
+					};
+					results.Update(await _dbClient.ConnectLineupToPostAsync(postToLineup), ResultMessages.CreateLineupToPost);
+				}
+				else
+				{
+					var newLineup = _mapper.Map<Database.Entities.Squad.Lineup>(post.Lineup);
 
-		public async Task<bool> UpdatePostAsync(Post post)
-		{
-			post.Edited = DateTime.Now;
-			_dbContext.Posts.Update(post);
+					results.Update(await _dbClient.CreateLineupAsync(newLineup), ResultMessages.CreateLineup);
 
-			_dbContext.Entry(post).State = EntityState.Modified;
-			_dbContext.Entry(post).Property(x => x.Created).IsModified = false;
-
-			var result = await _dbContext.SaveChangesAsync();
-
-			_dbContext.Entry(post).State = EntityState.Detached;
-
-			return result >= 0;
-		}
-
-		public async Task<bool> ScissorPostAsync(Scissored scissoredPost)
-		{
-			scissoredPost.Created = DateTime.Now;
-			_dbContext.ScissoredPosts.Add(scissoredPost);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> SavePostAsync(SavedPost savedPost)
-		{
-			savedPost.Created = DateTime.Now;
-			_dbContext.SavedPosts.Add(savedPost);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> AddLineupToPostAsync(PostToLineup postToLineup)
-		{
-			_dbContext.LineupsOnPosts.Add(postToLineup);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> RemovePostToLineupAsync(int postId)
-		{
-			var post = await _dbContext.LineupsOnPosts.FirstOrDefaultAsync(x => x.PostId == postId);
-			_dbContext.LineupsOnPosts.Remove(post);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> PostToLineupExistsAsync(int postId)
-		{
-			return await _dbContext.LineupsOnPosts.CountAsync(x => x.PostId == postId) > 0;
-		}
-
-		public async Task<IEnumerable<UrlTip>> GetUrlTipsAsync()
-		{
-			return await _dbContext.UrlTips.Include(x => x.Post).ToListAsync();
-		}
-
-		public async Task<UrlTip> GetUrlTipOnIdAsync(int id)
-		{
-			return await _dbContext.UrlTips.FindAsync(id);
-		}
-
-		public async Task<UrlTip> GetUrlOnPostIdAsync(int postId)
-		{
-			return await _dbContext.UrlTips.Include(x => x.Post).FirstOrDefaultAsync(tip => tip.PostId == postId);
-		}
-
-		public async Task<bool> PostToUrlExistsAsync(int postId)
-		{
-			return await _dbContext.UrlTips.CountAsync(x => x.PostId == postId) > 0;
-		}
-
-		public async Task<bool> AddUrlToPostAsync(UrlTip tip)
-		{
-			_dbContext.UrlTips.Add(tip);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> UpdateUrlToPostAsync(UrlTip tip)
-		{
-			_dbContext.UrlTips.Update(tip);
-
-			_dbContext.Entry(tip).State = EntityState.Modified;
-			_dbContext.Entry(tip).Property(x => x.Clicks).IsModified = false;
-
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> RemoveUrlToPostAsync(int postId)
-		{
-			var tip = await _dbContext.UrlTips.FirstOrDefaultAsync(x => x.PostId == postId);
-			_dbContext.UrlTips.Remove(tip);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> UpdateUrlTipClickCountAsync(int postId)
-		{
-			var tip = await _dbContext.UrlTips.FirstOrDefaultAsync(t => t.PostId == postId);
-			tip.Clicks++;
-			_dbContext.UrlTips.Update(tip);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<IEnumerable<Vote>> GetVotesAsync()
-		{
-			return await _dbContext.Votes.OrderByDescending(x => x.Created).ToListAsync();
-		}
-
-		public async Task<IEnumerable<Vote>> GetVotesOnUserIdAsync(string id)
-		{
-			return await _dbContext.Votes.Where(x => x.CreatedByUserId == id).OrderByDescending(x => x.Created).ToListAsync();
-		}
-
-		public async Task<IEnumerable<Vote>> GetVotesOnPostIdAsync(int id)
-		{
-			return await _dbContext.Votes.Include(x => x.User).ThenInclude(x => x.NickNames)
-				.Where(x => x.PostId == id).OrderByDescending(x => x.Created).ToListAsync();
-		}
-
-		public async Task<bool> AddVoteAsync(Vote vote)
-		{
-			_dbContext.Votes.Add(vote);
-			return await _dbContext.SaveChangesAsync() >= 0;
-		}
-
-		public async Task<bool> UserHasAlreadyVotedAsync(int postId, string userId)
-		{
-			return await _dbContext.Votes.CountAsync(x => x.PostId == postId && x.CreatedByUserId == userId) > 0;
+					var postToLineup = new Database.Entities.Forum.PostToLineup
+					{
+						PostId = postId,
+						LineupId = newLineup.Id
+					};
+					results.Update(await _dbClient.ConnectLineupToPostAsync(postToLineup), ResultMessages.CreateLineupToPost);
+				}
+			}
+			else
+			{
+				if (await _dbClient.PostHasALineupConnectedToItAsync(postId))
+				{
+					await _dbClient.DeleteLineupConnectionToPostAsync(postId);
+				}
+			}
 		}
 	}
 }

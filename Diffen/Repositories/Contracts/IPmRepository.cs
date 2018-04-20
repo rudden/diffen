@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Diffen.Repositories.Contracts
 {
-	using Database.Entities.User;
+	using Models;
+	using Models.User;
 
 	public interface IPmRepository
 	{
-		Task<IEnumerable<PersonalMessage>> GetPmsSentFromUserToUserAsync(string fromUserId, string toUserId);
-		Task<IEnumerable<AppUser>> GetUsersWithConversationForUserAsync(string userId);
-		Task<bool> AddPmAsync(PersonalMessage pm);
-		Task<IEnumerable<PersonalMessage>> GetPmsAsync(string userId);
+		Task<List<PersonalMessage>> GetPmsSentFromUserToUserAsync(string fromUserId, string toUserId);
+		Task<List<KeyValuePair<string, string>>> GetUsersWithConversationForUserAsKeyValuePairAsync(string userId);
+		Task<List<Result>> CreatePersonalMessageAsync(Models.User.CRUD.PersonalMessage pm);
 	}
 }
