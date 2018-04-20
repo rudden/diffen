@@ -4,6 +4,30 @@
 	{
 		public ResultType Type { get; set; }
 		public string Message { get; set; }
+
+		public Result() {}
+
+		public Result(bool outcome)
+		{
+			Type = outcome ? ResultType.Success : ResultType.Failure;
+		}
+
+		public Result ComplementWithMessageAndReturn(Message message)
+		{
+			switch (Type)
+			{
+				case ResultType.Failure:
+					Message = message.Failure;
+					break;
+				case ResultType.Success:
+					Message = message.Success;
+					break;
+				default:
+					Message = "";
+					break;
+			}
+			return this;
+		}
 	}
 
 	public enum ResultType
