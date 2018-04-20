@@ -20,7 +20,7 @@ import {
 	SET_PAGED_POSTS, 
 	SET_POST_AFTER_VOTE,
 	SET_REMOVE_POST_FROM_LIST,
-    SET_KVP_USERS,
+    SET_URLTIP_TOPLIST,
 	FETCH_URLTIP_TOPLIST
 } from './types'
 
@@ -74,10 +74,6 @@ export const Actions: ActionTree<State, any> = {
 				store.commit(SET_REMOVE_POST_FROM_LIST, payload.postId)
 			}).catch((error) => console.warn(error))
 	},
-	[FETCH_KVP_USERS]: (store: ActionContext<State, any>): Promise<void> => {
-		return axios.get(`${store.rootState.vm.api}/users`)
-			.then((res) => store.commit(SET_KVP_USERS, res.data)).catch((error) => console.warn(error))
-	},
 	[FETCH_LINEUP_ON_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<Lineup> => {
 		return new Promise<Lineup>((resolve, reject) => {
 			return axios.get(`${store.rootState.vm.api}/squads/lineups/post/${payload.postId}`)
@@ -90,11 +86,9 @@ export const Actions: ActionTree<State, any> = {
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},
-	[FETCH_URLTIP_TOPLIST]: (store: ActionContext<State, any>): Promise<UrlTip[]> => {
-		return new Promise<UrlTip[]>((resolve, reject) => {
-			return axios.get(`${store.rootState.vm.api}/posts/url/toplist`)
-				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
-		})
+	[FETCH_URLTIP_TOPLIST]: (store: ActionContext<State, any>): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/posts/url/toplist`)
+			.then((res) => store.commit(SET_URLTIP_TOPLIST, res.data)).catch((error) => console.warn(error))
 	},
 }
 export default Actions

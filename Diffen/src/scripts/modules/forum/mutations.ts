@@ -1,7 +1,7 @@
 import State from './state'
 import { MutationTree } from 'vuex'
 
-import { Post, VoteType, Filter } from '../../model/forum'
+import { Post, VoteType, Filter, UrlTip } from '../../model/forum'
 import { Vote as CrudVote } from '../../model/forum/crud'
 import { Paging, KeyValuePair } from '../../model/common'
 
@@ -11,7 +11,7 @@ import {
     SET_IS_LOADING_POSTS,
     SET_REMOVE_POST_FROM_LIST,
     SET_FILTER,
-    SET_KVP_USERS
+    SET_URLTIP_TOPLIST
 } from './types'
 
 export const Mutations: MutationTree<State> = {
@@ -33,24 +33,12 @@ export const Mutations: MutationTree<State> = {
         state.isLoadingPosts = payload.value
     },
     [SET_REMOVE_POST_FROM_LIST]: (state: State, postId: number) => { 
-        let index: number = 0
-        for (let i = 0; i < state.pagedPosts.data.length; i++) {
-            if (state.pagedPosts.data[i].id !== postId)
-                continue
-            index = state.pagedPosts.data.indexOf(state.pagedPosts.data[i])
-            break
-        }
-        if (index > -1)
-		{
-			state.pagedPosts.data.splice(index, 1)
-		}
+        state.pagedPosts.data = state.pagedPosts.data.filter((p: Post) => p.id !== postId)
     },
     [SET_FILTER]: (state: State, payload: { filter: Filter }) => { 
         state.filter = payload.filter
     },
-    [SET_KVP_USERS]: (state: State, users: KeyValuePair[]) => { 
-        state.users = users
-    },
+    [SET_URLTIP_TOPLIST]: (state: State, urlTips: UrlTip[]) => { state.urlTipTopList = urlTips },   
 }
 
 export default Mutations

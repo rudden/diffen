@@ -2,7 +2,7 @@
 export const GET_PAGED_POSTS = 'forum/GET_PAGED_POSTS'
 export const GET_IS_LOADING_POSTS = 'forum/GET_IS_LOADING_POSTS'
 export const GET_FILTER = 'forum/GET_FILTER'
-export const GET_KVP_USERS = 'forum/GET_KVP_USERS'
+export const GET_URLTIP_TOPLIST = 'forum/GET_URLTIP_TOPLIST'
 
 // actions
 export const FETCH_PAGED_POSTS = 'forum/FETCH_PAGED_POSTS'
@@ -22,4 +22,4 @@ export const SET_POST_AFTER_VOTE = 'forum/SET_POST_AFTER_VOTE'
 export const SET_IS_LOADING_POSTS = 'forum/SET_IS_LOADING_POSTS'
 export const SET_REMOVE_POST_FROM_LIST = 'forum/SET_REMOVE_POST_FROM_LIST'
 export const SET_FILTER = 'forum/SET_FILTER'
-export const SET_KVP_USERS = 'forum/SET_KVP_USERS'
+export const SET_URLTIP_TOPLIST = 'forum/SET_URLTIP_TOPLIST'
