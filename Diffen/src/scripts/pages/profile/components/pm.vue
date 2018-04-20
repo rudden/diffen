@@ -10,6 +10,11 @@
 					<typeahead v-model="selectedUser" target="#pm-users" :data="users" item-key="value" force-select />
 				</div>
 			</div>
+			<div class="row mt-3">
+				<div class="col">
+					<span class="badge badge-secondary mr-2" v-for="convUser in conversationUsers" v-bind:key="convUser.key">{{ convUser.value }}</span>
+				</div>
+			</div>
 			<template v-if="selectedUser && selectedUser.key || !userIsLoggedInUser">
 				<div class="row" :class="{ 'mt-3' : userIsLoggedInUser }">
 					<div class="col">
@@ -71,7 +76,7 @@ import { ViewModel, KeyValuePair, Result, ResultType } from '../../../model/comm
 import { PersonalMessage } from '../../../model/profile'
 import { PersonalMessage as CrudPm } from '../../../model/profile/crud'
 
-import { FETCH_KVP_USERS, FETCH_PERSONAL_MESSAGES, CREATE_PM } from '../../../modules/profile/types'
+import { FETCH_KVP_USERS, FETCH_CONVERSATION_KVP_USERS, FETCH_PERSONAL_MESSAGES, CREATE_PM } from '../../../modules/profile/types'
 
 import Results from '../../../components/results.vue'
 
@@ -86,6 +91,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 export default class Pm extends Vue {
 	@State(state => state.vm) vm: ViewModel
 	@ModuleAction(FETCH_KVP_USERS) loadUsers: () => Promise<KeyValuePair[]>
+	@ModuleAction(FETCH_CONVERSATION_KVP_USERS) loadConversationUsers: (payload: { userId: string }) => Promise<KeyValuePair[]>
 	@ModuleAction(FETCH_PERSONAL_MESSAGES) loadPms: (payload: { to?: string }) => Promise<PersonalMessage[]>
 	@ModuleAction(CREATE_PM) create: (payload: { pm: CrudPm }) => Promise<Result[]>
 
@@ -96,6 +102,7 @@ export default class Pm extends Vue {
 	
 	pms: PersonalMessage[] = []
 	users: KeyValuePair[] = []
+	conversationUsers: KeyValuePair[] = []
 
 	get canCreate() {
 		return this.newPmMessage.length > 0
@@ -117,6 +124,8 @@ export default class Pm extends Vue {
 		}
 
 	mounted() {
+		this.loadConversationUsers({ userId: this.vm.loggedInUser.id })
+			.then((users: KeyValuePair[]) => this.conversationUsers = users)
 		if (this.vm.selectedUserId && !this.userIsLoggedInUser) {
 			this.loadPms({ to: this.vm.selectedUserId })
 				.then((pms: PersonalMessage[]) => {
