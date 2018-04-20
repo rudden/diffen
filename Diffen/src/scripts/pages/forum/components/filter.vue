@@ -89,15 +89,17 @@ const ModuleGetter = namespace('forum', Getter)
 const ModuleAction = namespace('forum', Action)
 const ModuleMutation = namespace('forum', Mutation)
 
+const ProfileModuleAction = namespace('profile', Action)
+
 import { 
     GET_IS_LOADING_POSTS,
     GET_FILTER,
-    GET_KVP_USERS,
     FETCH_PAGED_POSTS,
-    FETCH_KVP_USERS,
     SET_IS_LOADING_POSTS,
     SET_FILTER
 } from '../../../modules/forum/types'
+
+import { FETCH_KVP_USERS } from '../../../modules/profile/types'
 
 import { StartingEleven, Filter } from '../../../model/forum'
 import { ViewModel, KeyValuePair } from '../../../model/common'
@@ -114,11 +116,11 @@ export default class FilterComponent extends Vue {
 	@State(state => state.vm) vm: ViewModel
 	@ModuleGetter(GET_IS_LOADING_POSTS) isLoadingPosts: boolean
 	@ModuleGetter(GET_FILTER) filter: Filter
-	@ModuleGetter(GET_KVP_USERS) users: KeyValuePair[]
     @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
-	@ModuleAction(FETCH_KVP_USERS) loadUsers: () => Promise<void>
 	@ModuleMutation(SET_IS_LOADING_POSTS) setIsLoadingPosts: (payload: { value: boolean }) => void
 	@ModuleMutation(SET_FILTER) setFilter: (payload: { filter: Filter }) => void
+
+	@ProfileModuleAction(FETCH_KVP_USERS) loadUsers: () => Promise<KeyValuePair[]>
 
 	includedUsers: KeyValuePair[] = []
     startingEleven: string = StartingEleven[StartingEleven.All]
@@ -152,10 +154,11 @@ export default class FilterComponent extends Vue {
         }
     }
 
+    users: KeyValuePair[] = []
     selectedUser: any = ''
     
     mounted() {
-        this.loadUsers()
+        this.fetchUsers()
 	}
 
 	get excludedUsers(): any {
@@ -190,7 +193,7 @@ export default class FilterComponent extends Vue {
         
         this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers } })
         this.loadPosts()
-        this.loadUsers()
+        this.fetchUsers()
     }
 
     all() {
@@ -199,7 +202,7 @@ export default class FilterComponent extends Vue {
         
         this.setFilter({ filter: {} })
         this.loadPosts()
-        this.loadUsers()
+        this.fetchUsers()
     }
 
     loadPosts() {
@@ -214,20 +217,13 @@ export default class FilterComponent extends Vue {
         }
     }
 
-    removeUser(kvp: KeyValuePair): void {
-		let index: number = 0
-		for (let i = 0; i < this.includedUsers.length; i++) {
-			if (this.includedUsers[i].key !== kvp.key)
-				continue
-			
-			index = this.includedUsers.indexOf(this.includedUsers[i])
-			break
-		}
-		if (index > -1)
-		{
-			this.includedUsers.splice(index, 1)
-		}
-		this.users.push(kvp)
-	}
+    removeUser(selected: KeyValuePair): void {
+        this.includedUsers = this.includedUsers.filter((kvp: KeyValuePair) => kvp.key !== selected.key)
+		this.users.push(selected)
+    }
+    
+    fetchUsers() {
+        this.loadUsers().then((users: KeyValuePair[]) => this.users = users)
+    }
 }
 </script>
