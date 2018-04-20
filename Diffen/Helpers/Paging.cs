@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Diffen.Helpers
 {
@@ -8,11 +9,19 @@ namespace Diffen.Helpers
 		public int CurrentPage { get; set; }
 		public int NumberOfPages { get; set; }
 		public int Total { get; set; }
+	}
 
-		public Paging() { }
-		public Paging(IEnumerable<T> data)
+	public static class PagingExtensions
+	{
+		public static Paging<T> ToPaging<T>(this IEnumerable<T> data, int total, int pageNumber, int pageSize)
 		{
-			Data = data;
+			return new Paging<T>
+			{
+				Data = data,
+				NumberOfPages = Convert.ToInt32(Math.Ceiling((double)total / pageSize)),
+				CurrentPage = pageNumber,
+				Total = total
+			};
 		}
 	}
 }

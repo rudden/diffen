@@ -75,7 +75,7 @@ namespace Diffen.Database.Clients
 			{
 				posts = posts.Where(x => filter.IncludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
 			}
-			return posts.ToListAsync();
+			return posts.OrderByCreated().ToListAsync();
 		}
 
 		public Task<List<Post>> GetPostsOnUserIdAsync(string userId)
@@ -87,7 +87,7 @@ namespace Diffen.Database.Clients
 		public async Task<List<Post>> GetSavedPostsOnUserIdAsync(string userId)
 		{
 			var savedPosts = await _dbContext.SavedPosts.IncludeAll().ToListAsync();
-			return savedPosts.Where(post => post.SavedByUserId == userId).Select(x => x.Post).ToList();
+			return savedPosts.Where(post => post.SavedByUserId == userId).Select(x => x.Post).OrderByDescending(x => x.Created).ToList();
 		}
 
 		public Task<Post> GetPostOnIdAsync(int postId)

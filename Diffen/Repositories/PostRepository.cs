@@ -34,15 +34,7 @@ namespace Diffen.Repositories
 		public async Task<Paging<Post>> GetPagedPostsAsync(int pageNumber, int pageSize)
 		{
 			var posts = await _dbClient.GetPagedPostsAsync(pageNumber, pageSize);
-			var pagedPosts = posts.OrderByDescending(x => x.Created).Page(pageNumber, pageSize).ToList();
-
-			return new Paging<Post>
-			{
-				Data = _mapper.Map<List<Post>>(pagedPosts),
-				NumberOfPages = Convert.ToInt32(Math.Ceiling((double)posts.Count / pageSize)),
-				CurrentPage = pageNumber,
-				Total = posts.Count
-			};
+			return _mapper.Map<List<Post>>(posts.Page(pageNumber, pageSize)).ToPaging(posts.Count, pageNumber, pageSize);
 		}
 
 		public Task<int> CountAllPostsAsync()
@@ -53,15 +45,7 @@ namespace Diffen.Repositories
 		public async Task<Paging<Post>> GetPagedPostsOnUserIdAsync(string userId, int pageNumber, int pageSize = 5)
 		{
 			var posts = await _dbClient.GetPostsOnUserIdAsync(userId);
-			var pagedPosts = posts.OrderByDescending(x => x.Created).Page(pageNumber, pageSize).ToList();
-
-			return new Paging<Post>
-			{
-				Data = _mapper.Map<List<Post>>(pagedPosts),
-				NumberOfPages = Convert.ToInt32(Math.Ceiling((double)posts.Count / pageSize)),
-				CurrentPage = pageNumber,
-				Total = posts.Count
-			};
+			return _mapper.Map<List<Post>>(posts.Page(pageNumber, pageSize)).ToPaging(posts.Count, pageNumber, pageSize);
 		}
 
 		public async Task<Post> GetPostOnIdAsync(int id)
@@ -73,29 +57,13 @@ namespace Diffen.Repositories
 		public async Task<Paging<Post>> GetPagedPostsOnFilterAsync(int pageNumber, int pageSize, Filter filter)
 		{
 			var posts = await _dbClient.GetPostsOnFilterAsync(filter);
-			var pagedPosts = posts.OrderByDescending(x => x.Created).Page(pageNumber, pageSize).ToList();
-
-			return new Paging<Post>
-			{
-				Data = _mapper.Map<List<Post>>(pagedPosts),
-				NumberOfPages = Convert.ToInt32(Math.Ceiling((double) posts.Count / pageSize)),
-				CurrentPage = pageNumber,
-				Total = posts.Count
-			};
+			return _mapper.Map<List<Post>>(posts.Page(pageNumber, pageSize)).ToPaging(posts.Count, pageNumber, pageSize);
 		}
 
 		public async Task<Paging<Post>> GetPagedSavedPostsAsync(string userId, int pageNumber, int pageSize = 5)
 		{
 			var posts = await _dbClient.GetSavedPostsOnUserIdAsync(userId);
-			var pagedPosts = posts.OrderByDescending(x => x.Created).Page(pageNumber, pageSize).ToList();
-
-			return new Paging<Post>
-			{
-				Data = _mapper.Map<List<Post>>(pagedPosts),
-				NumberOfPages = Convert.ToInt32(Math.Ceiling((double)posts.Count / pageSize)),
-				CurrentPage = pageNumber,
-				Total = posts.Count
-			};
+			return _mapper.Map<List<Post>>(posts.Page(pageNumber, pageSize)).ToPaging(posts.Count, pageNumber, pageSize);
 		}
 
 		public async Task<List<Result>> CreatePostAsync(Models.Forum.CRUD.Post post)
