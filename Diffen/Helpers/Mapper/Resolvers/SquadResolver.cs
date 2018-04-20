@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using AutoMapper;
@@ -31,7 +32,8 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				{
 					Id = x.Position.Id,
 					Name = x.Position.Name
-				})
+				}),
+				InNumberOfStartingElevens = source.InLineups.Count
 			};
 		}
 
@@ -77,7 +79,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					PositionId = player.PositionId
 				}).ToList(),
 				CreatedByUserId = source.CreatedByUserId,
-				Created = source.Created
+				Created = DateTime.Now
 			};
 		}
 
@@ -100,6 +102,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		{
 			return new Database.Entities.Squad.Player
 			{
+				Id = source.Id,
 				FirstName = source.FirstName,
 				LastName = source.LastName,
 				IsCaptain = source.IsCaptain,
