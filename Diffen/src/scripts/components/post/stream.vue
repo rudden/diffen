@@ -1,5 +1,5 @@
 <template>
-	<ul class="list-group media-list media-list-stream mb-4">
+	<ul class="list-group media-list media-list-stream">
 		<slot name="top"></slot>
 		<li class="media list-group-item p-4" v-show="loaderPredicate">
 			<loader v-bind="{ background: '#699ED0' }" />
@@ -16,8 +16,12 @@
 							records: paged.total,
 							perPage: pageSize,
 							options: {
+								chunk: 5,
 								theme: 'bootstrap4',
+								edgeNavigation: true,
 								texts: {
+									first: 'första',
+									last: 'sista',
 									count: 'visar {from} till {to} av {count} inlägg|{count} inlägg|ett inlägg'
 								}
 							}
