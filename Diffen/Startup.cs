@@ -34,6 +34,11 @@ namespace Diffen
 				.AddEnvironmentVariables();
 
 			Configuration = builder.Build();
+
+			Log.Logger = new LoggerConfiguration()
+				.ReadFrom.Configuration(Configuration)
+				.Enrich.FromLogContext()
+				.CreateLogger();
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
+using Serilog;
+
 namespace Diffen
 {
 	using Database;
@@ -17,10 +19,9 @@ namespace Diffen
 
 			using (var scope = host.Services.CreateScope())
 			{
-				var services = scope.ServiceProvider;
 				try
 				{
-					Initializer.SeedAsync(services).Wait();
+					Initializer.SeedAsync(scope.ServiceProvider).Wait();
 				}
 				catch (Exception ex)
 				{
@@ -35,7 +36,9 @@ namespace Diffen
 			WebHost.CreateDefaultBuilder(args)
 				.UseKestrel()
 				.UseContentRoot(Directory.GetCurrentDirectory())
+				.UseIISIntegration()
 				.UseStartup<Startup>()
+				.UseSerilog()
 				.CaptureStartupErrors(true)
 				.Build();
 	}
