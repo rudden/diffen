@@ -16,7 +16,7 @@
 					</template>
 					<template v-else>
 						<div class="col-sm-12" :class="{ 'col-lg-6 col-md-6': userIsLoggedInUser, 'col-lg-12 col-md-6': !userIsLoggedInUser }">
-							<button class="btn btn-sm btn-info btn-block" v-on:click="load">ladda startelvor</button>
+							<button class="btn btn-sm btn-primary btn-block" v-on:click="load">ladda startelvor</button>
 						</div>
 					</template>
 					<template v-if="userIsLoggedInUser">
@@ -138,11 +138,13 @@ export default class Lineups extends Vue {
 
 	mounted() {
 		if (this.preSelectedLineupId > 0) {
-			this.loadLineups({ userId: this.userId })
-				.then(() => {
-					this.selectedLineupId = this.preSelectedLineupId
-					this.changeLineup()
-				})
+			if (!this.lineups || this.lineups.length == 0) {
+				this.loadLineups({ userId: this.userId })
+					.then(() => {
+						this.selectedLineupId = this.preSelectedLineupId
+						this.changeLineup()
+					})
+			}
 		}
 	}
 
