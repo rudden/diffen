@@ -100,11 +100,19 @@ export default class NewPost extends Vue {
             created: this.selectedLineup.created
         }
     }
+    get inEditMode() {
+        return this.post && this.post.inEdit ? true : false
+    }
+    get inReplyMode() {
+        return this.parentId > 0 ? true : false
+    }
 
     submit() {
-        this.setIsLoadingPosts({ value: true })
+        if (!this.inEditMode && !this.inReplyMode) {
+            this.setIsLoadingPosts({ value: true })
+        }
         new Promise<Result[]>((resolve, reject) => {
-            if (this.newPost.id > 0) {
+            if (this.inEditMode) {
                 if (!this.selectedLineup.id) {
                     this.newPost.lineup = undefined
                 } else {
@@ -121,16 +129,15 @@ export default class NewPost extends Vue {
                 if (this.selectedLineup.id) {
                     this.newPost.lineup = this.lineup
                 }
-                this.create({ post: this.newPost })
-                    .then((res) => {
-                        resolve(res)
-                        this.newPost = new CrudPost()
-                    })
+                this.create({ post: this.newPost }).then((res) => resolve(res))
             }
         }).then((res) => {
             this.results = res
-            this.loadPaged({ pageNumber: 1, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
-                .then(() => this.setIsLoadingPosts({ value: false }))
+            if (!this.inEditMode && !this.inReplyMode) {
+                this.newPost = new CrudPost()
+                this.loadPaged({ pageNumber: 1, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
+                    .then(() => this.setIsLoadingPosts({ value: false }))
+            }
         })
     }
 
