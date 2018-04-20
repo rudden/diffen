@@ -26,24 +26,24 @@
                                 </template>
                             </modal>
                             <span v-if="(post.lineupId || post.urlTipHref) && createdByLoggedInUser"> · </span>
-                            <modal v-bind="{ id: `edit-${post.id}`, header: 'editera inlägg' }" v-if="createdByLoggedInUser">
+                            <modal v-bind="{ id: `edit-${post.id}`, header: 'editera inlägg' }" v-if="createdByLoggedInUser" :close-action="closePostActionModal">
                                 <template slot="btn">
-                                    <a data-toggle="modal" :data-target="'#' + `edit-${post.id}`">
+                                    <a data-toggle="modal" :data-target="'#' + `edit-${post.id}`" v-on:click="post.inEdit = true">
                                         <span class="icon icon-edit"></span>
                                     </a>
 								</template>
-                                <template slot="body">
+                                <template slot="body" v-if="post.inEdit">
                                     <new-post :post="post" v-bind="{ parentId: post.parentPost ? post.parentPost.id : null }" />
                                 </template>
                             </modal>
                             <span v-if="post.lineupId || post.urlTipHref || createdByLoggedInUser"> · </span>
-                            <modal v-bind="{ id: `reply-${post.id}`, header: 'svara inlägg' }">
+                            <modal v-bind="{ id: `reply-${post.id}`, header: 'svara inlägg' }" :close-action="closePostActionModal">
                                 <template slot="btn">
-                                    <a data-toggle="modal" :data-target="'#' + `reply-${post.id}`">
+                                    <a data-toggle="modal" :data-target="'#' + `reply-${post.id}`" v-on:click="post.inReply = true">
                                         <span class="icon icon-quote"></span>
                                     </a>
 								</template>
-                                <template slot="body">
+                                <template slot="body" v-if="post.inReply">
                                     <div class="media-body">
                                         <div class="media-body-text">
                                             <post-main-content :post="post" />
@@ -91,18 +91,19 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
-import { Getter, Action, State, namespace } from 'vuex-class'
+import { Getter, Action, Mutation, State, namespace } from 'vuex-class'
 
 const ModuleGetter = namespace('forum', Getter)
 const ModuleAction = namespace('forum', Action)
+const ModuleMutation = namespace('forum', Mutation)
 const SquadModuleGetter = namespace('squad', Getter)
 const SquadModuleAction = namespace('squad', Action)
 
-import { BOOKMARK_POST, SCISSOR_POST } from '../../modules/forum/types'
+import { GET_FILTER, BOOKMARK_POST, SCISSOR_POST, FETCH_PAGED_POSTS, SET_IS_LOADING_POSTS } from '../../modules/forum/types'
 import { FETCH_LINEUP } from '../../modules/squad/types'
 
 import { Lineup } from '../../model/squad'
-import { Post, Vote, VoteType } from '../../model/forum'
+import { Post, Vote, VoteType, Filter } from '../../model/forum'
 import { ViewModel, Paging } from '../../model/common'
 
 import NewPost from './new.vue'
@@ -130,9 +131,12 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 })
 export default class PostComponent extends Vue {
     @State(state => state.vm) vm: ViewModel
+    @ModuleGetter(GET_FILTER) filter: Filter
     @ModuleAction(BOOKMARK_POST) bookmark: (payload: { postId: number }) => Promise<void>
     @ModuleAction(SCISSOR_POST) scissor: (payload: { postId: number }) => Promise<void>
-
+    @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
+	@ModuleMutation(SET_IS_LOADING_POSTS) setIsLoadingPosts: (payload: { value: boolean }) => void
+    
     @SquadModuleAction(FETCH_LINEUP) loadLineup: (payload: { id: number }) => Promise<Lineup>
 
     post: Post
@@ -160,6 +164,31 @@ export default class PostComponent extends Vue {
         return !this.vm.loggedInUser.savedPostsIds.includes(this.post.id)
     }
 
+    created() {
+        // listen for escape key events
+        // ugly solution since i'm not able to access jquery in vue sfc written in ts
+        window.addEventListener('keyup', (e) => {
+            if (e.which == 27) {
+                this.closePostActionModal()
+            }
+        })
+    }
+
+    closePostActionModal() {
+        if (this.post) {
+            // reload all posts when modal is closed
+            if (this.post.inEdit || this.post.inReply) {
+                this.reloadPosts()
+            }
+            if (this.post.inEdit) {
+                this.post.inEdit = false
+            }
+            if (this.post.inReply) {
+                this.post.inReply = false
+            }
+        }
+    }
+
     getLineup() {
         this.loadingLineup = true
         this.loadLineup({ id: <number>this.post.lineupId })
@@ -173,6 +202,12 @@ export default class PostComponent extends Vue {
     }
     scissorPost() {
         this.scissor({ postId: this.post.id }).then(() => this.$forceUpdate())
+    }
+
+    reloadPosts() {
+        this.setIsLoadingPosts({ value: true })
+        this.loadPaged({ pageNumber: 1, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
+            .then(() => this.setIsLoadingPosts({ value: false }))
     }
 }
 </script>
