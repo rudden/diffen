@@ -6,6 +6,7 @@ export const GET_SAVED_POSTS = 'profile/GET_SAVED_POSTS'
 // actions
 export const FETCH_USER = 'profile/FETCH_USER'
 export const FETCH_KVP_USERS = 'profile/FETCH_KVP_USERS'
+export const FETCH_CONVERSATION_KVP_USERS = 'profile/FETCH_CONVERSATION_KVP_USERS'
 export const FETCH_PERSONAL_MESSAGES = 'profile/FETCH_PERSONAL_MESSAGES'
 export const FETCH_POSTS = 'profile/FETCH_POSTS'
 export const FETCH_SAVED_POSTS = 'profile/FETCH_SAVED_POSTS'

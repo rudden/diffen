@@ -24,6 +24,7 @@ import {
     CHANGE_FILTER,
 	FETCH_INVITES,
 	CREATE_INVITE,
+    FETCH_CONVERSATION_KVP_USERS,
 } from './types'
 
 // export everything compliant to the vuex specification for actions
@@ -35,6 +36,12 @@ export const Actions: ActionTree<State, any> = {
 	[FETCH_KVP_USERS]: (store: ActionContext<State, any>): Promise<KeyValuePair[]> => {
 		return new Promise<KeyValuePair[]>((resolve, reject) => {
 			return axios.get(`${store.rootState.vm.api}/users`)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[FETCH_CONVERSATION_KVP_USERS]: (store: ActionContext<State, any>, payload: { userId: string }): Promise<KeyValuePair[]> => {
+		return new Promise<KeyValuePair[]>((resolve, reject) => {
+			return axios.get(`${store.rootState.vm.api}/users/${payload.userId}/pm/users`)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},
