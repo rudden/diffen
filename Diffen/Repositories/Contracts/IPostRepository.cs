@@ -11,11 +11,11 @@ namespace Diffen.Repositories.Contracts
 	{
 		Task<List<Post>> GetPostsAsync();
 		Task<Paging<Post>> GetPagedPostsAsync(int pageNumber, int pageSize);
-		Task<int> CountAllPostsAsync();
 		Task<Paging<Post>> GetPagedPostsOnUserIdAsync(string userId, int pageNumber, int pageSize = 5);
-		Task<Post> GetPostOnIdAsync(int id);
 		Task<Paging<Post>> GetPagedPostsOnFilterAsync(int pageNumber, int pageSize, Filter filter);
 		Task<Paging<Post>> GetPagedSavedPostsAsync(string userId, int pageNumber, int pageSize = 5);
+		Task<Post> GetPostOnIdAsync(int id);
+		Task<int> CountAllPostsAsync();
 		Task<List<Result>> CreatePostAsync(Models.Forum.CRUD.Post post);
 		Task<List<Result>> UpdatePostAsync(Models.Forum.CRUD.Post post);
 		Task<bool> ScissorPostAsync(int postId);

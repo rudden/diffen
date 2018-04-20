@@ -37,21 +37,10 @@ namespace Diffen.Repositories
 			return _mapper.Map<List<Post>>(posts.Page(pageNumber, pageSize)).ToPaging(posts.Count, pageNumber, pageSize);
 		}
 
-		public Task<int> CountAllPostsAsync()
-		{
-			return _dbClient.CountPostsAsync();
-		}
-
 		public async Task<Paging<Post>> GetPagedPostsOnUserIdAsync(string userId, int pageNumber, int pageSize = 5)
 		{
 			var posts = await _dbClient.GetPostsOnUserIdAsync(userId);
 			return _mapper.Map<List<Post>>(posts.Page(pageNumber, pageSize)).ToPaging(posts.Count, pageNumber, pageSize);
-		}
-
-		public async Task<Post> GetPostOnIdAsync(int id)
-		{
-			var post = await _dbClient.GetPostOnIdAsync(id);
-			return _mapper.Map<Post>(post);
 		}
 
 		public async Task<Paging<Post>> GetPagedPostsOnFilterAsync(int pageNumber, int pageSize, Filter filter)
@@ -64,6 +53,17 @@ namespace Diffen.Repositories
 		{
 			var posts = await _dbClient.GetSavedPostsOnUserIdAsync(userId);
 			return _mapper.Map<List<Post>>(posts.Page(pageNumber, pageSize)).ToPaging(posts.Count, pageNumber, pageSize);
+		}
+
+		public async Task<Post> GetPostOnIdAsync(int id)
+		{
+			var post = await _dbClient.GetPostOnIdAsync(id);
+			return _mapper.Map<Post>(post);
+		}
+
+		public Task<int> CountAllPostsAsync()
+		{
+			return _dbClient.CountPostsAsync();
 		}
 
 		public async Task<List<Result>> CreatePostAsync(Models.Forum.CRUD.Post post)
