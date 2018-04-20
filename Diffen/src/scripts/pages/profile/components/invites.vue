@@ -13,7 +13,7 @@
 						<div class="col">
 							<modal v-bind="{ header: 'inbjudningar', id: 'invites' }">
 								<template slot="btn">
-									<button data-toggle="modal" data-target="#invites" class="btn btn-sm btn-info btn-block" v-on:click="load">visa inbjudningar</button>
+									<button data-toggle="modal" data-target="#invites" class="btn btn-sm btn-primary btn-block" v-on:click="load">visa inbjudningar</button>
 								</template>
 								<template slot="body">
 									<template v-if="invites.length > 0">
@@ -74,17 +74,16 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
-import { Getter, Mutation, Action, State, namespace } from 'vuex-class'
+import { Getter, Action, State, namespace } from 'vuex-class'
 
 const ModuleGetter = namespace('profile', Getter)
 const ModuleAction = namespace('profile', Action)
-const ModuleMutation = namespace('profile', Mutation)
 
 import { ViewModel, Result, ResultType } from '../../../model/common'
 import { Invite as CrudInvite } from '../../../model/profile/crud'
 import { Invite } from '../../../model/profile'
 
-import { GET_USER, FETCH_USER, FETCH_INVITES, CREATE_INVITE } from '../../../modules/profile/types'
+import { FETCH_INVITES, CREATE_INVITE } from '../../../modules/profile/types'
 
 import Modal from '../../../components/modal.vue'
 import Results from '../../../components/results.vue'
