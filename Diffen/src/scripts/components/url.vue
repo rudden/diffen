@@ -27,7 +27,7 @@ import { UPDATE_URLTIP_CLICKS, FETCH_URLTIP_TOPLIST } from '../modules/forum/typ
 })
 export default class Url extends Vue {
 	@ModuleAction(UPDATE_URLTIP_CLICKS) update: (payload: { postId: number }) => Promise<boolean>
-	@ModuleAction(FETCH_URLTIP_TOPLIST) loadUrlTipTopList: () => Promise<UrlTip[]>
+	@ModuleAction(FETCH_URLTIP_TOPLIST) loadUrlTipTopList: () => Promise<void>
 
 	href: string
 	text: string
