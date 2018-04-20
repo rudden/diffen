@@ -591,7 +591,7 @@ namespace Diffen.Migrations
                         .HasForeignKey("LineupId");
 
                     b.HasOne("Diffen.Database.Entities.Squad.Player", "Player")
-                        .WithMany()
+                        .WithMany("InLineups")
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
