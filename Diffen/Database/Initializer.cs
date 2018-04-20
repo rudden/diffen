@@ -106,7 +106,7 @@ namespace Diffen.Database
 			var scissors = await userManager.GetUsersInRoleAsync("Sax");
 			if (!scissors.Any())
 			{
-				var newScissors = userManager.Users.ToList().PickRandom(10);
+				var newScissors = userManager.Users.ToList().PickRandom(4);
 				foreach (var scissor in newScissors)
 				{
 					await userManager.AddToRoleAsync(scissor, "Sax");
