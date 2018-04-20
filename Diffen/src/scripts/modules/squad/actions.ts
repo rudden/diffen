@@ -4,7 +4,7 @@ import { Store, ActionTree, ActionContext } from 'vuex'
 
 import { Result, KeyValuePair } from '../../model/common'
 import { Lineup, Player, Formation } from '../../model/squad'
-import { Lineup as CrudLineup } from '../../model/squad/crud'
+import { Lineup as CrudLineup, Player as CrudPlayer } from '../../model/squad/crud'
 
 import { 
 	FETCH_KVP_USERS,
@@ -19,7 +19,9 @@ import {
 	SET_PLAYERS,
 	SET_FORMATIONS,
 	SET_SELECTED_LINEUP,
-	SET_POSITIONS
+	SET_POSITIONS,
+    UPDATE_PLAYER,
+	CREATE_PLAYER
 } from './types'
 
 // export everything compliant to the vuex specification for actions
@@ -61,6 +63,18 @@ export const Actions: ActionTree<State, any> = {
 	[FETCH_LINEUP]: (store: ActionContext<State, any>, payload: { id: number }): Promise<Lineup> => {
 		return new Promise<Lineup>((resolve, reject) => {
 			return axios.get(`${store.rootState.vm.api}/squads/lineups/${payload.id}`)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[CREATE_PLAYER]: (store: ActionContext<State, any>, payload: { player: CrudPlayer }): Promise<Result[]> => {
+		return new Promise<Result[]>((resolve, reject) => {
+			return axios.post(`${store.rootState.vm.api}/squads/players/create`, payload.player)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[UPDATE_PLAYER]: (store: ActionContext<State, any>, payload: { player: CrudPlayer }): Promise<Result[]> => {
+		return new Promise<Result[]>((resolve, reject) => {
+			return axios.post(`${store.rootState.vm.api}/squads/players/update`, payload.player)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},

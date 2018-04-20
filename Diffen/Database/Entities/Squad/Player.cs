@@ -20,5 +20,6 @@ namespace Diffen.Database.Entities.Squad
 
 		// Linked Tables
 		public ICollection<PlayerToPosition> AvailablePositions { get; set; }
+		public ICollection<PlayerToLineup> InLineups { get; set; }
 	}
 }

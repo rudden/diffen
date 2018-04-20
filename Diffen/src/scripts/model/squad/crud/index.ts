@@ -10,3 +10,15 @@ export class PlayerToLineup {
     playerId: number
     positionId: number
 }
+
+export class Player {
+    id: number
+    firstName: string = ''
+    lastName: string = ''
+    kitNumber: number = 0
+    isSold: boolean
+    isCaptain: boolean
+    isHereOnLoan: boolean
+    isOutOnLoan: boolean
+    availablePositionsIds: number[] = []
+}

@@ -23,6 +23,7 @@ export class Player {
     isHereOnLoan: boolean
     isSold: boolean
     availablePositions: Position[]
+    inNumberOFStartingElevens: number
 }
 
 export class Formation {

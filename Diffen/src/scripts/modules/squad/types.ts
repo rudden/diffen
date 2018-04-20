@@ -8,7 +8,6 @@ export const GET_SELECTED_LINEUP = 'squad/GET_SELECTED_LINEUP'
 
 // actions
 export const FETCH_KVP_USERS = 'squad/FETCH_KVP_USERS'
-
 export const FETCH_LINEUP = 'squad/FETCH_LINEUP'
 export const FETCH_LINEUPS_ON_USER = 'squad/FETCH_LINEUPS_ON_USER'
 export const FETCH_LINEUP_ON_POST = 'squad/FETCH_LINEUP_ON_POST'
@@ -16,6 +15,8 @@ export const FETCH_PLAYERS = 'squad/FETCH_PLAYERS'
 export const FETCH_POSITIONS = 'squad/FETCH_POSITIONS'
 export const FETCH_FORMATIONS = 'squad/FETCH_FORMATIONS'
 export const CREATE_LINEUP = 'squad/CREATE_LINEUP'
+export const CREATE_PLAYER = 'squad/CREATE_PLAYER'
+export const UPDATE_PLAYER = 'squad/UPDATE_PLAYER'
 
 // mutations
 export const SET_LINEUPS = 'squad/SET_LINEUPS'
