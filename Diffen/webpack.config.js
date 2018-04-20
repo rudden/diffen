@@ -14,6 +14,9 @@ module.exports = {
 		'forum': './src/scripts/pages/forum',
 		'squad': './src/scripts/pages/squad',
 		'profile': './src/scripts/pages/profile',
+		
+		'navbar': './src/scripts/pages/sub/navbar',
+		
 		'style': './src/styles/app.scss'
 	},
 	output: {
