@@ -2,7 +2,7 @@
 	<div class="container container__profile mt-3 mb-5">
 		<div class="row">
 			<div class="col-sm-12 col-md-6 col-lg-6">
-				<post-stream :full-size-post="false" :page-size="5" :paging="pageCreatedPosts" :state-stored-items="createdPosts" :loader-predicate="isLoadingCreatedPosts">
+				<post-stream :full-size-post="false" :paging="pageCreatedPosts" :state-stored-items="createdPosts" :loader-predicate="isLoadingCreatedPosts">
 					<template slot="top">
 						<li class="media list-group-item p-4">
 							<h6 class="mb-0">skapade inlägg</h6>
@@ -11,7 +11,7 @@
 				</post-stream>
 			</div>
 			<div class="col-sm-12 col-md-6 col-lg-6">
-				<post-stream :full-size-post="false" :page-size="5" :paging="pageSavedPosts" :state-stored-items="savedPosts" :loader-predicate="isLoadingSavedPosts">
+				<post-stream :full-size-post="false" :paging="pageSavedPosts" :state-stored-items="savedPosts" :loader-predicate="isLoadingSavedPosts">
 					<template slot="top">
 						<li class="media list-group-item p-4">
 							<h6 class="mb-0">sparade inlägg</h6>
