@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -17,6 +18,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 	public class UserResolver :
 		ITypeConverter<Database.Entities.User.AppUser, User>,
 		ITypeConverter<Database.Entities.User.PersonalMessage, PersonalMessage>,
+		ITypeConverter<Models.User.CRUD.PersonalMessage, Database.Entities.User.PersonalMessage>,
 		ITypeConverter<Database.Entities.User.AppUser, Models.Forum.User>,
 		ITypeConverter<Database.Entities.User.Filter, Filter>,
 		ITypeConverter<Database.Entities.User.Invite, Invite>, 
@@ -42,6 +44,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				Id = source.Id,
 				Bio = source.Bio,
+				Email = source.Email,
 				NickName = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
 				Avatar = GetAvatar(source),
 				Karma = GetKarma(source.Posts),
@@ -81,6 +84,17 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			};
 		}
 
+		public Database.Entities.User.PersonalMessage Convert(Models.User.CRUD.PersonalMessage source, Database.Entities.User.PersonalMessage destination, ResolutionContext context)
+		{
+			return new Database.Entities.User.PersonalMessage
+			{
+				FromUserId = source.FromUserId,
+				ToUserId = source.ToUserId,
+				Message = source.Message,
+				Created = DateTime.Now
+			};
+		}
+
 		public Models.Forum.User Convert(Database.Entities.User.AppUser source, Models.Forum.User destination, ResolutionContext context)
 		{
 			return new Models.Forum.User
@@ -99,8 +113,8 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				UserId = source.UserId,
 				PostsPerPage = source.PostsPerPage,
-				ExcludedUsers = source.ExcludedUserIds?.Split(",")
-					.Select(userId => new KeyValuePair<string, string>(userId, _userRepository.GetCurrentNickOnUserIdAsync(userId).Result))
+				ExcludedUsers = !string.IsNullOrEmpty(source.ExcludedUserIds) ? source.ExcludedUserIds?.Split(",")
+					.Select(userId => new KeyValuePair<string, string>(userId, _userRepository.GetCurrentNickOnUserIdAsync(userId).Result)) : new List<KeyValuePair<string, string>>()
 			};
 		}
 
