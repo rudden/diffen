@@ -12,6 +12,7 @@
 			CreateMap<Database.Entities.User.AppUser, Models.User.User>().ConvertUsing<UserResolver>();
 			CreateMap<Database.Entities.User.AppUser, Models.Forum.User>().ConvertUsing<UserResolver>();
 			CreateMap<Database.Entities.User.PersonalMessage, Models.User.PersonalMessage>().ConvertUsing<UserResolver>();
+			CreateMap<Models.User.CRUD.PersonalMessage, Database.Entities.User.PersonalMessage>().ConvertUsing<UserResolver>();
 			CreateMap<Database.Entities.User.Filter, Models.User.Filter>().ConvertUsing<UserResolver>();
 			CreateMap<Database.Entities.User.Invite, Models.User.Invite>().ConvertUsing<UserResolver>();
 			CreateMap<Database.Entities.Squad.Player, Models.Squad.Player>().ConvertUsing<SquadResolver>();
