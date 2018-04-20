@@ -55,14 +55,15 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
-import { Action, State, namespace } from 'vuex-class'
+import { Getter, Action, State, namespace } from 'vuex-class'
 
 import { ViewModel } from '../../../model/common'
 import { UrlTip } from '../../../model/forum'
 
+const ModuleGetter = namespace('forum', Getter)
 const ModuleAction = namespace('forum', Action)
 
-import { FETCH_URLTIP_TOPLIST } from '../../../modules/forum/types'
+import { GET_URLTIP_TOPLIST, FETCH_URLTIP_TOPLIST } from '../../../modules/forum/types'
 
 import Url from '../../../components/url.vue'
 
@@ -73,13 +74,11 @@ import Url from '../../../components/url.vue'
 })
 export default class LeftSidebar extends Vue {
     @State(state => state.vm) vm: ViewModel
-    @ModuleAction(FETCH_URLTIP_TOPLIST) loadUrlTipTopList: () => Promise<UrlTip[]>
+    @ModuleGetter(GET_URLTIP_TOPLIST) urlTips: UrlTip[]
+    @ModuleAction(FETCH_URLTIP_TOPLIST) loadUrlTipTopList: () => Promise<void>
 
-    urlTips: UrlTip[] = []
-    
     mounted() {
         this.loadUrlTipTopList()
-            .then((topList: UrlTip[]) => this.urlTips = topList)
     }
 
     get user() {
