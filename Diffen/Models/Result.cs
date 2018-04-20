@@ -1,4 +1,7 @@
-﻿namespace Diffen.Models
+﻿using System.Threading.Tasks;
+using System.Collections.Generic;
+
+namespace Diffen.Models
 {
 	public class Result
 	{
@@ -138,5 +141,19 @@
 	{
 		public string Success { get; set; }
 		public string Failure { get; set; }
+	}
+
+	public static class ResultExtensions
+	{
+		public static void Update(this List<Result> source, bool outcome, Message message)
+		{
+			source.Add(new Result(outcome).ComplementWithMessageAndReturn(message));
+		}
+
+		public static async Task<List<Result>> Get(this List<Result> source, Task<bool> outcome, Message message)
+		{
+			source.Update(await outcome, message);
+			return source;
+		}
 	}
 }
