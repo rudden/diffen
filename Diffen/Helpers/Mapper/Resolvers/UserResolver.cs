@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -21,21 +20,20 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Models.User.CRUD.PersonalMessage, Database.Entities.User.PersonalMessage>,
 		ITypeConverter<Database.Entities.User.AppUser, Models.Forum.User>,
 		ITypeConverter<Database.Entities.User.Filter, Filter>,
-		ITypeConverter<Database.Entities.User.Invite, Invite>, 
-		ITypeConverter<Database.Entities.User.AppUser, ViewModels.LoggedInUser>
+		ITypeConverter<Database.Entities.User.Invite, Invite>
 	{
 		private readonly UserManager<Database.Entities.User.AppUser> _userManager;
 		private readonly IUserRepository _userRepository;
 
-		private readonly IHostingEnvironment _environment;
 
-		private const string GenericAvatarPath = "/uploads/avatars/generic/logo.png";
+		private const string BasePathForAvatars = "/uploads/avatars/";
+		private readonly string _genericAvatarPath;
 
-		public UserResolver(UserManager<Database.Entities.User.AppUser> userManager, IUserRepository userRepository, IHostingEnvironment environment)
+		public UserResolver(UserManager<Database.Entities.User.AppUser> userManager, IUserRepository userRepository)
 		{
 			_userManager = userManager;
 			_userRepository = userRepository;
-			_environment = environment;
+			_genericAvatarPath = string.Concat(BasePathForAvatars, "generic/logo.png");
 		}
 
 		public User Convert(Database.Entities.User.AppUser source, User destination, ResolutionContext context)
@@ -45,7 +43,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Id = source.Id,
 				Bio = source.Bio,
 				Email = source.Email,
-				NickName = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
+				NickName = source.NickNames.Current() ?? "anonymous",
 				Avatar = GetAvatar(source),
 				Karma = GetKarma(source.Posts),
 				NumberOfPosts = source.Posts.Count,
@@ -71,13 +69,13 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				{
 					Id = source.FromUserId,
 					Avatar = GetAvatar(source.FromUser),
-					NickName = source.FromUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous"
+					NickName = source.FromUser.NickNames.Current() ?? "anonymous"
 				},
 				To = new PmUser
 				{
 					Id = source.ToUserId,
 					Avatar = GetAvatar(source.ToUser),
-					NickName = source.ToUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous"
+					NickName = source.ToUser.NickNames.Current() ?? "anonymous"
 				},
 				Message = source.Message,
 				Since = source.Created.GetSinceStamp()
@@ -100,9 +98,9 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			return new Models.Forum.User
 			{
 				Id = source.Id,
-				NickName = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
+				NickName = source.NickNames.Current() ?? "anonymous",
 				Avatar = GetAvatar(source),
-				IsAdmin = _userManager.GetRolesAsync(source).Result.Any(role => role.Equals("Admin") || role.Equals("Sax")),
+				IsAdmin = _userManager.GetRolesAsync(source).Result.Any(role => role.Equals("Admin") || role.Equals("Scissor")),
 				SecludedUntil = source.SecludedUntil.GetSecluded()
 			};
 		}
@@ -126,28 +124,13 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				InvitedBy = new InvitedBy
 				{
 					Id = source.InvitedByUser.Id,
-					NickName = source.InvitedByUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous"
+					NickName = source.InvitedByUser.NickNames.Current() ?? "anonymous"
 				},
 				AccountIsCreated = source.AccountIsCreated,
 				InviteSent = source.InviteSent.ToString("yyyy-MM-dd"),
 				AccountCreated = source.AccountCreated != null
 					? System.Convert.ToDateTime(source.AccountCreated).ToString("yyyy-MM-dd")
 					: string.Empty
-			};
-		}
-
-		public ViewModels.LoggedInUser Convert(Database.Entities.User.AppUser source, ViewModels.LoggedInUser destination, ResolutionContext context)
-		{
-			return new ViewModels.LoggedInUser
-			{
-				Id = source.Id,
-				Name = source.UserName,
-				Nick = source.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous",
-				AvatarFileName = GetAvatar(source),
-				Bio = source.Bio,
-				InRoles = _userManager.GetRolesAsync(source).Result,
-				SecludedUntil = source.SecludedUntil.ToString("yyyy-MM-dd"),
-				Filter = context.Mapper.Map<Models.User.Filter>(source.Filter) ?? new Models.User.Filter(source)
 			};
 		}
 
@@ -174,22 +157,9 @@ namespace Diffen.Helpers.Mapper.Resolvers
 
 		private string GetAvatar(Database.Entities.User.AppUser source)
 		{
-			if (string.IsNullOrEmpty(source.AvatarFileName))
-			{
-				return GenericAvatarPath;
-			}
-			var userPath = $"uploads\\avatars\\{source.Id}";
-			var path = Path.Combine(_environment.WebRootPath, userPath);
-			if (!Directory.Exists(path))
-			{
-				return GenericAvatarPath;
-			}
-			var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, userPath));
-			if (files == null || !files.Any())
-			{
-				return GenericAvatarPath;
-			}
-			return $"/uploads/avatars/{source.Id}/{source.AvatarFileName}";
+			return string.IsNullOrEmpty(source.AvatarFileName) 
+				? _genericAvatarPath 
+				: string.Concat(BasePathForAvatars, source.AvatarFileName);
 		}
 	}
 }
