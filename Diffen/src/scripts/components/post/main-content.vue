@@ -4,7 +4,7 @@
             <small class="float-right text-muted">{{ post.since }}</small>
             <h6>
                 {{ post.user.nickName }}
-                <template v-if="post.edited">
+                <template v-if="post.updated">
                     <span class="badge badge-danger ml-2">editerat</span>
                 </template>
             </h6>
