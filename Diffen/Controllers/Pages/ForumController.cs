@@ -6,10 +6,11 @@ using AutoMapper;
 
 namespace Diffen.Controllers.Pages
 {
+	using ViewModels;
 	using Repositories.Contracts;
 
 	[Route("forum")]
-	public class ForumController : CommonController
+	public class ForumController : CommonController<ForumPageViewModel>
 	{
 		public ForumController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository) 
 			: base(configuration, mapper, userRepository)
@@ -26,7 +27,7 @@ namespace Diffen.Controllers.Pages
 		[Route("post/{id}")]
 		public IActionResult Index(int id)
 		{
-			Model.PostId = id;
+			Model.SelectedPostId = id;
 			return View(Model);
 		}
 	}

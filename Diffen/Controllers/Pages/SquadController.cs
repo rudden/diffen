@@ -6,10 +6,11 @@ using AutoMapper;
 
 namespace Diffen.Controllers.Pages
 {
+	using ViewModels;
 	using Repositories.Contracts;
 
 	[Route("squad")]
-	public class SquadController : CommonController
+	public class SquadController : CommonController<PageViewModel>
 	{
 		public SquadController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)
 			: base(configuration, mapper, userRepository)

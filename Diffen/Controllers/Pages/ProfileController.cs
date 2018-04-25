@@ -6,10 +6,11 @@ using AutoMapper;
 
 namespace Diffen.Controllers.Pages
 {
+	using ViewModels;
 	using Repositories.Contracts;
 
 	[Route("profile")]
-	public class ProfileController : CommonController
+	public class ProfileController : CommonController<ProfilePageViewModel>
 	{
 		public ProfileController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)
 			: base(configuration, mapper, userRepository)

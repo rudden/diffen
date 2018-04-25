@@ -9,14 +9,14 @@ namespace Diffen.Controllers
 	using ViewModels;
 	using Repositories.Contracts;
 
-	public abstract class CommonController : Controller
+	public abstract class CommonController<TModel> : Controller where TModel : PageViewModel, new() 
 	{
 		private readonly IConfigurationRoot _configuration;
 
 		private readonly IMapper _mapper;
 		private readonly IUserRepository _userRepository;
 
-		protected PageViewModel Model;
+		protected TModel Model;
 
 		protected CommonController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)
 		{
@@ -30,7 +30,7 @@ namespace Diffen.Controllers
 			if (Model == null)
 			{
 				var controller = (ControllerBase) context.Controller;
-				Model = new PageViewModel
+				Model = new TModel
 				{
 					Api = _configuration["Api:Url"],
 					LoggedInUser = _mapper.Map<Models.User.User>(_userRepository.GetUserOnEmailAsync(User.Identity.Name).Result),
