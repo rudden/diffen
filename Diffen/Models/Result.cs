@@ -9,6 +9,11 @@ namespace Diffen.Models
 		public string Message { get; set; }
 
 		public Result() {}
+		public Result(bool outcome, string message)
+		{
+			Type = outcome ? ResultType.Success : ResultType.Failure;
+			Message = message;
+		}
 
 		public Result(bool outcome)
 		{
@@ -134,6 +139,42 @@ namespace Diffen.Models
 		{
 			Success = "Spärrade användaren",
 			Failure = "Kunde inte spärra användaren"
+		};
+
+		public static Message CreatePoll { get; } = new Message
+		{
+			Success = "Skapade en ny poll",
+			Failure = "Kunde inte skapa en ny poll"
+		};
+
+		public static Message CreatePollVote { get; } = new Message
+		{
+			Success = "Röstade på en poll",
+			Failure = "Kunde inte rösta på en poll"
+		};
+
+		public static Message CreateChronicle { get; } = new Message
+		{
+			Success = "Skapade en ny krönika",
+			Failure = "Kunde inte skapa en ny krönika"
+		};
+
+		public static Message UpdateChronicle { get; } = new Message
+		{
+			Success = "Uppdaterade krönikan",
+			Failure = "Kunde inte uppdatera krönikan"
+		};
+
+		public static Message UpdateChronicleHeaderFile { get; } = new Message
+		{
+			Success = "La till bild till headern",
+			Failure = "Kunde inte lägga till bilden till krönikan"
+		};
+
+		public static Message ChangeAvatar { get; } = new Message
+		{
+			Success = "Bytte profilbild",
+			Failure = "Kunde inte byta profilbild"
 		};
 	}
 
