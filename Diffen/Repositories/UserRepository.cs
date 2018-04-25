@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 using AutoMapper;
-using Diffen.Database.Entities.User;
+using Diffen.Helpers.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +15,6 @@ namespace Diffen.Repositories
 	using Models;
 	using Models.User;
 	using Models.Squad;
-	using Helpers.Extensions;
 	using Database.Clients.Contracts;
 
 	using AppUser = Database.Entities.User.AppUser;
@@ -59,14 +58,14 @@ namespace Diffen.Repositories
 		{
 			// user is fetched with user manager due to issue with entity framework (entity is already being tracked...)
 			var currentUser = await _userManager.Users.Include(x => x.NickNames).Include(x => x.FavoritePlayer).FirstOrDefaultAsync(x => x.Id == userId);
-			var currentNick = currentUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick;
+			var currentNick = currentUser.NickNames.Current();
 
 			var results = new List<Result>();
 			if (!string.IsNullOrEmpty(currentNick) && !currentNick.Equals(user.NickName))
 			{
 				if (!await _dbClient.NickNameIsAlreadyTakenByOtherUserAsync(user.NickName))
 				{
-					var nickName = new NickName
+					var nickName = new Database.Entities.User.NickName
 					{
 						UserId = userId,
 						Nick = user.NickName,
@@ -102,7 +101,7 @@ namespace Diffen.Repositories
 				{
 					return results;
 				}
-				var favoritePlayer = new FavoritePlayer
+				var favoritePlayer = new Database.Entities.User.FavoritePlayer
 				{
 					PlayerId = user.FavoritePlayerId,
 					UserId = userId
@@ -115,7 +114,7 @@ namespace Diffen.Repositories
 				{
 					return results;
 				}
-				var favoritePlayer = new FavoritePlayer
+				var favoritePlayer = new Database.Entities.User.FavoritePlayer
 				{
 					PlayerId = user.FavoritePlayerId,
 					UserId = userId
@@ -202,25 +201,16 @@ namespace Diffen.Repositories
 			{
 				return new List<Result>
 				{
-					new Result
-					{
-						Message = "Emailen är inte giltig",
-						Type = ResultType.Failure
-					}
+					new Result(false, "Emailen är inte giltig")
 				};
 			}
 			if (await EmailHasInvite(invite.Email))
 			{
 				return new List<Result>
 				{
-					new Result
-					{
-						Message = "Det finns redan en inbjudan på denna email",
-						Type = ResultType.Failure
-					}
+					new Result(false, "Det finns redan en inbjudan på denna email")
 				};
 			}
-
 			return await new List<Result>().Get(_dbClient.CreateInviteAsync(_mapper.Map<Database.Entities.User.Invite>(invite)),
 				ResultMessages.CreateInvite);
 		}
