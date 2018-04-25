@@ -1,12 +1,23 @@
 import { User } from '../profile'
+import { Component as VueComponent } from 'vue/types/options'
 
-export class ViewModel {
+export class PageViewModel {
 	api: string
 	page: string
-	postId: number
-	pageNumber: number
-	selectedUserId: string
 	loggedInUser: User = new User()
+}
+
+export class ForumViewModel extends PageViewModel {
+	selectedPostId: number
+}
+
+export class ProfileViewModel extends PageViewModel {
+	selectedUserId: string
+}
+
+export class ChronicleViewModel extends PageViewModel {
+	inCreate: boolean
+	selectedChronicleSlug: string
 }
 
 export class KeyValuePair {
@@ -28,4 +39,18 @@ export class Result {
 
 export enum ResultType {
 	Failure, Success
+}
+
+export class IdAndNickNameUser {
+	id: string
+	nickName: string
+}
+
+export class NavItem {
+	id: number
+	text?: string
+	component: VueComponent
+	attributes?: Object
+	available?: boolean
+	active: boolean
 }
