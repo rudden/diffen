@@ -1,7 +1,7 @@
 <template>
     <div class="col-lg-3 d-none d-lg-block">
         <div class="card card-profile mb-4">
-            <div class="card-header" style="background-image: url(stadion.png);"></div>
+            <div class="card-header" style="background-image: url(bg.jpg);"></div>
             <div class="card-body text-center">
                 <a href="/profile">
                     <img class="card-profile-img" :src="user.avatar">
@@ -57,7 +57,7 @@ import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 import { Getter, Action, State, namespace } from 'vuex-class'
 
-import { ViewModel } from '../../../model/common'
+import { PageViewModel } from '../../../model/common'
 import { UrlTip } from '../../../model/forum'
 
 const ModuleGetter = namespace('forum', Getter)
@@ -73,7 +73,7 @@ import Url from '../../../components/url.vue'
     }
 })
 export default class LeftSidebar extends Vue {
-    @State(state => state.vm) vm: ViewModel
+    @State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_URLTIP_TOPLIST) urlTips: UrlTip[]
     @ModuleAction(FETCH_URLTIP_TOPLIST) loadUrlTipTopList: () => Promise<void>
 
