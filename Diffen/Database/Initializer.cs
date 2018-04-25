@@ -690,7 +690,7 @@ namespace Diffen.Database
 				for (var i = 0; i <= 50; i++)
 				{
 					var randomUser = dbContext.Users.PickRandom();
-					var randomUserNick = randomUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick;
+					var randomUserNick = randomUser.NickNames.Current();
 					var post = new Post
 					{
 						Message = $"Autogenererat inlägg för {randomUserNick}. Scrolla vidare! \n\nMvh Admin",
@@ -908,7 +908,7 @@ namespace Diffen.Database
 						{
 							FromUserId = user.Id,
 							ToUserId = randomUser.Id,
-							Message = $"Ville bara säga hej {randomUser.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick}!\n\nLorem ipsum dolor amet prism intelligentsia fashion axe skateboard, tilde etsy small batch distillery. Yuccie cornhole artisan taxidermy iceland raclette prism drinking vinegar truffaut health goth ennui.\n\nMvh {user.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick}",
+							Message = $"Ville bara säga hej {randomUser.NickNames.Current()}!\n\nLorem ipsum dolor amet prism intelligentsia fashion axe skateboard, tilde etsy small batch distillery. Yuccie cornhole artisan taxidermy iceland raclette prism drinking vinegar truffaut health goth ennui.\n\nMvh {user.NickNames.Current()}",
 							Created = RandomDateTime.Get(user.Joined, DateTime.Now)
 						};
 						dbContext.PersonalMessages.Add(personalMessage);
