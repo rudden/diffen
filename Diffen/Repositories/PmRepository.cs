@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using AutoMapper;
-using Diffen.Helpers.Extensions;
 
 namespace Diffen.Repositories
 {
 	using Contracts;
 	using Models;
 	using Models.User;
+	using Helpers.Extensions;
 	using Database.Clients.Contracts;
 
 	public class PmRepository : IPmRepository
@@ -34,7 +34,7 @@ namespace Diffen.Repositories
 			var users = await _dbClient.GetUsersThatUserHasOngoingConversationWithAsync(userId);
 			return users.Select(user =>
 				new KeyValuePair<string, string>(user.Id,
-					user.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick)).ToList();
+					user.NickNames.Current())).ToList();
 		}
 
 		public Task<List<Result>> CreatePersonalMessageAsync(Models.User.CRUD.PersonalMessage pm)
