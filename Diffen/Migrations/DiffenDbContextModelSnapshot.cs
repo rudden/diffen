@@ -24,17 +24,21 @@ namespace Diffen.Migrations
             modelBuilder.Entity("Diffen.Database.Entities.Forum.Post", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("Id");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnName("Created");
 
                     b.Property<string>("CreatedByUserId");
 
-                    b.Property<DateTime?>("Edited");
-
-                    b.Property<string>("Message");
+                    b.Property<string>("Message")
+                        .HasColumnName("Message");
 
                     b.Property<int?>("ParentPostId");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnName("Updated");
 
                     b.HasKey("Id");
 
@@ -119,6 +123,86 @@ namespace Diffen.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Votes");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.Chronicle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("HeaderFileName");
+
+                    b.Property<string>("Slug");
+
+                    b.Property<string>("Text");
+
+                    b.Property<string>("Title");
+
+                    b.Property<DateTime>("Updated");
+
+                    b.Property<string>("WrittenByUserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WrittenByUserId");
+
+                    b.ToTable("Chronicles");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.Poll", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("CreatedByUserId");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.ToTable("Polls");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.PollSelection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("PollId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollId");
+
+                    b.ToTable("PollSelections");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.PollVote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<int>("PollSelectionId");
+
+                    b.Property<string>("VotedByUserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollSelectionId");
+
+                    b.HasIndex("VotedByUserId");
+
+                    b.ToTable("PollVotes");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Squad.Formation", b =>
@@ -570,6 +654,40 @@ namespace Diffen.Migrations
                         .WithMany("Votes")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.Chronicle", b =>
+                {
+                    b.HasOne("Diffen.Database.Entities.User.AppUser", "WrittenByUser")
+                        .WithMany()
+                        .HasForeignKey("WrittenByUserId");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.Poll", b =>
+                {
+                    b.HasOne("Diffen.Database.Entities.User.AppUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.PollSelection", b =>
+                {
+                    b.HasOne("Diffen.Database.Entities.Other.Poll", "Poll")
+                        .WithMany("Selections")
+                        .HasForeignKey("PollId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.PollVote", b =>
+                {
+                    b.HasOne("Diffen.Database.Entities.Other.PollSelection", "PollSelection")
+                        .WithMany("Votes")
+                        .HasForeignKey("PollSelectionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Diffen.Database.Entities.User.AppUser", "VotedByUser")
+                        .WithMany()
+                        .HasForeignKey("VotedByUserId");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Squad.Lineup", b =>

@@ -7,6 +7,7 @@ namespace Diffen.Database
 	using Entities.User;
 	using Entities.Forum;
 	using Entities.Squad;
+	using Entities.Other;
 
 	public sealed class DiffenDbContext : IdentityDbContext<AppUser>
 	{
@@ -31,6 +32,11 @@ namespace Diffen.Database
 		public DbSet<Lineup> Lineups { get; set; }
 		public DbSet<PlayerToLineup> PlayersToLineups { get; set; }
 		public DbSet<PlayerToPosition> PlayersToPositions { get; set; }
+
+		public DbSet<Poll> Polls { get; set; }
+		public DbSet<PollSelection> PollSelections { get; set; }
+		public DbSet<PollVote> PollVotes { get; set; }
+		public DbSet<Chronicle> Chronicles { get; set; }
 
 		public DiffenDbContext(IConfigurationRoot configuration, DbContextOptions options) : base(options)
 		{

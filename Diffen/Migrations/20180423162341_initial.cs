@@ -205,6 +205,31 @@ namespace Diffen.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Chronicles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Created = table.Column<DateTime>(nullable: false),
+                    HeaderFileName = table.Column<string>(nullable: true),
+                    Slug = table.Column<string>(nullable: true),
+                    Text = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
+                    Updated = table.Column<DateTime>(nullable: false),
+                    WrittenByUserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Chronicles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Chronicles_AspNetUsers_WrittenByUserId",
+                        column: x => x.WrittenByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Invites",
                 columns: table => new
                 {
@@ -277,6 +302,27 @@ namespace Diffen.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Polls",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Created = table.Column<DateTime>(nullable: false),
+                    CreatedByUserId = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Polls", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Polls_AspNetUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Posts",
                 columns: table => new
                 {
@@ -284,9 +330,9 @@ namespace Diffen.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Created = table.Column<DateTime>(nullable: false),
                     CreatedByUserId = table.Column<string>(nullable: true),
-                    Edited = table.Column<DateTime>(nullable: true),
                     Message = table.Column<string>(nullable: true),
-                    ParentPostId = table.Column<int>(nullable: true)
+                    ParentPostId = table.Column<int>(nullable: true),
+                    Updated = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -401,6 +447,26 @@ namespace Diffen.Migrations
                         name: "FK_PlayersToPositions_Positions_PositionId",
                         column: x => x.PositionId,
                         principalTable: "Positions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PollSelections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    PollId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PollSelections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PollSelections_Polls_PollId",
+                        column: x => x.PollId,
+                        principalTable: "Polls",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -560,6 +626,33 @@ namespace Diffen.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PollVotes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Created = table.Column<DateTime>(nullable: false),
+                    PollSelectionId = table.Column<int>(nullable: false),
+                    VotedByUserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PollVotes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PollVotes_PollSelections_PollSelectionId",
+                        column: x => x.PollSelectionId,
+                        principalTable: "PollSelections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PollVotes_AspNetUsers_VotedByUserId",
+                        column: x => x.VotedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -598,6 +691,11 @@ namespace Diffen.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chronicles_WrittenByUserId",
+                table: "Chronicles",
+                column: "WrittenByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FavoritePlayers_PlayerId",
@@ -678,6 +776,26 @@ namespace Diffen.Migrations
                 column: "PositionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Polls_CreatedByUserId",
+                table: "Polls",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PollSelections_PollId",
+                table: "PollSelections",
+                column: "PollId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PollVotes_PollSelectionId",
+                table: "PollVotes",
+                column: "PollSelectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PollVotes_VotedByUserId",
+                table: "PollVotes",
+                column: "VotedByUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Posts_CreatedByUserId",
                 table: "Posts",
                 column: "CreatedByUserId");
@@ -744,6 +862,9 @@ namespace Diffen.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Chronicles");
+
+            migrationBuilder.DropTable(
                 name: "FavoritePlayers");
 
             migrationBuilder.DropTable(
@@ -763,6 +884,9 @@ namespace Diffen.Migrations
 
             migrationBuilder.DropTable(
                 name: "PlayersToPositions");
+
+            migrationBuilder.DropTable(
+                name: "PollVotes");
 
             migrationBuilder.DropTable(
                 name: "SavedPosts");
@@ -792,10 +916,16 @@ namespace Diffen.Migrations
                 name: "Positions");
 
             migrationBuilder.DropTable(
+                name: "PollSelections");
+
+            migrationBuilder.DropTable(
                 name: "Posts");
 
             migrationBuilder.DropTable(
                 name: "Formations");
+
+            migrationBuilder.DropTable(
+                name: "Polls");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
