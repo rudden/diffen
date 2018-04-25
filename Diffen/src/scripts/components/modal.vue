@@ -8,8 +8,14 @@
                         <h4 class="modal-title">{{ header }}</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true" v-on:click="close">&times;</button>
                     </div>
+                    <div class="modal-body modal-body-scroller" v-if="hasBodyScrollerSlot">
+                        <slot name="scroller"></slot>
+                    </div>
                     <div class="modal-body">
                         <slot name="body"></slot>
+                    </div>
+                    <div class="modal-footer" v-if="hasFooterSlot">
+                        <slot name="footer"></slot>
                     </div>
                 </div>
             </div>
@@ -38,5 +44,19 @@ export default class Modal extends Vue {
             this.closeAction()
         }
     }
+
+    get hasBodyScrollerSlot() {
+        return !!this.$slots.scroller
+    }
+    get hasFooterSlot() {
+        return !!this.$slots.footer
+    }
 }
 </script>
+
+<style lang="scss" scoped>
+.modal-footer {
+    display: flow-root;
+}
+</style>
+

@@ -32,7 +32,7 @@
                                         <span class="icon icon-edit"></span>
                                     </a>
 								</template>
-                                <template slot="body" v-if="post.inEdit">
+                                <template slot="body">
                                     <new-post :post="post" v-bind="{ parentId: post.parentPost ? post.parentPost.id : null }" />
                                 </template>
                             </modal>
@@ -43,13 +43,14 @@
                                         <span class="icon icon-quote"></span>
                                     </a>
 								</template>
-                                <template slot="body" v-if="post.inReply">
+                                <template slot="scroller">
                                     <div class="media-body">
                                         <div class="media-body-text">
                                             <post-main-content :post="post" />
                                         </div>
                                     </div>
-                                    <hr />
+                                </template>
+                                <template slot="body">
                                     <new-post :parent-id="post.id" />
                                 </template>
                             </modal>
@@ -109,12 +110,12 @@ const ModuleMutation = namespace('forum', Mutation)
 const SquadModuleGetter = namespace('squad', Getter)
 const SquadModuleAction = namespace('squad', Action)
 
-import { GET_FILTER, BOOKMARK_POST, SCISSOR_POST, FETCH_PAGED_POSTS, SET_IS_LOADING_POSTS } from '../../modules/forum/types'
+import { GET_FILTER, GET_PAGED_POSTS, BOOKMARK_POST, SCISSOR_POST, FETCH_PAGED_POSTS, SET_IS_LOADING_POSTS } from '../../modules/forum/types'
 import { FETCH_LINEUP } from '../../modules/squad/types'
 
 import { Lineup } from '../../model/squad'
 import { Post, Vote, VoteType, Filter } from '../../model/forum'
-import { ViewModel, Paging } from '../../model/common'
+import { PageViewModel, Paging } from '../../model/common'
 
 import NewPost from './new.vue'
 import Url from '../url.vue'
@@ -140,8 +141,9 @@ import { Stretch as Loader } from 'vue-loading-spinner'
     }
 })
 export default class PostComponent extends Vue {
-    @State(state => state.vm) vm: ViewModel
+    @State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_FILTER) filter: Filter
+    @ModuleGetter(GET_PAGED_POSTS) pagedPosts: Paging<Post>
     @ModuleAction(BOOKMARK_POST) bookmark: (payload: { postId: number }) => Promise<void>
     @ModuleAction(SCISSOR_POST) scissor: (payload: { postId: number }) => Promise<void>
     @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
@@ -156,7 +158,7 @@ export default class PostComponent extends Vue {
     loadingLineup: boolean = false
 
     get loggeInUserIsAdmin(): boolean {
-        return this.vm.loggedInUser.inRoles.includes('Sax' || 'Admin')
+        return this.vm.loggedInUser.inRoles.includes('Scissor' || 'Admin')
     }
     get createdByLoggedInUser(): boolean {
         return this.post.user.id == this.vm.loggedInUser.id ? true : false
@@ -187,13 +189,12 @@ export default class PostComponent extends Vue {
     closePostActionModal() {
         if (this.post) {
             // reload all posts when modal is closed
-            if (this.post.inEdit || this.post.inReply) {
-                this.reloadPosts()
-            }
             if (this.post.inEdit) {
+                this.reloadPosts(this.pagedPosts.currentPage)
                 this.post.inEdit = false
             }
             if (this.post.inReply) {
+                this.reloadPosts(1)
                 this.post.inReply = false
             }
         }
@@ -214,9 +215,9 @@ export default class PostComponent extends Vue {
         this.scissor({ postId: this.post.id }).then(() => this.$forceUpdate())
     }
 
-    reloadPosts() {
+    reloadPosts(pageNumber: number) {
         this.setIsLoadingPosts({ value: true })
-        this.loadPaged({ pageNumber: 1, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
+        this.loadPaged({ pageNumber: pageNumber, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
             .then(() => this.setIsLoadingPosts({ value: false }))
     }
 }
