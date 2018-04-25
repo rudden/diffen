@@ -5,24 +5,28 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarResponsive">
 			<ul class="navbar-nav mr-auto">
+				<li class="nav-item" :class="{ 'active': this.active('home') }">
+					<a class="nav-link" href="/">hem <span class="sr-only">(current)</span></a>
+				</li>
 				<li class="nav-item" :class="{ 'active': this.active('forum') }">
-					<a class="nav-link" href="/forum">forum <span class="sr-only">(current)</span></a>
+					<a class="nav-link" href="/forum">forum</a>
 				</li>
 				<li class="nav-item" :class="{ 'active': this.active('squad') }">
 					<a class="nav-link" href="/squad">trupp</a>
 				</li>
-			</ul>
-			<div class="form-inline float-right d-none d-md-flex">
-				<input id="search_users" class="form-control" type="text" placeholder="sök efter en användare" data-action="grow" :disabled="loading" autocomplete="off">
-				<typeahead v-model="selectedUser" target="#search_users" :data="users" item-key="value" force-select />
-			</div>
-			<ul id="#js-popoverContent" class="nav navbar-nav float-right mr-0 d-none d-md-flex">
-				<li class="nav-item ml-2">
-					<button class="btn btn-default navbar-btn navbar-btn-avatar" data-toggle="popover">
-						<img class="rounded-circle" src="/uploads/avatars/generic/logo.png">
-					</button>
+				<li class="nav-item" :class="{ 'active': this.active('chronicle') }">
+					<a class="nav-link" href="/chronicle">krönikor</a>
+				</li>
+				<li class="navbar-divider"></li>
+				<li class="nav-item" :class="{ 'active': this.active('profile') }">
+					<a class="nav-link" href="/profile">profil</a>
 				</li>
 			</ul>
+			<div class="form-inline">
+				<input id="search_users" class="form-control" type="text" placeholder="sök efter en användare" data-action="grow" :disabled="loading" autocomplete="off">
+				<typeahead v-model="selectedUser" target="#search_users" :data="users" item-key="value" force-select />
+				<a href="/auth/logout" class="btn btn-outline-primary my-2 my-sm-0 ml-3">logga ut</a>
+			</div>
 			<ul class="nav navbar-nav d-none" id="js-popoverContent">
 				<li class="nav-item" :class="{ 'active': this.active('profile') }"><a class="nav-link" href="/profile">visa profil</a></li>
 				<li class="nav-item"><a class="nav-link" href="/auth/logout">logga ut</a></li>
@@ -40,7 +44,7 @@ const ModuleAction = namespace('profile', Action)
 
 import { FETCH_KVP_USERS } from '../../../../modules/profile/types'
 
-import { ViewModel, KeyValuePair } from '../../../../model/common'
+import { ProfileViewModel, PageViewModel, KeyValuePair } from '../../../../model/common'
 
 import { Typeahead } from 'uiv'
 
@@ -50,7 +54,7 @@ import { Typeahead } from 'uiv'
     }
 })
 export default class Navbar extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: PageViewModel
 	@ModuleAction(FETCH_KVP_USERS) loadUsers: () => Promise<KeyValuePair[]>
 
 	loading: boolean = true
@@ -58,23 +62,40 @@ export default class Navbar extends Vue {
 
 	selectedUser: any = ''
 
+	private baseUrl: string
+
 	@Watch('selectedUser')
 		onChange() {
-			console.log(this.selectedUser)
 			if (this.selectedUser && this.selectedUser.key) {
-				window.location.href = 'http://localhost:5000/profile/' + this.selectedUser.key
+				let newUrl: string = `${this.baseUrl}profile/${this.selectedUser.key}`
+				if (window.location.href == newUrl)
+					return
+				this.redirectTo(newUrl)
 			}
 		}
 
 	mounted() {
-		this.loadUsers().then((users: KeyValuePair[]) => {
-			this.users = users
-			this.loading = false
-		})
+		var getUrl = window.location
+		this.baseUrl = getUrl .protocol + '//' + getUrl.host + '/' + getUrl.pathname.split('/')[0]
+		this.loadUsers()
+			.then((users: KeyValuePair[]) => {
+				this.users = users
+				this.loading = false
+				if (this.vm.page == 'profile') {
+					let profileVm = this.vm as ProfileViewModel
+					if (profileVm.selectedUserId) {
+						this.selectedUser = this.users.filter((kvp: KeyValuePair) => kvp.key == profileVm.selectedUserId)[0]
+					}
+				}
+			})
 	}
 
 	active(page: string): boolean {
 		return this.vm ? this.vm.page == page ? true : false : false
+	}
+
+	redirectTo(href: string): void {
+		window.location.href = href
 	}
 }
 </script>
