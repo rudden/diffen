@@ -119,18 +119,32 @@ namespace Diffen.Controllers.Api
 			return _pmRepository.GetPmsSentFromUserToUserAsync(userId, to);
 		}
 
-		[HttpGet, Route("{userId}/pm/users")]
+		[HttpGet("{userId}/pm/users")]
 		public Task<List<KeyValuePair<string, string>>> GetUsersThatUserHasConversationWith(string userId)
 		{
 			_logger.Debug("Requesting to get a list of users in the form av keyvaluepair that the selected user has a conversation with (personal message)");
 			return _pmRepository.GetUsersWithConversationForUserAsKeyValuePairAsync(userId);
 		}
 
-		[HttpPost, Route("pm/create")]
+		[HttpPost("pm/create")]
 		public Task<List<Result>> CreatePm([FromBody] Models.User.CRUD.PersonalMessage pm)
 		{
 			_logger.Debug("Requesting to create a personal message");
 			return _pmRepository.CreatePersonalMessageAsync(pm);
+		}
+
+		[HttpPost("{userId}/avatar/{fileName}")]
+		public Task<List<Result>> UpdateAvatarFileName(string userId, string fileName)
+		{
+			_logger.Debug("Requesting to update avatar for user with id {userId}", userId);
+			return _userRepository.UpdateAvatarFileNameForUserWithIdAsync(userId, fileName);
+		}
+
+		[HttpDelete("{userId}/avatar")]
+		public Task<List<Result>> DeleteAvatarForUser(string userId)
+		{
+			_logger.Debug("Requesting to delete avatar for user with id {userId}", userId);
+			return _userRepository.ResetUsersAvatarToGenericAsync(userId);
 		}
 	}
 }
