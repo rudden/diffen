@@ -17,6 +17,7 @@ namespace Diffen.Database
 	using Entities.User;
 	using Entities.Squad;
 	using Entities.Forum;
+	using Entities.Other;
 
 	public class Initializer
 	{
@@ -45,6 +46,7 @@ namespace Diffen.Database
 			await SeedVotesOnPostsAsync(dbContext);
 			await SeedUserFiltersAsync(dbContext);
 			await SeedScissoredPostsAsync(dbContext);
+			await SeedPollsAsync(dbContext);
 		}
 
 		private static async Task SeedUsersAndNickNamesAsync(DiffenDbContext dbContext, UserManager<AppUser> userManager)
@@ -929,6 +931,56 @@ namespace Diffen.Database
 					Created = RandomDateTime.Get(p.Created, p.Created.AddMinutes(30))
 				});
 				dbContext.ScissoredPosts.AddRange(scissoredPosts);
+				await dbContext.SaveChangesAsync();
+			}
+		}
+
+		private static async Task SeedPollsAsync(DiffenDbContext dbContext)
+		{
+			if (!dbContext.Polls.Any())
+			{
+				foreach (var pollItem in PollList.All())
+				{
+					var user = dbContext.Users.PickRandom();
+					var created = RandomDateTime.Get(user.Joined, DateTime.Now);
+					var poll = new Poll
+					{
+						Name = pollItem.Name,
+						CreatedByUserId = user.Id,
+						Created = created
+					};
+					dbContext.Polls.Add(poll);
+					await dbContext.SaveChangesAsync();
+					foreach (var selectionItem in pollItem.Selections)
+					{
+						var selection = new PollSelection
+						{
+							Name = selectionItem.Name,
+							PollId = poll.Id
+						};
+						dbContext.PollSelections.Add(selection);
+						await dbContext.SaveChangesAsync();
+					}
+				}
+
+				for (var i = 0; i < 3; i++)
+				{
+					foreach (var poll in dbContext.Polls.Include(x => x.Selections).ThenInclude(x => x.Votes))
+					{
+						for (var q = 0; q < 5; q++)
+						{
+							var selection = poll.Selections.PickRandom();
+							var user = dbContext.Users.Where(x => x.Id != poll.CreatedByUserId && !selection.Votes.Select(y => y.VotedByUserId).Contains(x.Id)).PickRandom();
+							var vote = new PollVote
+							{
+								PollSelectionId = selection.Id,
+								VotedByUserId = user.Id,
+								Created = poll.Created.AddDays(new Random().Next(1, 7))
+							};
+							dbContext.PollVotes.Add(vote);
+						}
+					}
+				}
 				await dbContext.SaveChangesAsync();
 			}
 		}
