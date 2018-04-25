@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="profile-header" style="background-image: url(/background.jpg);" v-if="!loading">
+		<div class="profile-header" style="background-image: url(/bg.jpg);" v-if="!loading">
 			<user-component />
 			<nav class="profile-header-nav">
 				<ul class="nav nav-tabs justify-content-center">
@@ -26,7 +26,8 @@ const ModuleAction = namespace('profile', Action)
 const ModuleMutation = namespace('profile', Mutation)
 
 import { User } from '../../../model/profile/'
-import { ViewModel } from '../../../model/common'
+import { ProfileViewModel, NavItem } from '../../../model/common'
+import { Component as VueComponent } from 'vue/types/options'
 
 import { GET_USER, FETCH_USER, SET_USER } from '../../../modules/profile/types'
 
@@ -37,23 +38,13 @@ import FilterComponent from './filter.vue'
 import Posts from './posts.vue'
 import UserComponent from './user.vue'
 
-import { Component as VueComponent } from 'vue/types/options'
-
-interface NavItem {
-	id: number,
-	text: string,
-	component: VueComponent,
-	available: boolean,
-	active: boolean
-}
-
 @Component({
 	components: {
 		Lineups, Pm, Invites, FilterComponent, Posts, UserComponent
 	}
 })
 export default class Wrapper extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: ProfileViewModel
 	@ModuleGetter(GET_USER) user: User
 	@ModuleAction(FETCH_USER) loadUser: (payload: { id: string }) => Promise<void>
 	@ModuleMutation(SET_USER) setUser: (user: User) => void
@@ -95,15 +86,15 @@ export default class Wrapper extends Vue {
 		this.navItems = [
 			{
 				id: 1,
-				text: 'startelvor',
-				component: Lineups,
+				text: 'pm',
+				component: Pm,
 				available: true,
 				active: true
 			},
 			{
 				id: 2,
-				text: 'pm',
-				component: Pm,
+				text: 'startelvor',
+				component: Lineups,
 				available: true,
 				active: false
 			},

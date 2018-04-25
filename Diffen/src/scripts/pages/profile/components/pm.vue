@@ -72,7 +72,7 @@ const ModuleGetter = namespace('profile', Getter)
 const ModuleAction = namespace('profile', Action)
 const ModuleMutation = namespace('profile', Mutation)
 
-import { ViewModel, KeyValuePair, Result, ResultType } from '../../../model/common'
+import { ProfileViewModel, KeyValuePair, Result, ResultType } from '../../../model/common'
 import { PersonalMessage } from '../../../model/profile'
 import { PersonalMessage as CrudPm } from '../../../model/profile/crud'
 
@@ -89,7 +89,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 	}
 })
 export default class Pm extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: ProfileViewModel
 	@ModuleAction(FETCH_KVP_USERS) loadUsers: () => Promise<KeyValuePair[]>
 	@ModuleAction(FETCH_CONVERSATION_KVP_USERS) loadConversationUsers: (payload: { userId: string }) => Promise<KeyValuePair[]>
 	@ModuleAction(FETCH_PERSONAL_MESSAGES) loadPms: (payload: { to?: string }) => Promise<PersonalMessage[]>
@@ -150,10 +150,6 @@ export default class Pm extends Vue {
 						this.$forceUpdate()
 					})
 			})
-	}
-
-	dismiss(type: ResultType) {
-		this.results = this.results.filter((r: Result) => r.type != type)
 	}
 }
 </script>

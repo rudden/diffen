@@ -58,7 +58,7 @@
 						<div class="form-group">
 							<input type="email" class="form-control" v-model="newInvite.email" placeholder="personen@mail.com" required />
 						</div>
-						<results :items="results" :dismiss="dismiss" class="mb-3" />
+						<results :items="results" class="mb-3" />
 						<div class="row">
 							<div class="col">
 								<button class="btn btn-success btn-block btn-sm" data-dismiss="modal" :disabled="!canSend" v-on:click="send">skicka</button>
@@ -79,7 +79,7 @@ import { Getter, Action, State, namespace } from 'vuex-class'
 const ModuleGetter = namespace('profile', Getter)
 const ModuleAction = namespace('profile', Action)
 
-import { ViewModel, Result, ResultType } from '../../../model/common'
+import { PageViewModel, Result, ResultType } from '../../../model/common'
 import { Invite as CrudInvite } from '../../../model/profile/crud'
 import { Invite } from '../../../model/profile'
 
@@ -95,7 +95,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 	}
 })
 export default class Invites extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: PageViewModel
 	@ModuleAction(FETCH_INVITES) loadInvites: () => Promise<Invite[]>
 	@ModuleAction(CREATE_INVITE) createInvite: (payload: { invite: CrudInvite }) => Promise<Result[]>
 
@@ -108,7 +108,7 @@ export default class Invites extends Vue {
 	newInvite: CrudInvite = new CrudInvite()
 
 	get isAdmin(): boolean {
-		return this.vm.loggedInUser.inRoles.some((role: string) => role == 'Admin' || role == 'Sax')
+		return this.vm.loggedInUser.inRoles.some((role: string) => role == 'Admin' || role == 'Scissor')
 	}
 	get canSend(): boolean {
     	var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -127,10 +127,6 @@ export default class Invites extends Vue {
 				this.results = results
 				this.loading = false
 			})
-	}
-
-	dismiss(type: ResultType) {
-		this.results = this.results.filter((r: Result) => r.type != type)
 	}
 }
 </script>

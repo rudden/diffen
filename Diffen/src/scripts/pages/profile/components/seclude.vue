@@ -12,7 +12,7 @@
                         <div class="form-group">
                             <date-picker v-model="date" :config="dpConfig" />
                         </div>
-                        <results :items="results" :dismiss="dismiss" class="mb-3" />
+                        <results :items="results" class="mb-3" />
                         <div class="form-group mb-0">
                             <div class="row">
                                 <div class="col">
@@ -46,7 +46,7 @@ const ModuleAction = namespace('profile', Action)
 import { User } from '../../../model/profile/'
 import { User as CrudUser } from '../../../model/profile/crud'
 import { Player } from '../../../model/squad/'
-import { ViewModel, Result, ResultType } from '../../../model/common'
+import { PageViewModel, Result, ResultType } from '../../../model/common'
 
 import Modal from '../../../components/modal.vue'
 import Results from '../../../components/results.vue'
@@ -70,7 +70,7 @@ import {
     }
 })
 export default class Seclude extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: PageViewModel
 	@ModuleGetter(GET_USER) user: User
 	@ModuleAction(FETCH_USER) loadUser: (payload: { id: string }) => Promise<void>
     @ModuleAction(SECLUDE_USER) secludeUser: (payload: { userId: string, to: string }) => Promise<Result[]>
@@ -104,7 +104,7 @@ export default class Seclude extends Vue {
         return this.vm.loggedInUser.inRoles.some(role => role == 'Admin')
     }
     get selectedUserIsScissorOrAdmin(): boolean {
-        return this.user.inRoles.some(role => role == 'Admin' || role == 'Sax')
+        return this.user.inRoles.some(role => role == 'Admin' || role == 'Scissor')
     }
 
     seclude() {
@@ -116,10 +116,6 @@ export default class Seclude extends Vue {
                 this.loading = false
             })
     }
-    
-    dismiss(type: ResultType) {
-		this.results = this.results.filter((r: Result) => r.type != type)
-	}
 }
 </script>
 

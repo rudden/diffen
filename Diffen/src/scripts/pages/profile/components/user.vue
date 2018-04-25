@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </template>
-            <results :items="results" :dismiss="dismiss" />
+            <results :items="results" />
         </div>
         <template v-else>
             <loader v-bind="{ background: '#699ED0' }" />
@@ -74,7 +74,7 @@ const SquadModuleAction = namespace('squad', Action)
 import { User } from '../../../model/profile/'
 import { User as CrudUser } from '../../../model/profile/crud'
 import { Player } from '../../../model/squad/'
-import { ViewModel, Result, ResultType } from '../../../model/common'
+import { PageViewModel, Result, ResultType } from '../../../model/common'
 
 import Seclude from './seclude.vue'
 import Modal from '../../../components/modal.vue'
@@ -101,7 +101,7 @@ import {
     }
 })
 export default class UserComponent extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: PageViewModel
 	@ModuleGetter(GET_USER) user: User
 	@ModuleAction(FETCH_USER) loadUser: (payload: { id: string }) => Promise<void>
 	@ModuleAction(FETCH_ROLES) loadRoles: () => Promise<string[]>

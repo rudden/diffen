@@ -32,7 +32,7 @@ const ModuleGetter = namespace('profile', Getter)
 const ModuleAction = namespace('profile', Action)
 
 import { Post } from '../../../model/forum'
-import { ViewModel, Paging } from '../../../model/common'
+import { ProfileViewModel, Paging } from '../../../model/common'
 
 import { GET_CREATED_POSTS, GET_SAVED_POSTS, FETCH_POSTS, FETCH_SAVED_POSTS } from '../../../modules/profile/types'
 
@@ -47,7 +47,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 	}
 })
 export default class Posts extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: ProfileViewModel
 	@ModuleGetter(GET_CREATED_POSTS) createdPosts: Paging<Post>
 	@ModuleGetter(GET_SAVED_POSTS) savedPosts: Paging<Post>
 	@ModuleAction(FETCH_POSTS) loadPosts: (payload: { userId: string, pageNumber: number }) => Promise<void>

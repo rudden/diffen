@@ -56,7 +56,7 @@
             <div class="alert alert-danger" v-if="takenKitNumber">
                 tröjnumret är upptaget
             </div>
-            <results :items="results" :dismiss="dismiss" class="mb-3" />
+            <results :items="results" class="mb-3" />
             <div class="row">
                 <div class="col">
                     <button class="btn btn-success btn-block btn-sm" :disabled="!canSave" v-on:click="onSave">spara</button>
@@ -77,7 +77,7 @@ import { Getter, Action, State, namespace } from 'vuex-class'
 const ModuleGetter = namespace('squad', Getter)
 const ModuleAction = namespace('squad', Action)
 
-import { ViewModel, Result, ResultType } from '../../../model/common'
+import { PageViewModel, Result, ResultType } from '../../../model/common'
 import { Player, Position } from '../../../model/squad'
 import { Player as CrudPlayer } from '../../../model/squad/crud'
 
@@ -101,7 +101,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 	}
 })
 export default class FormComponent extends Vue {
-    @State(state => state.vm) vm: ViewModel
+    @State(state => state.vm) vm: PageViewModel
 	@ModuleGetter(GET_PLAYERS) players: Player[]
 	@ModuleGetter(GET_POSITIONS) positions: Position[]
 	@ModuleAction(FETCH_PLAYERS) loadPlayers: () => Promise<void>
@@ -125,7 +125,6 @@ export default class FormComponent extends Vue {
 		if (player) {
 			if (player.kitNumber == this.crudPlayer.kitNumber)
 				return false
-			return this.players.map((p: Player) => p.kitNumber).includes(parseInt(this.crudPlayer.kitNumber.toString()))
 		}
         return this.players.map((p: Player) => p.kitNumber).includes(parseInt(this.crudPlayer.kitNumber.toString()))
 	}
@@ -168,10 +167,6 @@ export default class FormComponent extends Vue {
 			}
 		}
     }
-    
-    dismiss(type: ResultType) {
-		this.results = this.results.filter((r: Result) => r.type != type)
-	}
 }
 </script>
 

@@ -34,7 +34,7 @@
 								</div>
 							</div>
 						</div>
-						<results :items="results" :dismiss="dismiss" class="mb-3" />
+						<results :items="results" class="mb-3" />
 						<div class="form-group mb-0">
 							<div class="row">
 								<div class="col">
@@ -61,7 +61,7 @@ const ModuleGetter = namespace('profile', Getter)
 const ModuleAction = namespace('profile', Action)
 const ModuleMutation = namespace('profile', Mutation)
 
-import { ViewModel, KeyValuePair, Result, ResultType } from '../../../model/common'
+import { PageViewModel, KeyValuePair, Result, ResultType } from '../../../model/common'
 import { Filter } from '../../../model/profile';
 
 import { GET_USER, FETCH_USER, FETCH_KVP_USERS, CHANGE_FILTER } from '../../../modules/profile/types'
@@ -77,7 +77,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 	}
 })
 export default class FilterComponent extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: PageViewModel
 	@ModuleAction(FETCH_KVP_USERS) loadUsers: () => Promise<KeyValuePair[]>
 	@ModuleAction(CHANGE_FILTER) changeFilter: (payload: { userId: string, filter: Filter }) => Promise<Result[]>
 
@@ -124,10 +124,6 @@ export default class FilterComponent extends Vue {
 			this.results = results
 			this.loading = false
 		})
-	}
-
-	dismiss(type: ResultType) {
-		this.results = this.results.filter((r: Result) => r.type != type)
 	}
 }
 </script>

@@ -13,8 +13,6 @@ const ModuleGetter = namespace('profile', Getter)
 const ModuleAction = namespace('profile', Action)
 const ModuleMutation = namespace('profile', Mutation)
 
-import { ViewModel } from '../../../model/common'
-
 import LineupComponent from '../../../components/lineups/lineups.vue'
 
 @Component({
@@ -22,7 +20,5 @@ import LineupComponent from '../../../components/lineups/lineups.vue'
 		LineupComponent
 	}
 })
-export default class Lineups extends Vue {
-	@State(state => state.vm) vm: ViewModel
-}
+export default class Lineups extends Vue {}
 </script>

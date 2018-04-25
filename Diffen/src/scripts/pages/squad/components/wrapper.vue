@@ -75,7 +75,7 @@ import { Getter, Action, State, namespace } from 'vuex-class'
 const ModuleGetter = namespace('squad', Getter)
 const ModuleAction = namespace('squad', Action)
 
-import { ViewModel, Result, ResultType } from '../../../model/common'
+import { PageViewModel, Result, ResultType } from '../../../model/common'
 import { Player, Position } from '../../../model/squad'
 import { Player as CrudPlayer } from '../../../model/squad/crud'
 
@@ -97,7 +97,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 	}
 })
 export default class Wrapper extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: PageViewModel
 	@ModuleGetter(GET_PLAYERS) players: Player[]
 	@ModuleAction(FETCH_PLAYERS) loadPlayers: () => Promise<void>
 	@ModuleAction(FETCH_POSITIONS) loadPositions: () => Promise<void>
