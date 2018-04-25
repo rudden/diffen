@@ -83,3 +83,35 @@
 	opacity: 0.4;
 	pointer-events: none;
 }
+
+div.flow-root {
+	display: flow-root;
+}
+
+/* navbar */
+.navbar-divider {
+	border-left: 1px solid white;
+	margin: 0.3rem 0.75rem;
+}
+@media (max-width: 768px) {
+	.navbar {
+		.form-inline {
+			margin-top: 22px;
+			a.btn {
+				width: 100%;
+				display: block;
+				margin-left: 0 !important;
+			}
+		}
+		.dropdown.open {
+			margin-top: -0.7rem !important;
+		}
+	}
+	.navbar-divider {
+		border-top: 1px solid white;
+		border-left: none;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		width: 15%;
+	}
+}
