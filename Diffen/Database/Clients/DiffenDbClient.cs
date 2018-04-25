@@ -12,6 +12,7 @@ namespace Diffen.Database.Clients
 	using Entities.User;
 	using Entities.Forum;
 	using Entities.Squad;
+	using Entities.Other;
 	using Helpers.Extensions;
 
 	public class DiffenDbClient : IDiffenDbClient
@@ -477,6 +478,102 @@ namespace Diffen.Database.Clients
 				});
 			}
 			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<List<Poll>> GetPollsAsync()
+		{
+			return _dbContext.Polls.IncludeAll().OrderByDescending(x => x.Created).ToListAsync();
+		}
+
+		public Task<List<Poll>> GetActivePollsAsync()
+		{
+			return _dbContext.Polls.IncludeAll().Where(poll => poll.Created.AddDays(7) >= DateTime.Now).OrderByDescending(x => x.Created).ToListAsync();
+		}
+
+		public Task<List<Poll>> GetLastNthActivePollsAsync(int amount = 5)
+		{
+			return _dbContext.Polls.IncludeAll().Where(poll => poll.Created.AddDays(7) >= DateTime.Now).OrderByDescending(x => x.Created).Take(amount).ToListAsync();
+		}
+
+		public Task<List<Poll>> GetPollsOnUserIdAsync(string userId)
+		{
+			return _dbContext.Polls.IncludeAll().Where(poll => poll.CreatedByUserId == userId).OrderByDescending(x => x.Created).ToListAsync();
+		}
+
+		public Task<Poll> GetPollOnIdAsync(int pollId)
+		{
+			return _dbContext.Polls.IncludeAll().FirstOrDefaultAsync(poll => poll.Id == pollId);
+		}
+
+		public Task<bool> CreatePollAsync(Poll poll)
+		{
+			_dbContext.Polls.Add(poll);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<bool> CreatePollSelectionsAsync(IEnumerable<PollSelection> selections)
+		{
+			_dbContext.PollSelections.AddRange(selections);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<bool> CreateVoteOnPollAsync(PollVote vote)
+		{
+			_dbContext.PollVotes.Add(vote);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<List<Chronicle>> GetChroniclesAsync()
+		{
+			return _dbContext.Chronicles.IncludeAll().OrderByDescending(x => x.Created).ToListAsync();
+		}
+
+		public Task<List<Chronicle>> GetChroniclesOnUserIdAsync(string userId)
+		{
+			return _dbContext.Chronicles.IncludeAll().Where(x => x.WrittenByUserId == userId).OrderByDescending(x => x.Created).ToListAsync();
+		}
+
+		public Task<Chronicle> GetChronicleOnIdAsync(int chronicleId)
+		{
+			return _dbContext.Chronicles.IncludeAll().FirstOrDefaultAsync(x => x.Id == chronicleId);
+		}
+
+		public Task<Chronicle> GetChronicleOnSlugAsync(string slug)
+		{
+			return _dbContext.Chronicles.IncludeAll().FirstOrDefaultAsync(x => x.Slug == slug);
+		}
+
+		public Task<Chronicle> GetLastAddedChronicleAsync()
+		{
+			return _dbContext.Chronicles.IncludeAll().OrderByDescending(x => x.Created).FirstOrDefaultAsync();
+		}
+
+		public Task<bool> CreateChronicleAsync(Chronicle chronicle)
+		{
+			_dbContext.Chronicles.Add(chronicle);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public async Task<bool> UpdateChronicleAsync(Chronicle chronicle)
+		{
+			chronicle.Updated = DateTime.Now;
+			_dbContext.Chronicles.Update(chronicle);
+			_dbContext.Entry(chronicle).State = EntityState.Modified;
+			_dbContext.Entry(chronicle).Property(x => x.HeaderFileName).IsModified = false;
+			_dbContext.Entry(chronicle).Property(x => x.Created).IsModified = false;
+			var result = await CommitedResultIsSuccessfulAsync();
+			_dbContext.Entry(chronicle).State = EntityState.Detached;
+			return result;
+		}
+
+		public async Task<bool> SetHeaderFileNameOnChronicleAsync(Chronicle chronicle)
+		{
+			_dbContext.Chronicles.Update(chronicle);
+			_dbContext.Entry(chronicle).State = EntityState.Modified;
+			_dbContext.Entry(chronicle).Property(x => x.Created).IsModified = false;
+			var result = await CommitedResultIsSuccessfulAsync();
+			_dbContext.Entry(chronicle).State = EntityState.Detached;
+			return result;
 		}
 
 		private async Task<bool> CommitedResultIsSuccessfulAsync()

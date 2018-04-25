@@ -6,6 +6,7 @@ namespace Diffen.Database.Clients.Contracts
 	using Entities.User;
 	using Entities.Forum;
 	using Entities.Squad;
+	using Entities.Other;
 
 	public interface IDiffenDbClient
 	{
@@ -78,5 +79,25 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> UpdatePlayerAsync(Player player);
 		Task<bool> DeleteFavoritePlayerRelationToUserForPlayerAsync(int playerId);
 		Task<bool> UpdateAvailablePositionsForPlayerAsync(int playerId, IEnumerable<int> positionIds);
+
+		// Poll Related Requests
+		Task<List<Poll>> GetPollsAsync();
+		Task<List<Poll>> GetActivePollsAsync();
+		Task<List<Poll>> GetLastNthActivePollsAsync(int amount = 5);
+		Task<List<Poll>> GetPollsOnUserIdAsync(string userId);
+		Task<Poll> GetPollOnIdAsync(int pollId);
+		Task<bool> CreatePollAsync(Poll poll);
+		Task<bool> CreatePollSelectionsAsync(IEnumerable<PollSelection> selections);
+		Task<bool> CreateVoteOnPollAsync(PollVote vote);
+
+		// Chronicle Related Requests
+		Task<List<Chronicle>> GetChroniclesAsync();
+		Task<List<Chronicle>> GetChroniclesOnUserIdAsync(string userId);
+		Task<Chronicle> GetLastAddedChronicleAsync();
+		Task<Chronicle> GetChronicleOnIdAsync(int chronicleId);
+		Task<Chronicle> GetChronicleOnSlugAsync(string slug);
+		Task<bool> CreateChronicleAsync(Chronicle chronicle);
+		Task<bool> UpdateChronicleAsync(Chronicle chronicle);
+		Task<bool> SetHeaderFileNameOnChronicleAsync(Chronicle chronicle);
 	}
 }
