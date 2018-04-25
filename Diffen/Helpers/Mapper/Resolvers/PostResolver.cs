@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Http;
@@ -12,7 +13,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 
 	public class PostResolver : 
 		ITypeConverter<Database.Entities.Forum.Post, Models.Forum.Post>,
-		ITypeConverter<Database.Entities.Forum.Post, Models.Forum.ParentPost>, 
+		ITypeConverter<Database.Entities.Forum.Post, Models.Forum.ParentPost>,
 		ITypeConverter<Database.Entities.Forum.Vote, Models.Forum.Vote>, 
 		ITypeConverter<Models.Forum.CRUD.Post, Database.Entities.Forum.Post>, 
 		ITypeConverter<Models.Forum.CRUD.Vote, Database.Entities.Forum.Vote>
@@ -36,7 +37,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				ParentPost = source.ParentPost != null ? context.Mapper.Map<Models.Forum.ParentPost>(source.ParentPost) : null,
 				LineupId = source.Lineup?.LineupId,
 				Since = source.Created.GetSinceStamp(),
-				Edited = source.Edited.GetSinceStamp(),
+				Updated = source.Updated.GetSinceStamp(),
 				IsScissored = source.Scissored != null,
 				LoggedInUserCanVote = source.User.Id != _loggedInUserId && source.Votes.All(v => v.CreatedByUserId != _loggedInUserId)
 			};
@@ -44,11 +45,13 @@ namespace Diffen.Helpers.Mapper.Resolvers
 
 		public Models.Forum.ParentPost Convert(Database.Entities.Forum.Post source, Models.Forum.ParentPost destination, ResolutionContext context)
 		{
+			var parent = source.ParentPost;
 			return new Models.Forum.ParentPost
 			{
 				Id = source.Id,
 				Message = source.Message,
 				User = context.Mapper.Map<Models.Forum.User>(source.User),
+				Parent = parent != null ? context.Mapper.Map<Models.Forum.ParentPost>(parent) : null,
 				Since = source.Created.GetSinceStamp()
 			};
 		}
@@ -58,7 +61,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			return new Models.Forum.Vote
 			{
 				Type = source.Type,
-				ByNickName = source.User.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick ?? "anonymous"
+				ByNickName = source.User.NickNames.Current() ?? "anonymous"
 			};
 		}
 
@@ -80,7 +83,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Type = source.Type,
 				PostId = source.PostId,
 				CreatedByUserId = source.CreatedByUserId,
-				Created = System.DateTime.Now
+				Created = DateTime.Now
 			};
 		}
 	}
