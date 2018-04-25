@@ -7,7 +7,7 @@ export class Post {
     createdByUserId: string
     parentPostId?: number
     urlTipHref?: string
-    lineup?: Lineup
+    lineupId: number = 0
 }
 
 export class Vote {

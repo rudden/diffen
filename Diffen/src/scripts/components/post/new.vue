@@ -5,14 +5,25 @@
         </div>
         <div class="input-group">
             <input type="text" class="form-control" placeholder="länktips" v-model="newPost.urlTipHref">
+            <template v-if="lineups.length > 0 || noLineupsFound">
+                <select class="form-control ml-2" v-model="newPost.lineupId" :disabled="!lineups.length > 0" @change="changeLineup">
+                    <option value="0">{{ lineups.length > 0 ? 'välj en startelva' : 'hittade inga startelvor' }}</option>
+                    <option v-for="lineup in lineups" :value="lineup.id" :key="lineup.id">{{ lineup.formation.name }}, skapad {{ lineup.created }}</option>
+                </select>
+            </template>
+            <template v-else>
+                <button class="btn btn-primary ml-2" v-on:click="fetchLineups">ladda startelvor</button>
+            </template>
             <div class="input-group-btn">
                 <button class="btn btn-success align-self-stretch ml-2" v-on:click="submit" :disabled="!canSubmit">{{ btnText }}</button>
             </div>
         </div>
-        <div class="mt-3">
-            <lineups v-bind="{ preSelectedLineupId: post ? post.lineupId ? post.lineupId : 0 : 0 }" />
-        </div>
-        <results :items="results" :dismiss="dismiss" class="pt-3" />
+        <template v-if="newPost.lineupId > 0">
+            <div class="mt-3">
+                <formation-component :formation="selectedLineup.formation" :players="selectedLineup.players" />
+            </div>
+        </template>
+        <results :items="results" class="pt-3" />
     </div>
 </template>
 
@@ -26,18 +37,20 @@ const ModuleAction = namespace('forum', Action)
 const ModuleMutation = namespace('forum', Mutation)
 
 const SquadModuleGetter = namespace('squad', Getter)
+const SquadModuleAction = namespace('squad', Action)
+const SquadModuleMutation = namespace('squad', Mutation)
 
 import { GET_FILTER, CREATE_POST, UPDATE_POST, FETCH_PAGED_POSTS, SET_IS_LOADING_POSTS } from '../../modules/forum/types'
-import { GET_SELECTED_LINEUP } from '../../modules/squad/types'
+import { GET_LINEUPS, GET_SELECTED_LINEUP, FETCH_LINEUPS_ON_USER, SET_SELECTED_LINEUP } from '../../modules/squad/types'
 
 import { Post, Filter } from '../../model/forum'
 import { Post as CrudPost } from '../../model/forum/crud'
-import { ViewModel, Result, ResultType, Paging } from '../../model/common'
+import { PageViewModel, Result, ResultType, Paging } from '../../model/common'
 import { Lineup, PlayerToLineup } from '../../model/squad'
 import { Lineup as CrudLineup } from '../../model/squad/crud'
 
 import Results from '../results.vue'
-import Lineups from '../lineups/lineups.vue'
+import FormationComponent from '../lineups/formation.vue'
 
 @Component({
     props: {
@@ -48,23 +61,27 @@ import Lineups from '../lineups/lineups.vue'
         }
     },
     components: {
-        Results, Lineups
+        Results, FormationComponent
     }
 })
 export default class NewPost extends Vue {
-  	@State(state => state.vm) vm: ViewModel
+  	@State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_FILTER) filter: Filter
     @ModuleAction(CREATE_POST) create: (payload: { post: CrudPost }) => Promise<Result[]>
     @ModuleAction(UPDATE_POST) update: (payload: { post: CrudPost }) => Promise<Result[]>
 	@ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
 	@ModuleMutation(SET_IS_LOADING_POSTS) setIsLoadingPosts: (payload: { value: boolean }) => void
 
+	@SquadModuleGetter(GET_LINEUPS) lineups: Lineup[]
     @SquadModuleGetter(GET_SELECTED_LINEUP) selectedLineup: Lineup
-
+	@SquadModuleAction(FETCH_LINEUPS_ON_USER) loadLineups: (payload: { userId: string }) => Promise<void>
+	@SquadModuleMutation(SET_SELECTED_LINEUP) setSelectedLineup: (lineup: Lineup) => void
+    
     post: Post
     parentId: number
 
     loading: boolean = true
+    noLineupsFound: boolean = false
     newPost: CrudPost = new CrudPost()
     results: Result[] = []
 
@@ -73,6 +90,15 @@ export default class NewPost extends Vue {
             this.newPost.id = this.post.id
             this.newPost.message = this.post.message
             this.newPost.urlTipHref = this.post.urlTipHref
+            if (this.post.lineupId) {
+                this.fetchLineups()
+                    .then(() => {
+                        this.newPost.lineupId = this.post.lineupId ? this.post.lineupId : 0
+                        this.changeLineup()
+                    })
+            } else {
+                this.newPost.lineupId = 0
+            }
         }
         this.newPost.parentPostId = this.parentId == 0 ? undefined : this.parentId
         this.newPost.createdByUserId = this.vm.loggedInUser.id
@@ -86,20 +112,6 @@ export default class NewPost extends Vue {
     get canSubmit() {
         return this.newPost.message ? this.newPost.message.length > 0 ? true : false : false
     }
-    get lineup(): CrudLineup {
-        return {
-            id: this.selectedLineup.id,
-            players: this.selectedLineup.players.map((ptl: PlayerToLineup) => {
-                return {
-                    playerId: ptl.player.id,
-                    positionId: ptl.position.id
-                }
-            }),
-            createdByUserId: this.vm.loggedInUser.id,
-            formationId: this.selectedLineup.formation.id,
-            created: this.selectedLineup.created
-        }
-    }
     get inEditMode() {
         return this.post && this.post.inEdit ? true : false
     }
@@ -107,28 +119,29 @@ export default class NewPost extends Vue {
         return this.parentId > 0 ? true : false
     }
 
+    fetchLineups() {
+		return this.loadLineups({ userId: this.vm.loggedInUser.id }).then(() => this.noLineupsFound = this.lineups.length == 0)
+    }
+    
+    changeLineup() {
+		if (this.newPost.lineupId > 0) 
+			this.setSelectedLineup(this.lineups.filter((l: Lineup) => l.id == this.newPost.lineupId)[0])
+		else
+			this.setSelectedLineup(new Lineup())
+	}
+
     submit() {
         if (!this.inEditMode && !this.inReplyMode) {
             this.setIsLoadingPosts({ value: true })
         }
         new Promise<Result[]>((resolve, reject) => {
             if (this.inEditMode) {
-                if (!this.selectedLineup.id) {
-                    this.newPost.lineup = undefined
-                } else {
-                    if (this.post.lineupId !== this.selectedLineup.id) {
-                        this.newPost.lineup = this.lineup
-                    }
-                }
                 if (this.post.urlTipHref == this.newPost.urlTipHref) {
                     this.newPost.urlTipHref = undefined
                 }
                 this.update({ post: this.newPost }).then((res) => resolve(res))
             }
             else {
-                if (this.selectedLineup.id) {
-                    this.newPost.lineup = this.lineup
-                }
                 this.create({ post: this.newPost }).then((res) => resolve(res))
             }
         }).then((res) => {
@@ -140,17 +153,13 @@ export default class NewPost extends Vue {
             }
         })
     }
-
-    dismiss(type: ResultType) {
-		this.results = this.results.filter((r: Result) => r.type != type)
-	}
 }
 </script>
 
 <style lang="scss" scoped>
 .input-group:nth-child(2) {
     padding-top: 1.5rem;
-    input {
+    input, select, option {
         border-radius: 4px !important;
     }
 }

@@ -91,7 +91,7 @@ namespace Diffen.Repositories
 		public async Task<List<Result>> UpdatePostAsync(Models.Forum.CRUD.Post post)
 		{
 			var updatePost = _mapper.Map<Database.Entities.Forum.Post>(post);
-			updatePost.Edited = DateTime.Now;
+			updatePost.Updated = DateTime.Now;
 
 			var isUpdated = _dbClient.UpdatePostAsync(updatePost);
 			var results = await new List<Result>().Get(isUpdated, ResultMessages.UpdatePost);
@@ -183,34 +183,18 @@ namespace Diffen.Repositories
 				}
 			}
 
-			if (post.Lineup != null)
+			if (post.LineupId > 0)
 			{
-				if (post.Lineup.Id > 0)
+				if (await _dbClient.PostHasALineupConnectedToItAsync(postId))
 				{
-					if (await _dbClient.PostHasALineupConnectedToItAsync(postId))
-					{
-						await _dbClient.DeleteLineupConnectionToPostAsync(postId);
-					}
-					var postToLineup = new Database.Entities.Forum.PostToLineup
-					{
-						PostId = postId,
-						LineupId = post.Lineup.Id
-					};
-					results.Update(await _dbClient.ConnectLineupToPostAsync(postToLineup), ResultMessages.CreateLineupToPost);
+					await _dbClient.DeleteLineupConnectionToPostAsync(postId);
 				}
-				else
+				var postToLineup = new Database.Entities.Forum.PostToLineup
 				{
-					var newLineup = _mapper.Map<Database.Entities.Squad.Lineup>(post.Lineup);
-
-					results.Update(await _dbClient.CreateLineupAsync(newLineup), ResultMessages.CreateLineup);
-
-					var postToLineup = new Database.Entities.Forum.PostToLineup
-					{
-						PostId = postId,
-						LineupId = newLineup.Id
-					};
-					results.Update(await _dbClient.ConnectLineupToPostAsync(postToLineup), ResultMessages.CreateLineupToPost);
-				}
+					PostId = postId,
+					LineupId = post.LineupId
+				};
+				results.Update(await _dbClient.ConnectLineupToPostAsync(postToLineup), ResultMessages.CreateLineupToPost);
 			}
 			else
 			{

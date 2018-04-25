@@ -31,7 +31,6 @@
 				<template v-if="selectedLineupId > 0">
 					<div class="mt-3">
 						<formation-component :formation="selectedLineup.formation" :players="selectedLineup.players" />
-						<results :items="results" :dismiss="dismiss" class="pt-3" />
 					</div>
 				</template>
 				<div class="row mt-3" v-if="inCreate">
@@ -46,6 +45,7 @@
 					<div class="row mt-3">
 						<div class="col">
 							<formation-component :formation="selectedFormation" />
+							<results :items="results" class="pt-3" />
 							<button class="btn btn-success btn-sm btn-block mt-3" :disabled="!canCreate" v-on:click="submit">skapa</button>
 						</div>
 					</div>
@@ -69,7 +69,7 @@ const ModuleMutation = namespace('squad', Mutation)
 
 import { Lineup, Player, Formation } from '../../model/squad/'
 import { Lineup as CrudLineup } from '../../model/squad/crud'
-import { ViewModel, Result, ResultType } from '../../model/common'
+import { ProfileViewModel, Result, ResultType } from '../../model/common'
 
 import Results from '../../components/results.vue'
 import { Stretch as Loader } from 'vue-loading-spinner'
@@ -82,7 +82,6 @@ import {
 	GET_NEW_LINEUP,
 	GET_SELECTED_LINEUP,
 	FETCH_LINEUPS_ON_USER,
-	FETCH_LINEUP_ON_POST,
 	FETCH_LINEUP,
 	FETCH_FORMATIONS,
 	FETCH_PLAYERS,
@@ -106,7 +105,7 @@ import FormationComponent from './formation.vue'
 	}
 })
 export default class Lineups extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: ProfileViewModel
 
 	@ModuleGetter(GET_LINEUPS) lineups: Lineup[]
 	@ModuleGetter(GET_PLAYERS) players: Player[]
@@ -118,7 +117,6 @@ export default class Lineups extends Vue {
 	@ModuleAction(FETCH_FORMATIONS) loadFormations: () => Promise<void>
 	@ModuleAction(FETCH_POSITIONS) loadPositions: () => Promise<void>
 	@ModuleAction(FETCH_LINEUPS_ON_USER) loadLineups: (payload: { userId: string }) => Promise<void>
-    @ModuleAction(FETCH_LINEUP_ON_POST) loadLineupOnPost: (payload: { postId: number }) => Promise<Lineup>
     @ModuleAction(FETCH_LINEUP) loadLineup: (payload: { id: number }) => Promise<Lineup>
 	@ModuleAction(CREATE_LINEUP) create: (payload: { lineup: CrudLineup }) => Promise<Result[]>
 
@@ -138,13 +136,15 @@ export default class Lineups extends Vue {
 
 	mounted() {
 		if (this.preSelectedLineupId > 0) {
-			if (!this.lineups || this.lineups.length == 0) {
-				this.loadLineups({ userId: this.userId })
-					.then(() => {
-						this.selectedLineupId = this.preSelectedLineupId
-						this.changeLineup()
-					})
-			}
+			new Promise<void>((resolve, reject) => {
+				if (!this.lineups || this.lineups.length == 0)
+					this.loadLineups({ userId: this.userId }).then(() => resolve())
+				else
+					resolve()
+			}).then(() => {
+				this.selectedLineupId = this.preSelectedLineupId
+				this.changeLineup()
+			})
 		}
 	}
 
@@ -165,29 +165,23 @@ export default class Lineups extends Vue {
 		this.loading = true
 		this.loadLineups({ userId: this.userId })
 			.then(() => {
-				if (this.lineups.length == 0)
-					this.noLineupsFound = true
-				else
-					this.noLineupsFound = false
+				this.noLineupsFound = this.lineups.length == 0
 				this.loading = false
 			})
 	}
 
 	changeLineup() {
-		if (this.selectedLineupId > 0) {
+		if (this.selectedLineupId > 0) 
 			this.setSelectedLineup(this.lineups.filter((l: Lineup) => l.id == this.selectedLineupId)[0])
-		} else {
+		else
 			this.setSelectedLineup(new Lineup())
-			
-		}
 	}
 
 	changeFormation() {
-		if (this.selectedFormationId > 0) {
+		if (this.selectedFormationId > 0)
 			this.setNewLineup({ formationId: this.selectedFormationId })
-		} else {
+		else
 			this.setNewLineup({ formationId: 0 })
-		}
 	}
 
 	setInCreate(state: boolean): Promise<void> {
@@ -213,8 +207,8 @@ export default class Lineups extends Vue {
 	submit() {
 		if (this.canCreate) {
 			this.loading = true
-			this.create({ lineup: { formationId: this.selectedFormationId, players: this.newLineup.players, createdByUserId: this.vm.loggedInUser.id }
-				}).then((res: Result[]) => {
+			this.create({ lineup: { formationId: this.selectedFormationId, players: this.newLineup.players, createdByUserId: this.vm.loggedInUser.id } })
+				.then((res: Result[]) => {
 					this.loadLineups({ userId: this.userId })
 						.then(() => {
 							this.setInCreate(false)
@@ -227,10 +221,6 @@ export default class Lineups extends Vue {
 						})
 				})
 		}
-	}
-
-	dismiss(type: ResultType) {
-		this.results = this.results.filter((r: Result) => r.type != type)
 	}
 }
 </script>
