@@ -19,12 +19,12 @@ namespace Diffen.Database.Entities.Forum
 		public AppUser User { get; set; }
 		public string CreatedByUserId { get; set; }
 
-		public DateTime Created { get; set; }
-		public DateTime? Edited { get; set; }
-
 		[ForeignKey("ParentPostId")]
 		public virtual Post ParentPost { get; set; }
 		public int? ParentPostId { get; set; }
+
+		public DateTime Created { get; set; }
+		public DateTime? Updated { get; set; }
 
 		// Linked Tables
 		public ICollection<Vote> Votes { get; set; }

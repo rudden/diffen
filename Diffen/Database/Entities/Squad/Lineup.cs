@@ -21,8 +21,9 @@ namespace Diffen.Database.Entities.Squad
 		public AppUser User { get; set; }
 		public string CreatedByUserId { get; set; }
 
-		public ICollection<PlayerToLineup> Players { get; set; }
-
 		public DateTime Created { get; set; }
+
+		// Linked Tables
+		public ICollection<PlayerToLineup> Players { get; set; }
 	}
 }

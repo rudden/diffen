@@ -10,6 +10,8 @@ namespace Diffen.Database.Entities.User
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
+		public string Message { get; set; }
+
 		[ForeignKey("FromUserId")]
 		public AppUser FromUser { get; set; }
 		public string FromUserId { get; set; }
@@ -18,7 +20,6 @@ namespace Diffen.Database.Entities.User
 		public AppUser ToUser { get; set; }
 		public string ToUserId { get; set; }
 
-		public string Message { get; set; }
 		public DateTime Created { get; set; }
 	}
 }
