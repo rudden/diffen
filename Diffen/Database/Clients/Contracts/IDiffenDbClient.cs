@@ -41,6 +41,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> UserHasAlreadyVotedOnPostAsync(int postId, string userId);
 
 		// User Related Requests
+		Task<List<AppUser>> GetUsersAsync();
 		Task<List<AppUser>> GetUsersExceptForLoggedInUserAsync();
 		Task<AppUser> GetUserOnIdAsync(string userId);
 		Task<AppUser> GetUserOnEmailAsync(string userEmail);

@@ -294,6 +294,14 @@ namespace Diffen.Database.Clients
 			return await _dbContext.Votes.CountAsync(x => x.PostId == postId && x.CreatedByUserId == userId) > 0;
 		}
 
+		public Task<List<AppUser>> GetUsersAsync()
+		{
+			return _dbContext.Users
+				.Include(x => x.NickNames)
+				.OrderByDescending(x => x.Joined)
+				.ToListAsync();
+		}
+
 		public Task<List<AppUser>> GetUsersExceptForLoggedInUserAsync()
 		{
 			return _dbContext.Users
