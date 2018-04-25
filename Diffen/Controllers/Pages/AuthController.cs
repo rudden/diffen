@@ -20,17 +20,19 @@ namespace Diffen.Controllers.Pages
 		private readonly IUserRepository _userRepository;
 		private readonly UserManager<AppUser> _userManager;
 		private readonly SignInManager<AppUser> _signInManager;
+		private readonly IUploadRepository _uploadRepository;
 
 		private readonly IHostingEnvironment _environment;
 
 		private readonly ILogger _logger = Log.ForContext<AuthController>();
 
-		public AuthController(IUserRepository userRepository, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IHostingEnvironment environment)
+		public AuthController(IUserRepository userRepository, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IHostingEnvironment environment, IUploadRepository uploadRepository)
 		{
 			_userRepository = userRepository;
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_environment = environment;
+			_uploadRepository = uploadRepository;
 		}
 
 		public IActionResult Login()
@@ -59,7 +61,9 @@ namespace Diffen.Controllers.Pages
 			}
 			if (!string.IsNullOrEmpty(attempt.SecludedUntil) && Convert.ToDateTime(attempt.SecludedUntil) > DateTime.Now)
 			{
-				_logger.Information("Login: User with email {userEmail} tried to login even though he or she is secluded until {secludedUntil}", attempt.Email, attempt.SecludedUntil);
+				_logger.Information(
+					"Login: User with email {userEmail} tried to login even though he or she is secluded until {secludedUntil}",
+					attempt.Email, attempt.SecludedUntil);
 				ModelState.AddModelError("All", $"du är spärrad till och med {attempt.SecludedUntil}");
 				return View();
 			}
@@ -127,17 +131,8 @@ namespace Diffen.Controllers.Pages
 
 					if (vm.Avatar != null)
 					{
-						var uploads = Path.Combine(_environment.WebRootPath, $"uploads\\avatars\\{user.Id}");
-						Directory.CreateDirectory(uploads);
-						if (vm.Avatar.Length > 0)
-						{
-							var path = Path.Combine(uploads, vm.Avatar.FileName);
-							using (var fileStream = new FileStream(path, FileMode.Create))
-							{
-								await vm.Avatar.CopyToAsync(fileStream);
-								await _userRepository.SetSelectedAvatarForUserAsync(user.Id, vm.Avatar.FileName);
-							}
-						}
+						var fileName = await _uploadRepository.UploadFileAsync("avatars", vm.Avatar, user.Id);
+						await _userRepository.UpdateAvatarFileNameForUserWithIdAsync(user.Id, fileName);
 					}
 
 					await _signInManager.SignInAsync(user, isPersistent: false);
