@@ -1,3 +1,11 @@
 .VuePagination__count {
 	margin-bottom: 0;
 }
+
+// hide first and last page-buttons on small devices
+@media (max-width: 768px) {
+	.VuePagination__pagination-item:first-child,
+	.VuePagination__pagination-item:last-child {
+		display: none;
+	}
+}
