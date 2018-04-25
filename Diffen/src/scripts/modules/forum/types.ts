@@ -5,6 +5,7 @@ export const GET_FILTER = 'forum/GET_FILTER'
 export const GET_URLTIP_TOPLIST = 'forum/GET_URLTIP_TOPLIST'
 
 // actions
+export const FETCH_CONVERSATION_ON_POST = 'forum/FETCH_CONVERSATION_ON_POST'
 export const FETCH_PAGED_POSTS = 'forum/FETCH_PAGED_POSTS'
 export const CREATE_POST = 'forum/CREATE_POST'
 export const UPDATE_POST = 'forum/UPDATE_POST'

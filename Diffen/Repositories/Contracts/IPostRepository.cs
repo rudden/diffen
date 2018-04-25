@@ -15,6 +15,7 @@ namespace Diffen.Repositories.Contracts
 		Task<Paging<Post>> GetPagedPostsOnFilterAsync(int pageNumber, int pageSize, Filter filter);
 		Task<Paging<Post>> GetPagedSavedPostsAsync(string userId, int pageNumber, int pageSize = 5);
 		Task<Post> GetPostOnIdAsync(int id);
+		Task<List<Post>> GetConversationOnPostIdAsync(int id);
 		Task<int> CountAllPostsAsync();
 		Task<List<Result>> CreatePostAsync(Models.Forum.CRUD.Post post);
 		Task<List<Result>> UpdatePostAsync(Models.Forum.CRUD.Post post);

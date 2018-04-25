@@ -93,8 +93,68 @@ namespace Diffen.Database.Clients
 
 		public Task<Post> GetPostOnIdAsync(int postId)
 		{
-			return _dbContext.Posts.IncludeAll().FirstOrDefaultAsync(post => post.Id == postId);
+			return _dbContext.Posts.IncludeAll().FirstOrDefaultAsync(x => x.Id == postId);
 		}
+
+		public async Task<List<Post>> GetConversationOnPostIdAsync(int postId)
+		{
+			var list = new List<Post>();
+			var initialPost = await _dbContext.Posts.IncludeAll().FirstOrDefaultAsync(x => x.Id == postId);
+			if (initialPost == null)
+				return new List<Post>();
+			list.Add(initialPost);
+			await LoadConversationAsync(initialPost, list);
+			return list.OrderBy(x => x.Created).ToList();
+		}
+
+		#region Conversation Related Helpers
+		private async Task LoadConversationAsync(Post post, ICollection<Post> posts)
+		{
+			await LoadPostAsync(post, posts, PostRelationType.Child);
+			await LoadPostAsync(post, posts, PostRelationType.Parent);
+		}
+
+		private async Task LoadPostAsync(Post post, ICollection<Post> posts, PostRelationType relationType)
+		{
+			var relationPosts = await LoadPostsOnRelationTypeAsync(post, relationType);
+			if (relationPosts == null || !relationPosts.Any())
+				return;
+
+			foreach (var relationPost in relationPosts)
+			{
+				await AddPostToCollectionAsync(relationPost, posts);
+			}
+		}
+
+		private Task<List<Post>> LoadPostsOnRelationTypeAsync(Post post, PostRelationType relationType)
+		{
+			switch (relationType)
+			{
+				case PostRelationType.Child:
+					return _dbContext.Posts.IncludeAll().Where(x => x.ParentPostId == post.Id).ToListAsync();
+				case PostRelationType.Parent:
+					return _dbContext.Posts.IncludeAll().Where(x => x.Id == post.ParentPostId).ToListAsync();
+				default:
+					return null;
+			}
+		}
+
+		private async Task AddPostToCollectionAsync(Post post, ICollection<Post> posts)
+		{
+			var postIds = posts.Any() ? posts.Select(x => x.Id) : new List<int>();
+			if (postIds.Contains(post.Id))
+				return;
+			posts.Add(post);
+			await LoadConversationAsync(post, posts);
+		}
+
+		public enum PostRelationType
+		{
+			Child,
+			Parent
+		}
+		#endregion
+
 
 		public Task<List<UrlTip>> GetUrlTipsAsync()
 		{

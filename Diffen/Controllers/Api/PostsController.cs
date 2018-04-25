@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 using Serilog;
-using AutoMapper;
 using Newtonsoft.Json;
 
 namespace Diffen.Controllers.Api
@@ -21,7 +20,7 @@ namespace Diffen.Controllers.Api
 
 		private readonly ILogger _logger = Log.ForContext<PostsController>();
 
-		public PostsController(IMapper mapper, IPostRepository postRepository)
+		public PostsController(IPostRepository postRepository)
 		{
 			_postRepository = postRepository;
 		}
@@ -34,10 +33,10 @@ namespace Diffen.Controllers.Api
 		}
 
 		[HttpGet("{postId}")]
-		public Task<Post> Get(int postId)
+		public Task<List<Post>> Get(int postId)
 		{
-			_logger.Debug("Requesting post with id {postId}", postId);
-			return _postRepository.GetPostOnIdAsync(postId);
+			_logger.Debug("Requesting full conversation for post with id {postId}", postId);
+			return _postRepository.GetConversationOnPostIdAsync(postId);
 		}
 
 		[HttpGet("page/{pageNumber}/{pageSize}")]

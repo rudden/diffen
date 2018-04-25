@@ -21,11 +21,18 @@ import {
 	SET_POST_AFTER_VOTE,
 	SET_REMOVE_POST_FROM_LIST,
     SET_URLTIP_TOPLIST,
-	FETCH_URLTIP_TOPLIST
+	FETCH_URLTIP_TOPLIST,
+	FETCH_CONVERSATION_ON_POST
 } from './types'
 
 // export everything compliant to the vuex specification for actions
 export const Actions: ActionTree<State, any> = {
+	[FETCH_CONVERSATION_ON_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<Post[]> => {
+		return new Promise<Post[]>((resolve, reject) => {
+			return axios.get(`${store.rootState.vm.api}/posts/${payload.postId}`)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
 	[FETCH_PAGED_POSTS]: (store: ActionContext<State, any>, payload: { pageNumber: number, pageSize: number, filter: Filter }): Promise<void> => {
 		return axios.get(`${store.rootState.vm.api}/posts/page/${payload.pageNumber}/${payload.pageSize}?filter=${JSON.stringify(payload.filter)}`)
 			.then((res) => store.commit(SET_PAGED_POSTS, res.data)).catch((error) => console.warn(error))

@@ -59,6 +59,9 @@
                             <a v-on:click="scissorPost" v-if="loggeInUserIsAdmin">
                                 · <span class="icon icon-scissors"></span>
                             </a>
+                            <a :href="`/forum/post/${post.id}`" class="no-hover">
+                                · <span class="icon icon-mask"></span>
+                            </a>
                             <voting :post="post" />
                         </div>
                     </template>
@@ -82,6 +85,13 @@
                             </li>
                         </ul>
                     </template>
+                </template>
+                <template v-else>
+                    <div class="message-footer">
+                        <a :href="`/forum/post/${post.id}`" class="no-hover">
+                            <span class="icon icon-mask"></span>
+                        </a>
+                    </div>
                 </template>
             </div>
         </div>
@@ -229,5 +239,8 @@ export default class PostComponent extends Vue {
         opacity: 0.4;
         pointer-events: none;
     }
+}
+.no-hover:hover {
+    text-decoration: none;
 }
 </style>

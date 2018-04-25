@@ -1,27 +1,54 @@
 <template>
-	<div class="container pt-4 pb-5">
-		<div class="row">
-			<left-sidebar />
-			<middle />
-			<right-sidebar />
-		</div>
+	<div class="container pt-3 pb-4" v-if="!loading">
+		<component :is="active.component" v-bind="active.attributes ? active.attributes : {}" />
 	</div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
+import { State, namespace } from 'vuex-class'
 
-import LeftSidebar from './left-sidebar.vue'
-import Middle from './middle.vue'
-import RightSidebar from './right-sidebar.vue'
+import MainComponent from './main.vue'
+import FullConversation from '../../../components/post/full-conversation.vue'
+
+import { ForumViewModel, NavItem } from '../../../model/common/'
+import { Component as VueComponent } from 'vue/types/options'
 
 @Component({
 	components: {
-		LeftSidebar,
-		Middle,
-		RightSidebar
+		MainComponent,
+		FullConversation
 	}
 })
-export default class Wrapper extends Vue {}
+export default class Wrapper extends Vue {
+	@State(state => state.vm) vm: ForumViewModel
+	
+	navItems: NavItem[] = []
+
+	loading: boolean = true
+	
+	get active() {
+		return this.navItems.filter((c: NavItem) => c.active)[0]
+	}
+	
+	mounted() {
+		this.navItems = [
+			{
+				id: 1,
+				component: MainComponent,
+				active: this.vm.selectedPostId == 0 ? true : false
+			},
+			{
+				id: 2,
+				component: FullConversation,
+				attributes: {
+					selectedPostId: this.vm.selectedPostId
+				},
+				active: this.vm.selectedPostId > 0 ? true : false
+			}
+		]
+		this.loading = false
+	}
+}
 </script>

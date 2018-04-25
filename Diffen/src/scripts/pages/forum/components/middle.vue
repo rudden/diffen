@@ -22,7 +22,7 @@ const ModuleMutation = namespace('forum', Mutation)
 import { GET_IS_LOADING_POSTS, GET_PAGED_POSTS, GET_FILTER, FETCH_PAGED_POSTS, SET_IS_LOADING_POSTS, SET_FILTER } from '../../../modules/forum/types'
 
 import { Post, Filter } from '../../../model/forum'
-import { ViewModel, Paging } from '../../../model/common'
+import { PageViewModel, Paging } from '../../../model/common'
 
 import NewPost from '../../../components/post/new.vue'
 
@@ -37,7 +37,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
     }
 })
 export default class Middle extends Vue {
-  	@State(state => state.vm) vm: ViewModel
+  	@State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_IS_LOADING_POSTS) isLoadingPosts: boolean
     @ModuleGetter(GET_FILTER) filter: Filter
     @ModuleGetter(GET_PAGED_POSTS) pagedPosts: Paging<Post>

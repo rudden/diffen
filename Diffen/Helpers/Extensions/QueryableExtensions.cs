@@ -7,6 +7,7 @@ namespace Diffen.Helpers.Extensions
 	using Database.Entities.User;
 	using Database.Entities.Forum;
 	using Database.Entities.Squad;
+	using Database.Entities.Other;
 
 	public static class QueryableExtensions
 	{
@@ -19,6 +20,17 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.Lineup)
 				.Include(x => x.UrlTip)
 				.Include(x => x.ParentPost).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
+				.AsNoTracking();
+		}
+
+		public static IQueryable<Post> IncludeAllExceptParent(this DbSet<Post> source)
+		{
+			return source
+				.Include(x => x.User).ThenInclude(x => x.NickNames)
+				.Include(x => x.User).ThenInclude(x => x.SavedPosts)
+				.Include(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
+				.Include(x => x.Lineup)
+				.Include(x => x.UrlTip)
 				.AsNoTracking();
 		}
 

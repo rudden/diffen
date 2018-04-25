@@ -18,6 +18,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<List<Post>> GetPostsOnUserIdAsync(string userId);
 		Task<List<Post>> GetSavedPostsOnUserIdAsync(string userId);
 		Task<Post> GetPostOnIdAsync(int postId);
+		Task<List<Post>> GetConversationOnPostIdAsync(int postId);
 		Task<List<UrlTip>> GetUrlTipsAsync();
 		Task<UrlTip> GetUrlTipOnIdAsync(int tipId);
 		Task<List<Vote>> GetVotesAsync();

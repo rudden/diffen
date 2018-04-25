@@ -61,6 +61,12 @@ namespace Diffen.Repositories
 			return _mapper.Map<Post>(post);
 		}
 
+		public async Task<List<Post>> GetConversationOnPostIdAsync(int id)
+		{
+			var conversation = await _dbClient.GetConversationOnPostIdAsync(id);
+			return _mapper.Map<List<Post>>(conversation);
+		}
+
 		public Task<int> CountAllPostsAsync()
 		{
 			return _dbClient.CountPostsAsync();
