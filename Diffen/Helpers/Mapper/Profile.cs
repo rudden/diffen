@@ -23,7 +23,13 @@
 			CreateMap<Models.Forum.CRUD.Vote, Database.Entities.Forum.Vote>().ConvertUsing<PostResolver>();
 			CreateMap<Models.Squad.CRUD.Lineup, Database.Entities.Squad.Lineup>().ConvertUsing<SquadResolver>();
 			CreateMap<Models.Squad.CRUD.Player, Database.Entities.Squad.Player>().ConvertUsing<SquadResolver>();
-			CreateMap<Database.Entities.User.AppUser, ViewModels.LoggedInUser>().ConvertUsing<UserResolver>();
+			CreateMap<Database.Entities.Other.Poll, Models.Other.Poll>().ConvertUsing<PollResolver>();
+			CreateMap<Database.Entities.Other.PollSelection, Models.Other.PollSelection>().ConvertUsing<PollResolver>();
+			CreateMap<Models.Other.CRUD.PollVote, Database.Entities.Other.PollVote>().ConvertUsing<PollResolver>();
+			CreateMap<Models.Other.CRUD.Poll, Database.Entities.Other.Poll>().ConvertUsing<PollResolver>();
+			CreateMap<string, Database.Entities.Other.PollSelection>().ConvertUsing<PollResolver>();
+			CreateMap<Database.Entities.Other.Chronicle, Models.Other.Chronicle>().ConvertUsing<ChronicleResolver>();
+			CreateMap<Models.Other.CRUD.Chronicle, Database.Entities.Other.Chronicle>().ConvertUsing<ChronicleResolver>();
 		}
 	}
 }
