@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="container-inner" v-if="!loading">
-            <img class="rounded-circle media-object" :src="user.avatar">
+            <img class="rounded-circle media-object" :src="user.avatar" data-action="zoom">
             <a v-if="(isLoggedIn || loggedInUserIsAdmin) && !inEdit" v-on:click="inEdit = true" class="edit-btn">
                 <span class="icon icon-pencil"></span>
             </a>
@@ -20,6 +20,18 @@
             </template>
             <template v-if="inEdit">
                 <template v-if="isLoggedIn">
+                    <div class="form-group">
+                        <div class="custom-file" v-if="!hasSelectedAvatar">
+                            <input type="file" class="custom-file-input" id="avatar" accept=".png,.jpg,.jpeg" @change="handleImageAdded" />
+                            <label class="custom-file-label" for="avatar" style="text-align: left">välj en profilbild</label>
+                        </div>
+                        <div class="alert alert-primary" style="text-align: left" v-else>
+                            <strong>{{ avatarFileName }}</strong>
+                            <button type="button" class="close" aria-label="Close" v-on:click="deSelectFile">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <input type="text" class="form-control" v-model="crudUser.nickName" placeholder="ditt nya nick" />
                     </div>
@@ -62,6 +74,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import axios from 'axios'
 import { Component } from 'vue-property-decorator'
 import { Getter, Action, State, namespace } from 'vuex-class'
 
@@ -119,6 +132,12 @@ export default class UserComponent extends Vue {
     
     results: Result[] = []
 
+    avatarFile: FormData = new FormData()
+    avatarFileName: string = ''
+
+    private directoryName: string = 'avatars'
+    private genericAvatarSrc: string = '/uploads/avatars/generic/logo.png'
+
 	created() {
         this.loadPlayers()
         this.loadRoles().then((roles: string[]) => this.roles = roles)
@@ -128,6 +147,8 @@ export default class UserComponent extends Vue {
         }
 
         this.setCrudUser()
+
+        this.avatarFileName = !this.user.avatar.includes('generic/logo') ? this.user.avatar.split('_____')[1] : ''
     }
     
     get isLoggedIn(): boolean {
@@ -138,6 +159,12 @@ export default class UserComponent extends Vue {
     }
     get canSave() {
 		return this.crudUser.nickName && this.crudUser.nickName.length > 1 && this.crudUser.bio.length <= 100
+    }
+    get hasSelectedAvatar(): boolean {
+        if (this.user.avatar != this.genericAvatarSrc) {
+            return this.avatarFileName ? true : false
+        }
+        return this.avatarFileName ? true : false
     }
     
     setCrudUser() {
@@ -153,20 +180,59 @@ export default class UserComponent extends Vue {
         this.loading = true
         this.crudUser.favoritePlayerId = this.favoritePlayerId
         this.updateUser({ userId: this.user.id, user: this.crudUser })
-        .then((results: Result[]) => {
-            this.results = results
-            this.loadUser({ id: this.user.id })
-                .then(() => {
+            .then((results: Result[]) => {
+                this.results = results
+                new Promise<void>((resolve, reject) => {
+                    if (!this.avatarFileName) {
+                        axios.delete(`${this.vm.api}/users/${this.vm.loggedInUser.id}/avatar`)
+                            .then((res) => {
+                                this.results.push(res.data)
+                                this.user.avatar = this.genericAvatarSrc
+                                resolve()
+                            })
+                    }
+                    else if (this.user.avatar.split('_____')[1] !== this.avatarFileName)
+                        this.uploadFile().then(() => this.loadUser({ id: this.user.id }).then(() => resolve()))
+                    else resolve()
+                }).then(() => {
                     this.setCrudUser()
                     this.inEdit = false
                     this.loading = false
                 })
+            })
+    }
+
+    uploadFile(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            axios.post(`${this.vm.api}/uploads/${this.directoryName}?uniqueId=${this.vm.loggedInUser.id}`, this.avatarFile, { headers: { 'Content-Type': 'application/json' } })
+                .then((result) => {
+                    let fileName: string = result.data
+                    axios.post(`${this.vm.api}/users/${this.vm.loggedInUser.id}/avatar/${fileName}`)
+                        .then((res) => {
+                            this.results.push(res.data)
+                            this.avatarFileName = fileName.split('_____')[1]
+                            resolve()
+                        })
+                }).catch(() => {
+                    resolve()
+                    this.results.push({ type: ResultType.Failure, message: 'Kunde inte ladda upp den nya profilbilden. Trolig orsak är att den är för stor.' })
+                })
         })
     }
 
-    dismiss(type: ResultType) {
-		this.results = this.results.filter((r: Result) => r.type != type)
-	}
+    handleImageAdded(e: any) {
+        var files = e.target.files
+        if (!files.length)
+            return
+        this.avatarFile = new FormData()
+        this.avatarFile.append('file', files[0])
+        this.avatarFileName = files[0].name
+    }
+
+    deSelectFile() {
+        this.avatarFile = new FormData()
+        this.avatarFileName = ''
+    }
 }
 </script>
 
