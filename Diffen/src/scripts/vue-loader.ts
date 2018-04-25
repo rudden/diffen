@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import store from './store'
 
-import { ViewModel } from './model/common'
 import { Component as VueComponent } from 'vue/types/options'
 
 export default class VueInstance {
@@ -23,7 +22,7 @@ export default class VueInstance {
         })
     }
 
-    vm(): ViewModel {
+    vm() {
         let dm: any = ''
         var el = document.getElementById(this.el)
         if (el) dm = el.getAttribute('view-model')
