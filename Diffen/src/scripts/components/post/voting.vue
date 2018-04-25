@@ -41,7 +41,7 @@ import { CREATE_VOTE } from '../../modules/forum/types'
 
 import { Post, VoteType, Vote } from '../../model/forum'
 import { Vote as CrudVote } from '../../model/forum/crud'
-import { ViewModel } from '../../model/common'
+import { PageViewModel } from '../../model/common'
 
 import { Popover } from 'uiv'
 
@@ -54,7 +54,7 @@ import { Popover } from 'uiv'
     }
 })
 export default class Voting extends Vue {
-    @State(state => state.vm) vm: ViewModel
+    @State(state => state.vm) vm: PageViewModel
     @ModuleAction(CREATE_VOTE) vote: (payload: { vote: CrudVote }) => Promise<void>
 
     post: Post

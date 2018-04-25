@@ -37,7 +37,7 @@ import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 import { State, namespace } from 'vuex-class'
 
-import { ViewModel, Paging } from '../../model/common'
+import { PageViewModel, Paging } from '../../model/common'
 import { Post } from '../../model/forum'
 
 import PostComponent from './item.vue'
@@ -64,7 +64,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 	}
 })
 export default class PostStream extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: PageViewModel
 
 	fullSizePost: boolean
 	pageSize: number
