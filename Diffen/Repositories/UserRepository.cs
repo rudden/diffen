@@ -25,20 +25,22 @@ namespace Diffen.Repositories
 		private readonly IMapper _mapper;
 		private readonly IDiffenDbClient _dbClient;
 		private readonly UserManager<AppUser> _userManager;
+		private readonly IUploadRepository _uploadRepository;
 
-		public UserRepository(IMapper mapper, IDiffenDbClient dbClient, UserManager<AppUser> userManager)
+		public UserRepository(IMapper mapper, IDiffenDbClient dbClient, UserManager<AppUser> userManager, IUploadRepository uploadRepository)
 		{
 			_mapper = mapper;
 			_dbClient = dbClient;
 			_userManager = userManager;
+			_uploadRepository = uploadRepository;
 		}
 
 		public async Task<List<KeyValuePair<string, string>>> GetUsersAsKeyValuePairAsync()
 		{
-			var users = await _dbClient.GetUsersExceptForLoggedInUserAsync();
+			var users = await _dbClient.GetUsersAsync();
 			return users.Select(user =>
 					new KeyValuePair<string, string>(user.Id,
-						user.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick)).ToList();
+						user.NickNames.Current())).ToList();
 		}
 
 		public async Task<User> GetUserOnIdAsync(string userId)
@@ -241,9 +243,31 @@ namespace Diffen.Repositories
 		public async Task<List<KeyValuePair<string, string>>> GetUsersInRoleAsKeyValuePairAsync(string roleName)
 		{
 			var users = await _userManager.GetUsersInRoleAsync(roleName);
-			return users.Select(user =>
-				new KeyValuePair<string, string>(user.Id,
-					user.NickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick)).ToList();
+			return users.Select(user => new KeyValuePair<string, string>(user.Id, user.NickNames.Current())).ToList();
+		}
+
+		public async Task<List<Result>> UpdateAvatarFileNameForUserWithIdAsync(string userId, string fileName)
+		{
+			var user = await _userManager.Users.Include(x => x.NickNames).Include(x => x.FavoritePlayer).FirstOrDefaultAsync(x => x.Id == userId);
+			user.AvatarFileName = fileName;
+			var results = await new List<Result>().Get(_dbClient.UpdateUserAsync(user), ResultMessages.ChangeAvatar);
+			if (results.Any(x => x.Type == ResultType.Success))
+			{
+				_uploadRepository.DeleteFilesInDirectory("avatars", x => x.Name.Contains(userId) && !x.Name.Equals(fileName));
+			}
+			return results;
+		}
+
+		public async Task<List<Result>> ResetUsersAvatarToGenericAsync(string userId)
+		{
+			var user = await _userManager.Users.Include(x => x.NickNames).Include(x => x.FavoritePlayer).FirstOrDefaultAsync(x => x.Id == userId);
+			user.AvatarFileName = null;
+			var results = await new List<Result>().Get(_dbClient.UpdateUserAsync(user), ResultMessages.ChangeAvatar);
+			if (results.Any(x => x.Type == ResultType.Success))
+			{
+				_uploadRepository.DeleteFilesInDirectory("avatars", x => x.Name.Contains(userId));
+			}
+			return results;
 		}
 	}
 }

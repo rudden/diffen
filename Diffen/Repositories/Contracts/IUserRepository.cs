@@ -26,5 +26,7 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> SetInviteAsAccountCreatedAsync(string userEmail);
 		Task<List<Result>> SecludeUserAsync(string userId, string toDate);
 		Task<List<KeyValuePair<string, string>>> GetUsersInRoleAsKeyValuePairAsync(string roleName);
+		Task<List<Result>> UpdateAvatarFileNameForUserWithIdAsync(string userId, string fileName);
+		Task<List<Result>> ResetUsersAvatarToGenericAsync(string userId);
 	}
 }
