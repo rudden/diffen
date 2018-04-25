@@ -15,7 +15,7 @@ namespace Diffen.Models.Forum
 		public int? LineupId { get; set; }
 
 		public string Since { get; set; }
-		public string Edited { get; set; }
+		public string Updated { get; set; }
 
 		public bool IsScissored { get; set; }
 		public bool LoggedInUserCanVote { get; set; }

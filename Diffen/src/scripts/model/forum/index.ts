@@ -11,7 +11,7 @@ export class Post {
     lineupId?: number
 
     since: string
-    edited: string
+    updated: string
 
     isScissored: boolean
     loggedInUserCanVote: boolean
