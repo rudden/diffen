@@ -1,10 +1,8 @@
 <template>
 	<div class="col-lg-3">
-		<div class="alert alert-warning alert-dismissible d-none d-lg-block" role="alert">
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<a class="alert-link" href="/profile">spana in din profil!</a> du kanske har fått ett nytt pm.
-		</div>
 		<filter-component />
+		<polls-component :type-of-polls="'active'" :is-small="true" class="mb-4" />
+		<chronicles-component :is-small="true" class="mb-4" />
 		<div class="card card-link-list">
 			<div class="card-body">
 				© {{ currentYear }} Diffen
@@ -16,12 +14,15 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
+import { State, namespace } from 'vuex-class'
 
 import FilterComponent from './filter.vue'
+import PollsComponent from '../../../components/other/polls.vue'
+import ChroniclesComponent from '../../../components/other/chronicles.vue'
 
 @Component({
 	components: {
-		FilterComponent
+		FilterComponent, PollsComponent, ChroniclesComponent
 	}
 })
 export default class RightSideBar extends Vue {
