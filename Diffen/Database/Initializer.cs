@@ -86,11 +86,19 @@ namespace Diffen.Database
 				};
 				await roleManager.CreateAsync(role);
 			}
-			if (!await roleManager.RoleExistsAsync("Sax"))
+			if (!await roleManager.RoleExistsAsync("Scissor"))
 			{
 				var role = new IdentityRole
 				{
-					Name = "Sax"
+					Name = "Scissor"
+				};
+				await roleManager.CreateAsync(role);
+			}
+			if (!await roleManager.RoleExistsAsync("Author"))
+			{
+				var role = new IdentityRole
+				{
+					Name = "Author"
 				};
 				await roleManager.CreateAsync(role);
 			}
@@ -105,13 +113,23 @@ namespace Diffen.Database
 				await userManager.AddToRoleAsync(administrator, "Admin");
 			}
 
-			var scissors = await userManager.GetUsersInRoleAsync("Sax");
+			var scissors = await userManager.GetUsersInRoleAsync("Scissor");
 			if (!scissors.Any())
 			{
 				var newScissors = userManager.Users.ToList().PickRandom(4);
 				foreach (var scissor in newScissors)
 				{
-					await userManager.AddToRoleAsync(scissor, "Sax");
+					await userManager.AddToRoleAsync(scissor, "Scissor");
+				}
+			}
+
+			var authors = await userManager.GetUsersInRoleAsync("Author");
+			if (!authors.Any())
+			{
+				var newAuthors = userManager.Users.ToList().PickRandom(5);
+				foreach (var author in newAuthors)
+				{
+					await userManager.AddToRoleAsync(author, "Author");
 				}
 			}
 		}
