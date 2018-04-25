@@ -48,10 +48,10 @@
                 <div class="list-group-item flex-column align-items-start">
 					<div class="row">
 						<div class="col pr-1">
-							<date-picker v-model="filter.fromDate" :config="fromDPConfig" placeholder="från" :class="{ 'form-control-sm': true }" @dp-change="dpChange" />
+							<date-picker v-model="filter.fromDate" :config="fromDPConfig" placeholder="från" :class="{ 'form-control-sm': true }" />
 						</div>
 						<div class="col pl-1">
-							<date-picker v-model="filter.toDate" :config="toDPConfig" placeholder="till" :class="{ 'form-control-sm': true }" @dp-change="dpChange" />
+							<date-picker v-model="filter.toDate" :config="toDPConfig" placeholder="till" :class="{ 'form-control-sm': true }" />
 						</div>
 					</div>
 					<div class="row" v-if="showDatePickerTip">
@@ -102,7 +102,7 @@ import {
 import { FETCH_KVP_USERS } from '../../../modules/profile/types'
 
 import { StartingEleven, Filter } from '../../../model/forum'
-import { ViewModel, KeyValuePair } from '../../../model/common'
+import { PageViewModel, KeyValuePair } from '../../../model/common'
 
 import { Typeahead } from 'uiv'
 import DatePicker from 'vue-bootstrap-datetimepicker'
@@ -113,7 +113,7 @@ import DatePicker from 'vue-bootstrap-datetimepicker'
     }
 })
 export default class FilterComponent extends Vue {
-	@State(state => state.vm) vm: ViewModel
+	@State(state => state.vm) vm: PageViewModel
 	@ModuleGetter(GET_IS_LOADING_POSTS) isLoadingPosts: boolean
 	@ModuleGetter(GET_FILTER) filter: Filter
     @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
@@ -124,8 +124,6 @@ export default class FilterComponent extends Vue {
 
 	includedUsers: KeyValuePair[] = []
     startingEleven: string = StartingEleven[StartingEleven.All]
-    
-    showDatePickerTip: boolean = false
 
 	fromDPConfig: any = { 
 		format: 'YYYY-MM-DD', 
@@ -173,6 +171,11 @@ export default class FilterComponent extends Vue {
 			excludedUsers: this.excludedUsers
 		}
     }
+    get showDatePickerTip() {
+        if (this.filter.fromDate && this.filter.toDate)
+            return this.filter.fromDate > this.filter.toDate ? true : false
+        return false
+    }
     
     @Watch('selectedUser')
 		onChange() {
@@ -209,12 +212,6 @@ export default class FilterComponent extends Vue {
         this.setIsLoadingPosts({ value: true })
         this.loadPaged({ pageNumber: 1, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
 			.then(() => this.setIsLoadingPosts({ value: false }))
-    }
-    
-    dpChange(): void {
-        if (this.filter.fromDate && this.filter.toDate) {
-            this.filter.fromDate > this.filter.toDate ? this.showDatePickerTip = true : this.showDatePickerTip = false 
-        }
     }
 
     removeUser(selected: KeyValuePair): void {
