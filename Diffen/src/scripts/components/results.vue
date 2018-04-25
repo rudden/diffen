@@ -31,13 +31,11 @@ import { Result, ResultType } from '../model/common'
 
 @Component({
     props: {
-        items: Array,
-        dismiss: Function
+        items: Array
     }
 })
 export default class Results extends Vue {
     items: Result[]
-    dismiss: (type: ResultType) => void
 
     results: Result[] = []
 
@@ -59,6 +57,10 @@ export default class Results extends Vue {
 
     get failures(): Result[] {
         return this.results.filter((r: Result) => r.message != '' && r.type == ResultType.Failure)
+    }
+
+    dismiss(type: ResultType) {
+		this.results = this.results.filter((r: Result) => r.type != type)
     }
 }
 </script>
