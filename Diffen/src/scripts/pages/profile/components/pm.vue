@@ -1,18 +1,21 @@
 <template>
 	<div class="container container__profile mt-3 mb-5">
-		<template v-if="loading">
+		<div v-show="loading">
 			<loader v-bind="{ background: '#699ED0' }" />
-		</template>
-		<template v-else>
+		</div>
+		<div v-show="!loading">
 			<div class="row" v-if="userIsLoggedInUser">
 				<div class="col">
-					<input id="pm-users" class="form-control" type="text" placeholder="sök på ett nick..">
+					<input id="pm-users" class="form-control" type="text" placeholder="sök på ett nick.." autocomplete="off">
 					<typeahead v-model="selectedUser" target="#pm-users" :data="users" item-key="value" force-select />
 				</div>
 			</div>
-			<div class="row mt-3">
+			<div class="row mt-3" v-if="userIsLoggedInUser && conversationUsers.length > 0">
 				<div class="col">
-					<span class="badge badge-secondary mr-2" v-for="convUser in conversationUsers" v-bind:key="convUser.key">{{ convUser.value }}</span>
+					<p class="mb-0">användare som du har en pågående konversation med</p>
+					<a href="#" v-on:click="selectedUser = convUser" v-for="convUser in conversationUsers" :key="convUser.key">
+						<span class="badge badge-secondary mr-2">{{ convUser.value }}</span>
+					</a>
 				</div>
 			</div>
 			<template v-if="selectedUser && selectedUser.key || !userIsLoggedInUser">
@@ -24,17 +27,17 @@
 						<div class="form-group mb-0">
 							<div class="row">
 								<div class="col">
-									<button class="btn btn-sm btn-success btn-block" v-on:click="submit" v-bind:disabled="!canCreate">skicka</button>
+									<button class="btn btn-sm btn-success btn-block" v-on:click="submit" :disabled="!canCreate">skicka</button>
 								</div>
 							</div>
 						</div>
-        				<results :items="results" :dismiss="dismiss" class="pt-3" />
+        				<results :items="results" class="pt-3" />
 					</div>
 				</div>
 			</template>
 			<template v-if="pms.length > 0">
 				<ul class="media-list media-list-conversation c-w-md mt-3 mb-0">
-					<li class="media mb-4" v-for="pm in pms" v-bind:key="pm.id" :class="{ 'media-current-user': pm.from.id == vm.loggedInUser.id }">
+					<li class="media mb-4" v-for="pm in pms" :key="pm.id" :class="{ 'media-current-user': pm.from.id == vm.loggedInUser.id }">
 						<template v-if="pm.from.id !== vm.loggedInUser.id">
 							<img class="rounded-circle media-object ml-3" :src="pm.from.avatar">
 						</template>
@@ -59,7 +62,7 @@
 					hittade ingen konversation mellan dig och <strong>{{ selectedUser.value }}</strong>
 				</div>
 			</template>
-		</template>
+		</div>
 	</div>
 </template>
 
@@ -144,6 +147,9 @@ export default class Pm extends Vue {
 			.then((results: Result[]) => {
 				this.results = results
 				this.newPmMessage = ''
+				if (!this.conversationUsers.map((kvp: KeyValuePair) => kvp.key).includes(this.selectedUser.key)) {
+					this.conversationUsers.push(this.selectedUser)
+				}
 				this.loadPms({ to: toUserId })
 					.then((pms: PersonalMessage[]) => {
 						this.pms = pms
