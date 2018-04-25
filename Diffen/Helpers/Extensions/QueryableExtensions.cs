@@ -86,5 +86,18 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.ToUser).ThenInclude(x => x.NickNames)
 				.AsNoTracking();
 		}
+
+		public static IQueryable<Poll> IncludeAll(this DbSet<Poll> source)
+		{
+			return source
+				.Include(x => x.CreatedByUser).ThenInclude(x => x.NickNames)
+				.Include(x => x.Selections).ThenInclude(x => x.Poll)
+				.Include(x => x.Selections).ThenInclude(x => x.Votes).ThenInclude(x => x.VotedByUser).ThenInclude(x => x.NickNames);
+		}
+
+		public static IQueryable<Chronicle> IncludeAll(this DbSet<Chronicle> source)
+		{
+			return source.Include(x => x.WrittenByUser).ThenInclude(x => x.NickNames);
+		}
 	}
 }
