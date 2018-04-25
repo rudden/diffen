@@ -25,5 +25,10 @@ namespace Diffen.Helpers.Extensions
 		{
 			return source.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
 		}
+
+		public static string Current(this IEnumerable<Database.Entities.User.NickName> nickNames)
+		{
+			return nickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick;
+		}
 	}
 }
