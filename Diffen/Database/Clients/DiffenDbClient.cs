@@ -591,9 +591,10 @@ namespace Diffen.Database.Clients
 			return CommitedResultIsSuccessfulAsync();
 		}
 
-		public Task<List<Chronicle>> GetChroniclesAsync()
+		public async Task<List<Chronicle>> GetChroniclesAsync(int amount = 0)
 		{
-			return _dbContext.Chronicles.IncludeAll().OrderByDescending(x => x.Created).ToListAsync();
+			var chronicles = await _dbContext.Chronicles.IncludeAll().OrderByDescending(x => x.Created).ToListAsync();
+			return amount == 0 ? chronicles : chronicles.Take(amount).ToList();
 		}
 
 		public Task<List<Chronicle>> GetChroniclesOnUserIdAsync(string userId)

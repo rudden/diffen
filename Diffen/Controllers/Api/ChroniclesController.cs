@@ -29,10 +29,10 @@ namespace Diffen.Controllers.Api
 		}
 
 		[HttpGet]
-		public Task<List<Chronicle>> Get()
+		public Task<List<Chronicle>> Get(int amount = 0)
 		{
-			_logger.Debug("Requesting all chronicles");
-			return _chronicleRepository.GetAllChroniclesAsync();
+			_logger.Debug("Requesting chronicles");
+			return _chronicleRepository.GetChroniclesAsync(amount);
 		}
 
 		[HttpGet("{userId}")]
@@ -72,7 +72,7 @@ namespace Diffen.Controllers.Api
 				var isUpdated = await _chronicleRepository.UpdateHeaderFileNameForLastAddedChronicleAsync($"{DirectoryForChronicleHeaderUploads}/{fileName}");
 				return isUpdated.Any(x => x.Type == ResultType.Success);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				return false;
 			}

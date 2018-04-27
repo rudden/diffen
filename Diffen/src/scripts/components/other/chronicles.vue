@@ -1,8 +1,13 @@
 <template>
     <ul class="list-group media-list media-list-stream">
         <li class="list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-if="loggedInUserIsAuthor || !isSmall">
-            <a href="/chronicle/new" class="btn btn-sm btn-primary" :class="{ 'float-right': !isSmall, 'btn-block': isSmall }" v-if="loggedInUserIsAuthor">ny krönika</a>
-            <h4 class="mb-0" v-if="!isSmall">krönikor</h4>
+            <template v-if="isSmall">
+                <h6 class="mb-0">krönikor</h6>
+            </template>
+            <template v-else>
+                <a href="/chronicle/new" class="btn btn-sm btn-success float-right" v-if="loggedInUserIsAuthor">skapa ny krönika</a>
+                <h4 class="mb-0">krönikor</h4>
+            </template>
         </li>
         <li class="media list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-show="loading">
             <loader v-bind="{ background: '#699ED0' }" />
@@ -12,7 +17,6 @@
                 <li class="list-group-item media"  :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="chronicle in chronicles" :key="chronicle.id">
                     <span class="icon icon-pencil text-muted mr-2" v-if="!isSmall"></span>
                     <div class="media-body">
-                        <small class="text-muted float-right">{{ chronicle.created }}</small>
                         <div class="media-heading">
                             <a :href="`/chronicle/${chronicle.slug}`">
                                 <template v-if="isSmall">
@@ -23,8 +27,17 @@
                                 </template>
                             </a>
                         </div>
+                        <div>
+                            <small class="text-muted float-right">{{ chronicle.created }}</small>
+                            <small class="text-muted">av: {{ chronicle.writtenByUser.nickName }}</small>
+                        </div>
                     </div>
                 </li>
+                <template v-if="isSmall">
+                    <li class="list-group-item">
+                        <a href="/chronicle" class="btn btn-sm btn-primary btn-block">visa fler</a>
+                    </li>
+                </template>
             </template>
             <template v-else>
                 <li class="list-group-item media" :class="{ 'p-3': isSmall, 'p-4': !isSmall }">
@@ -58,6 +71,10 @@ import { Stretch as Loader } from 'vue-loading-spinner'
         isSmall: {
             type: Boolean,
             default: false
+        },
+        amountOfChronicles: {
+            type: Number,
+            default: 0
         }
     },
 	components: {
@@ -67,14 +84,15 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 export default class Chronicles extends Vue {
     @State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_CHRONICLES) chronicles: Chronicle[]
-    @ModuleAction(FETCH_CHRONICLES) loadChronicles: () => Promise<void>
+    @ModuleAction(FETCH_CHRONICLES) loadChronicles: (payload: { amount: number }) => Promise<void>
 
     isSmall: boolean
+    amountOfChronicles: number
 
     loading: boolean = true
 
 	mounted() {
-        this.loadChronicles().then(() => this.loading = false)
+        this.loadChronicles({ amount: this.amountOfChronicles }).then(() => this.loading = false)
     }
 
     get loggedInUserIsAuthor() {

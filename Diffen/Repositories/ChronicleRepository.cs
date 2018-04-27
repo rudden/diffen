@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
+
 using AutoMapper;
 
 namespace Diffen.Repositories
@@ -14,18 +14,16 @@ namespace Diffen.Repositories
 	{
 		private readonly IMapper _mapper;
 		private readonly IDiffenDbClient _dbClient;
-		private readonly IUploadRepository _uploadRepository;
 
-		public ChronicleRepository(IMapper mapper, IDiffenDbClient dbClient, IUploadRepository uploadRepository)
+		public ChronicleRepository(IMapper mapper, IDiffenDbClient dbClient)
 		{
 			_mapper = mapper;
 			_dbClient = dbClient;
-			_uploadRepository = uploadRepository;
 		}
 
-		public async Task<List<Chronicle>> GetAllChroniclesAsync()
+		public async Task<List<Chronicle>> GetChroniclesAsync(int amount = 0)
 		{
-			return _mapper.Map<List<Chronicle>>(await _dbClient.GetChroniclesAsync());
+			return _mapper.Map<List<Chronicle>>(await _dbClient.GetChroniclesAsync(amount));
 		}
 
 		public async Task<List<Chronicle>> GetAllChroniclesOnUserIdAsync(string userId)

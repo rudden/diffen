@@ -8,7 +8,7 @@ namespace Diffen.Repositories.Contracts
 
 	public interface IChronicleRepository
 	{
-		Task<List<Chronicle>> GetAllChroniclesAsync();
+		Task<List<Chronicle>> GetChroniclesAsync(int amount = 0);
 		Task<List<Chronicle>> GetAllChroniclesOnUserIdAsync(string userId);
 		Task<Chronicle> GetChronicleOnIdAsync(int chronicleId);
 		Task<Chronicle> GetChronicleOnSlugAsync(string slug);

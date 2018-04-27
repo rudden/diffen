@@ -93,7 +93,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> CreateVoteOnPollAsync(PollVote vote);
 
 		// Chronicle Related Requests
-		Task<List<Chronicle>> GetChroniclesAsync();
+		Task<List<Chronicle>> GetChroniclesAsync(int amount = 0);
 		Task<List<Chronicle>> GetChroniclesOnUserIdAsync(string userId);
 		Task<Chronicle> GetLastAddedChronicleAsync();
 		Task<Chronicle> GetChronicleOnIdAsync(int chronicleId);
