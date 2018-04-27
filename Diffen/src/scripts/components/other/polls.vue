@@ -3,7 +3,7 @@
         <li class="list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }">
             <modal v-bind="{ id: 'new-poll', header: 'ny omröstning' }">
                 <template slot="btn">
-                    <button class="btn btn-sm btn-primary" :class="{ 'float-right': !isSmall, 'btn-block': isSmall }" data-toggle="modal" data-target="#new-poll">ny poll</button>
+                    <button class="btn btn-sm btn-success" :class="{ 'float-right': !isSmall, 'btn-block': isSmall }" data-toggle="modal" data-target="#new-poll">ny poll</button>
                 </template>
                 <template slot="body">
                     <template v-if="creating">
