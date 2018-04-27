@@ -25,22 +25,12 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
-import { Action, State, namespace } from 'vuex-class'
 
-const ModuleAction = namespace('forum', Action)
-
-import { FETCH_CONVERSATION_ON_POST } from '../../modules/forum/types'
-
+import { Conversation } from '../../model/forum'
 import { PageViewModel } from '../../model/common'
-import { Post } from '../../model/forum'
 
 import Embeds from './embeds.vue'
 import { Stretch as Loader } from 'vue-loading-spinner'
-
-interface Conversation {
-    post: Post
-    children: Conversation[]
-}
 
 @Component({
 	props: {
@@ -52,14 +42,8 @@ interface Conversation {
 	}
 })
 export default class Children extends Vue {
-    @State(state => state.vm) vm: PageViewModel
-
     children: Conversation[]
     selectedPostId: number
-
-    get firstChild() {
-        return this.children[0].post
-    }
 }
 </script>
 
