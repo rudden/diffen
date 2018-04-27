@@ -1,6 +1,6 @@
 <template>
 	<ul class="media-list media-list-stream">
-        <li class="list-group-item p4">
+        <li class="list-group-item p-4">
             <a href="/forum" class="btn btn-sm btn-primary float-right">tillbaka till forumet</a>
             <h4 class="mb-0">konversation</h4>
         </li>
@@ -44,16 +44,11 @@ const ModuleAction = namespace('forum', Action)
 import { FETCH_CONVERSATION_ON_POST } from '../../modules/forum/types'
 
 import { PageViewModel } from '../../model/common'
-import { Post } from '../../model/forum'
+import { Post, Conversation } from '../../model/forum'
 
 import Embeds from './embeds.vue'
 import Children from './children.vue'
 import { Stretch as Loader } from 'vue-loading-spinner'
-
-interface Conversation {
-    post: Post
-    children: Conversation[]
-}
 
 @Component({
 	props: {
@@ -93,7 +88,6 @@ export default class FullConversation extends Vue {
                 children: children
             }
             this.filterConversations(conversation)
-            console.log(conversation)
             return conversation
         }
     }

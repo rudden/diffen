@@ -64,3 +64,8 @@ export class UrlTip {
     clicks: number
     postId: number
 }
+
+export interface Conversation {
+    post: Post
+    children: Conversation[]
+}
