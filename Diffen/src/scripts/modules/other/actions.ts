@@ -54,8 +54,8 @@ export const Actions: ActionTree<State, any> = {
 		return axios.get(`${store.rootState.vm.api}/chronicles/${payload.slug}`)
 			.then((res) => store.commit(SET_CHRONICLE, res.data)).catch((error) => console.warn(error))
 	},
-	[FETCH_CHRONICLES]: (store: ActionContext<State, any>): Promise<void> => {
-		return axios.get(`${store.rootState.vm.api}/chronicles`)
+	[FETCH_CHRONICLES]: (store: ActionContext<State, any>, payload: { amount: number }): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/chronicles?amount=${payload.amount}`)
 			.then((res) => store.commit(SET_CHRONICLES, res.data)).catch((error) => console.warn(error))
 	},
 	[CREATE_CHRONICLE]: (store: ActionContext<State, any>, payload: { chronicle: CrudChronicle }): Promise<Result[]> => {
