@@ -1,7 +1,9 @@
 <template>
     <ul class="list-group media-list media-list-stream">
         <li class="list-group-item p-4">
-            <h4 class="mb-0">skriv en ny krönika</h4>
+            <h4 class="mb-0">
+                {{ selectedChronicleSlug ? 'editera en krönika' : 'skriv en ny krönika' }}
+            </h4>
         </li>
         <li class="media list-group-item p-4" v-show="loading">
             <loader v-bind="{ background: '#699ED0' }" />
@@ -217,7 +219,7 @@ export default class NewChronicle extends Vue {
                         })
                 }).catch(() => {
                     resolve()
-                    this.results.push({ type: ResultType.Failure, message: 'Kunde inte ladda upp den nya header-bilden. Trolig orsak är att den är för stor. Default-bild på stadion sätts istället.' })
+                    this.results.push({ type: ResultType.Failure, message: 'Kunde inte ladda upp den nya header-bilden. Trolig orsak är att den är för stor. Default-bild sätts istället.' })
                 })
         })
     }
