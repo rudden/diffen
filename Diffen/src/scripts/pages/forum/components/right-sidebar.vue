@@ -2,7 +2,7 @@
 	<div class="col-lg-3">
 		<filter-component />
 		<polls-component :type-of-polls="'active'" :is-small="true" class="mb-4" />
-		<chronicles-component :is-small="true" class="mb-4" />
+		<chronicles-component :is-small="true" :amount-of-chronicles="5" class="mb-4" />
 		<div class="card card-link-list">
 			<div class="card-body">
 				© {{ currentYear }} Diffen
@@ -28,4 +28,4 @@ import ChroniclesComponent from '../../../components/other/chronicles.vue'
 export default class RightSideBar extends Vue {
 	currentYear: number = (new Date()).getFullYear()
 }
-</script>	
+</script>
