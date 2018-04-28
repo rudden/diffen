@@ -12,15 +12,7 @@
 	<link rel="stylesheet" href="~/css/bootstrap-datetimepicker.min.css" />
 </head>
 <body class="with-top-navbar">
-	@if (User.Identity.IsAuthenticated)
-	{
-		@await Html.PartialAsync("_Navbar")
-	}
 	@RenderBody()
-	@if (User.Identity.IsAuthenticated)
-	{
-		@await Html.PartialAsync("_Footer")
-	}
 	<script src="~/dist/js/theme.js"></script>
 </body>
 </html>
