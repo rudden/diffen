@@ -20,6 +20,14 @@ export class ChronicleViewModel extends PageViewModel {
 	selectedChronicleSlug: string
 }
 
+export class PollViewModel extends PageViewModel {
+	selectedPollSlug: string
+}
+
+export class RegionViewModel extends PageViewModel {
+	googleMapsApiKey: string
+}
+
 export class KeyValuePair {
     key: any
     value: any
