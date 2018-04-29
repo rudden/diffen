@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 using Serilog;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace Diffen.Controllers.Api
 	using Models.Forum;
 	using Repositories.Contracts;
 
+	[Authorize]
 	[Route("api/[controller]")]
 	public class PostsController : Controller
 	{

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 using Serilog;
@@ -17,6 +18,7 @@ namespace Diffen.Controllers.Api
 
 	using Repositories.Contracts;
 
+	[Authorize]
 	[Route("api/[controller]")]
 	public class UsersController : Controller
 	{

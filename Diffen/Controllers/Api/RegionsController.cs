@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 using Serilog;
 
@@ -11,6 +12,7 @@ namespace Diffen.Controllers.Api
 	using Models.Other;
 	using Repositories.Contracts;
 
+	[Authorize]
 	[Route("api/[controller]")]
 	public class RegionsController : Controller
 	{
