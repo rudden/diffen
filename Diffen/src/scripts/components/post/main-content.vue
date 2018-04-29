@@ -3,7 +3,7 @@
         <div class="media-heading">
             <small class="float-right text-muted">{{ post.since }}</small>
             <h6>
-                {{ post.user.nickName }}
+                <a :href="`/profile/${post.user.id}`">{{ post.user.nickName }}</a>
                 <template v-if="post.updated">
                     <span class="badge badge-danger ml-2">editerat</span>
                 </template>
@@ -34,3 +34,9 @@ export default class PostMainContent extends Vue {
     post: Post
 }
 </script>
+
+<style lang="scss" scoped>
+a {
+    color: black;
+}
+</style>
