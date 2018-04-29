@@ -11,34 +11,29 @@
 					</div>
 					<template v-if="isAdmin">
 						<div class="col">
-							<modal v-bind="{ header: 'inbjudningar', id: 'invites' }">
-								<template slot="btn">
-									<button data-toggle="modal" data-target="#invites" class="btn btn-sm btn-primary btn-block" v-on:click="load">visa inbjudningar</button>
-								</template>
+							<modal v-bind="{ attributes: { name: 'invites', scrollable: true }, header: 'inbjudningar', button: { classes: 'btn btn-sm btn-primary btn-block', text: 'visa inbjudningar' }, onOpen: load }">
 								<template slot="body">
 									<template v-if="invites.length > 0">
 										<table class="table table-sm mb-0">
 											<thead class="thead-dark">
 												<tr>
-													<th scope="col">email</th>
-													<th scope="col">har skapat konto</th>
-													<th scope="col">inbjudan skickad</th>
-													<th scope="col">kontot skapat</th>
-													<th scope="col">inbjuden av</th>
+													<th scope="col">till</th>
+													<th scope="col">från</th>
+													<th scope="col">skickad</th>
+													<th scope="col">använd</th>
 												</tr>
 											</thead>
 											<tbody>
 												<tr v-for="invite in invites">
 													<td>{{ invite.email }}</td>
+													<td>
+														<a style="color: black" v-bind:href="'/profile/' + invite.invitedBy.id">{{ invite.invitedBy.nickName }}</a>
+													</td>
+													<td>{{ invite.inviteSent }}</td>
 													<td style="text-align: center">
 														<template v-if="invite.accountIsCreated">
 															<span class="icon icon-check"></span>	
 														</template>
-													</td>
-													<td>{{ invite.inviteSent }}</td>
-													<td>{{ invite.accountCreated }}</td>
-													<td>
-														<a style="color: black" v-bind:href="'/profile/' + invite.invitedBy.id">{{ invite.invitedBy.nickName }}</a>
 													</td>
 												</tr>
 											</tbody>
@@ -87,11 +82,10 @@ import { FETCH_INVITES, CREATE_INVITE } from '../../../modules/profile/types'
 
 import Modal from '../../../components/modal.vue'
 import Results from '../../../components/results.vue'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
 	components: {
-		Loader, Modal, Results
+		Modal, Results
 	}
 })
 export default class Invites extends Vue {

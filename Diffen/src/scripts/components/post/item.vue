@@ -12,10 +12,7 @@
                         <div class="message-footer">
                             <url v-bind="{ href: post.urlTipHref, text: 'länktips', postId: post.id }" v-if="post.urlTipHref" />
                             <span v-if="post.lineupId && post.urlTipHref"> · </span>
-                            <modal v-bind="{ id: `lineup-${post.id}`, header: 'startelva' }" v-if="post.lineupId">
-                                <template slot="btn">
-									 <small><a href="#" data-toggle="modal" :data-target="'#' + `lineup-${post.id}`" v-on:click="getLineup">visa startelva</a></small>
-								</template>
+                            <modal v-bind="modalAttributes.startingEleven" v-if="post.lineupId">
                                 <template slot="body">
                                     <template v-if="lineup.id && !loadingLineup">
                                         <formation-component :formation="lineup.formation" :players="lineup.players" />
@@ -26,31 +23,20 @@
                                 </template>
                             </modal>
                             <span v-if="(post.lineupId || post.urlTipHref) && createdByLoggedInUser"> · </span>
-                            <modal v-bind="{ id: `edit-${post.id}`, header: 'editera inlägg' }" v-if="createdByLoggedInUser" :close-action="closePostActionModal">
-                                <template slot="btn">
-                                    <a data-toggle="modal" :data-target="'#' + `edit-${post.id}`" v-on:click="post.inEdit = true">
-                                        <span class="icon icon-edit"></span>
-                                    </a>
-								</template>
-                                <template slot="body">
+                            <modal v-bind="modalAttributes.editPost" v-if="createdByLoggedInUser">
+                               <template slot="body">
                                     <new-post :post="post" v-bind="{ parentId: post.parentPost ? post.parentPost.id : null }" />
                                 </template>
                             </modal>
                             <span v-if="post.lineupId || post.urlTipHref || createdByLoggedInUser"> · </span>
-                            <modal v-bind="{ id: `reply-${post.id}`, header: 'svara inlägg' }" :close-action="closePostActionModal">
-                                <template slot="btn">
-                                    <a data-toggle="modal" :data-target="'#' + `reply-${post.id}`" v-on:click="post.inReply = true">
-                                        <span class="icon icon-quote"></span>
-                                    </a>
-								</template>
-                                <template slot="scroller">
+                            <modal v-bind="modalAttributes.replyPost">
+                                <template slot="body">
                                     <div class="media-body">
                                         <div class="media-body-text">
                                             <post-main-content :post="post" />
                                         </div>
                                     </div>
-                                </template>
-                                <template slot="body">
+                                    <hr />
                                     <new-post :parent-id="post.id" />
                                 </template>
                             </modal>
@@ -61,7 +47,7 @@
                                 · <span class="icon icon-scissors"></span>
                             </a>
                             <a :href="`/forum/post/${post.id}`" class="no-hover">
-                                · <span class="icon icon-mask"></span>
+                                · <span class="icon icon-eye"></span>
                             </a>
                             <voting :post="post" />
                         </div>
@@ -90,7 +76,7 @@
                 <template v-else>
                     <div class="message-footer">
                         <a :href="`/forum/post/${post.id}`" class="no-hover">
-                            <span class="icon icon-mask"></span>
+                            <span class="icon icon-eye"></span>
                         </a>
                     </div>
                 </template>
@@ -126,8 +112,6 @@ import PostMainContent from './main-content.vue'
 
 import FormationComponent from '../lineups/formation.vue'
 
-import { Stretch as Loader } from 'vue-loading-spinner'
-
 @Component({
     props: {
         post: Object,
@@ -137,7 +121,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
         }
     },
     components: {
-        Url, Embeds, NewPost, Modal, Voting, FormationComponent, Loader, PostMainContent
+        Url, Embeds, NewPost, Modal, Voting, FormationComponent, PostMainContent
     }
 })
 export default class PostComponent extends Vue {
@@ -157,8 +141,46 @@ export default class PostComponent extends Vue {
     lineup: Lineup = new Lineup()
     loadingLineup: boolean = false
 
+    modalAttributes: any = {
+        startingEleven: {
+            attributes: {
+                name: `lineup-${this.post.id}`,
+                draggable: true
+            },
+            header: 'startelva',
+            button: {
+                classes: 'small',
+                text: 'visa startelva'
+            },
+            onOpen: this.getLineup
+        },
+        editPost: {
+            attributes: {
+                name: `edit-${this.post.id}`
+            },
+            header: 'editera inlägg',
+            button: {
+                icon: 'icon icon-edit'
+            },
+            onOpen: () => this.post.inEdit = true,
+            onClose: this.closePostActionModal
+        },
+        replyPost: {
+            attributes: {
+                name: `reply-${this.post.id}`,
+                resizable: true
+            },
+            header: 'svara inlägg',
+            button: {
+                icon: 'icon icon-quote'
+            },
+            onOpen: () => this.post.inReply = true,
+            onClose: this.closePostActionModal
+        }
+    }
+
     get loggeInUserIsAdmin(): boolean {
-        return this.vm.loggedInUser.inRoles.includes('Scissor' || 'Admin')
+        return this.vm.loggedInUser.inRoles.some(role => role == 'Scissor' || role == 'Admin')
     }
     get createdByLoggedInUser(): boolean {
         return this.post.user.id == this.vm.loggedInUser.id ? true : false
@@ -174,16 +196,6 @@ export default class PostComponent extends Vue {
     }
     get canBookmark(): boolean {
         return !this.vm.loggedInUser.savedPostsIds.includes(this.post.id)
-    }
-
-    created() {
-        // listen for escape key events
-        // ugly solution since i'm not able to access jquery in vue sfc written in ts
-        window.addEventListener('keyup', (e) => {
-            if (e.which == 27) {
-                this.closePostActionModal()
-            }
-        })
     }
 
     closePostActionModal() {

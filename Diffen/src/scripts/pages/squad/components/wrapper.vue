@@ -1,64 +1,59 @@
 <template>
-	<div class="container pt-4 pb-5">
-		<div class="row">
-			<div class="col-lg-12 col-md-12">
-				<ul class="list-group media-list media-list-stream">
-					<li class="list-group-item">
-						<modal v-bind="{ id: 'new-player', header: 'ny spelare' }" v-if="loggedInUserIsAdmin">
-							<template slot="btn">
-								<button data-toggle="modal" :data-target="'#new-player'" class="btn btn-sm btn-primary float-right">ny spelare</button>
+	<div>
+		<navbar />
+		<div class="container pt-4 pb-5">
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<ul class="list-group media-list media-list-stream">
+						<li class="list-group-item p-4">
+							<modal v-bind="modalAttributes.newPlayer" v-if="loggedInUserIsAdmin">
+								<template slot="body">
+									<form-component :save="create" />
+								</template>
+							</modal>
+							<h4 class="mb-0">spelartruppen</h4>
+						</li>
+						<li class="list-group-item media">
+							<template v-if="!loading">
+								<table class="table table-sm mb-0">
+									<thead class="thead-dark">
+										<tr>
+											<th scope="col">namn</th>
+											<th scope="col" class="d-none d-sm-table-cell">tröjnummer</th>
+											<th scope="col" class="d-none d-sm-table-cell">i antal startelvor</th>
+											<th scope="col" class="d-none d-sm-table-cell">antal positioner</th>
+											<th scope="col" v-if="loggedInUserIsAdmin"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="player in players" v-bind:key="player.id">
+											<td>
+												{{ player.fullName }}
+												<span class="badge badge-primary ml-1" v-if="player.isCaptain">kapten</span>
+												<span class="badge badge-danger ml-1" v-if="player.isHereOnLoan">inlånad</span>
+												<span class="badge badge-warning ml-1" v-if="player.isOutOnLoan">utlånad</span>
+												<span class="badge badge-danger ml-1" v-if="player.isSold">såld</span>
+											</td>
+											<td class="d-none d-sm-table-cell">{{ player.kitNumber == 0 ? '' : player.kitNumber }}</td>
+											<td class="d-none d-sm-table-cell">{{ player.inNumberOfStartingElevens }}</td>
+											<td class="d-none d-sm-table-cell">{{ player.availablePositions.length }}</td>
+											<td v-if="loggedInUserIsAdmin">
+												<modal v-bind="{ attributes: { name: `edit-${player.id}` }, header: player.name, button: { icon: 'icon icon-edit' } }">
+													<template slot="body">
+														<form-component :player="player" :save="update" />
+													</template>
+												</modal>
+											</td>
+										</tr>
+									</tbody>
+								</table>
 							</template>
-							<template slot="body">
-								<form-component :save="create" />
+							<template v-else>
+								<loader v-bind="{ background: '#699ED0' }" />
 							</template>
-						</modal>
-						<h4 class="mb-0">spelartruppen</h4>
-					</li>
-					<li class="list-group-item media">
-						<template v-if="!loading">
-							<table class="table table-sm mb-0">
-								<thead class="thead-dark">
-									<tr>
-										<th scope="col">namn</th>
-										<th scope="col">tröjnummer</th>
-										<th scope="col">i antal startelvor</th>
-										<th scope="col">antal positioner</th>
-										<th scope="col" v-if="loggedInUserIsAdmin"></th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr v-for="player in players" v-bind:key="player.id">
-										<td>
-											{{ player.fullName }}
-											<span class="badge badge-primary ml-1" v-if="player.isCaptain">kapten</span>
-											<span class="badge badge-danger ml-1" v-if="player.isHereOnLoan">inlånad</span>
-											<span class="badge badge-warning ml-1" v-if="player.isOutOnLoan">utlånad</span>
-											<span class="badge badge-danger ml-1" v-if="player.isSold">såld</span>
-										</td>
-										<td>{{ player.kitNumber }}</td>
-										<td>{{ player.inNumberOfStartingElevens }}</td>
-										<td>{{ player.availablePositions.length }}</td>
-										<td v-if="loggedInUserIsAdmin">
-											<modal v-bind="{ id: `edit-${player.id}`, header: player.name }">
-												<template slot="btn">
-													<a data-toggle="modal" :data-target="'#' + `edit-${player.id}`">
-														<span class="icon icon-edit"></span>
-													</a>
-												</template>
-												<template slot="body">
-													<form-component :player="player" :save="update" />
-												</template>
-											</modal>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</template>
-						<template v-else>
-							<loader v-bind="{ background: '#699ED0' }" />
-						</template>
-					</li>
-				</ul>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -86,11 +81,10 @@ import {
 
 import FormComponent from './form.vue'
 import Modal from '../../../components/modal.vue'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
 	components: {
-		Loader, Modal, FormComponent
+		Modal, FormComponent
 	}
 })
 export default class Wrapper extends Vue {
@@ -102,6 +96,19 @@ export default class Wrapper extends Vue {
 	@ModuleAction(CREATE_PLAYER) createPlayer: (payload: { player: CrudPlayer }) => Promise<Result[]>
 
 	loading: boolean = true
+
+	modalAttributes: any = {
+		newPlayer: {
+			attributes: {
+				name: 'new-player'
+			},
+			header: 'ny spelare',
+			button: {
+				classes: 'btn btn-sm btn-primary float-right',
+				text: 'ny spelare'
+			}
+		}
+	}
 
 	mounted() {
 		Promise.all([this.loadPlayers(), this.loadPositions()])
