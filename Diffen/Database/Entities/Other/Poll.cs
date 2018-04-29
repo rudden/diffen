@@ -14,6 +14,7 @@ namespace Diffen.Database.Entities.Other
 		public int Id { get; set; }
 
 		public string Name { get; set; }
+		public string Slug { get; set; }
 
 		[ForeignKey("CreatedByUserId")]
 		public AppUser CreatedByUser { get; set; }
