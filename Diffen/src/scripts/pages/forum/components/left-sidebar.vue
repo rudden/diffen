@@ -34,6 +34,9 @@
                     <template v-if="user.favoritePlayer">
                         <li><span class="text-muted icon icon-heart mr-3"></span>{{ user.favoritePlayer.fullName }}</li>
                     </template>
+                    <template v-if="user.region">
+                        <li class="text-uppercase"><span class="text-muted icon icon-globe mr-3"></span>DIF {{ user.region }}</li>
+                    </template>
                 </ul>
             </div>
         </div>
