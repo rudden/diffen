@@ -99,7 +99,7 @@ namespace Diffen.Database.Clients
 		public async Task<List<Post>> GetConversationOnPostIdAsync(int postId)
 		{
 			var list = new List<Post>();
-			var initialPost = await _dbContext.Posts.IncludeAll().FirstOrDefaultAsync(x => x.Id == postId);
+			var initialPost = await _dbContext.Posts.IncludeAll().ExceptScissored().FirstOrDefaultAsync(x => x.Id == postId);
 			if (initialPost == null)
 				return new List<Post>();
 			list.Add(initialPost);
@@ -131,9 +131,9 @@ namespace Diffen.Database.Clients
 			switch (relationType)
 			{
 				case PostRelationType.Child:
-					return _dbContext.Posts.IncludeAll().Where(x => x.ParentPostId == post.Id).ToListAsync();
+					return _dbContext.Posts.IncludeAll().ExceptScissored().Where(x => x.ParentPostId == post.Id).ToListAsync();
 				case PostRelationType.Parent:
-					return _dbContext.Posts.IncludeAll().Where(x => x.Id == post.ParentPostId).ToListAsync();
+					return _dbContext.Posts.IncludeAll().ExceptScissored().Where(x => x.Id == post.ParentPostId).ToListAsync();
 				default:
 					return null;
 			}
@@ -154,7 +154,6 @@ namespace Diffen.Database.Clients
 			Parent
 		}
 		#endregion
-
 
 		public Task<List<UrlTip>> GetUrlTipsAsync()
 		{
@@ -630,6 +629,7 @@ namespace Diffen.Database.Clients
 
 		public Task<bool> CreateChronicleAsync(Chronicle chronicle)
 		{
+			chronicle.Created = DateTime.Now;
 			_dbContext.Chronicles.Add(chronicle);
 			return CommitedResultIsSuccessfulAsync();
 		}
