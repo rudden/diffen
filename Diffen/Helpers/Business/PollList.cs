@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 
 namespace Diffen.Helpers.Business
 {
@@ -6,160 +7,49 @@ namespace Diffen.Helpers.Business
 	{
 		public static List<PollItem> All() => new List<PollItem>
 		{
-			new PollItem
+			new PollItem("Bästa anfallaren 2017?", new []
 			{
-				Name = "Bästa anfallaren 2017?",
-				Selections = new List<PollSelectionItem>
-				{
-					new PollSelectionItem
-					{
-						Name = "Gustav Engvall"
-					},
-					new PollSelectionItem
-					{
-						Name = "Aliou Badji"
-					},
-					new PollSelectionItem
-					{
-						Name = "Tinotenda Kadewere"
-					},
-					new PollSelectionItem
-					{
-						Name = "Haruna Garba"
-					},
-					new PollSelectionItem
-					{
-						Name = "Amadou Jawo"
-					}
-				}
-			},
-			new PollItem
+				"Gustav Engvall",
+				"Aliou Badji",
+				"Tinotenda Kadewere",
+				"Haruna Garba",
+				"Amadou Jawo",
+				"Julian Kristoffersen"
+			}),
+			new PollItem("Nöjd med 3e platsen 2017?", new [] { "Ja", "Nej", "Sådär" }),
+			new PollItem("Topp 3 2018 eller vinna Svenska Cupen?", new []
 			{
-				Name = "Nöjd med 3e platsen 2017?",
-				Selections = new List<PollSelectionItem>
-				{
-					new PollSelectionItem
-					{
-						Name = "Ja"
-					},
-					new PollSelectionItem
-					{
-						Name = "Nej"
-					},
-					new PollSelectionItem
-					{
-						Name = "Sådär"
-					}
-				}
-			},
-			new PollItem
+				"Topp 3",
+				"Vinna Svenska Cupen",
+				"Va? Vinna Allsvenskan!"
+			}),
+			new PollItem("Bästa nyförvärvet 2018", new []
 			{
-				Name = "Topp 3 2018 eller vinna Svenska Cupen?",
-				Selections = new List<PollSelectionItem>
-				{
-					new PollSelectionItem
-					{
-						Name = "Topp 3"
-					},
-					new PollSelectionItem
-					{
-						Name = "Vinna Svenska Cupen"
-					},
-					new PollSelectionItem
-					{
-						Name = "Va? Vinna Allsvenskan!"
-					}
-				}
-			},
-			new PollItem
+				"Marcus Danielsson",
+				"Hampus Finndell",
+				"Johan Andersson",
+				"Yura Movsisyan",
+				"Dzenis Kozica",
+				"Fredrik Ulvestad",
+				"Edward Chilufya"
+			}),
+			new PollItem("Viktigaste spelaren att förlänga med?", new []
 			{
-				Name = "Bästa nyförvärvet 2018",
-				Selections = new List<PollSelectionItem>
-				{
-					new PollSelectionItem
-					{
-						Name = "Marcus Danielsson"
-					},
-					new PollSelectionItem
-					{
-						Name = "Hampus Finndell"
-					},
-					new PollSelectionItem
-					{
-						Name = "Johan Andersson"
-					},
-					new PollSelectionItem
-					{
-						Name = "Yura Movsisyan"
-					},
-					new PollSelectionItem
-					{
-						Name = "Dzenis Kozica"
-					},
-					new PollSelectionItem
-					{
-						Name = "Fredrik Ulvestad"
-					},
-					new PollSelectionItem
-					{
-						Name = "Edward Chilufya"
-					}
-				}
-			},
-			new PollItem
+				"Andreas Isaksson",
+				"Jonas Olsson",
+				"Kerim Mrabti",
+				"Niclas Gunnarsson"
+			}),
+			new PollItem("Bästa mittbackskonstellationen", new []
 			{
-				Name = "Viktigaste spelaren att förlänga med?",
-				Selections = new List<PollSelectionItem>
-				{
-					new PollSelectionItem
-					{
-						Name = "Andreas Isaksson"
-					},
-					new PollSelectionItem
-					{
-						Name = "Jonas Olsson"
-					},
-					new PollSelectionItem
-					{
-						Name = "Kerim Mrabti"
-					},
-					new PollSelectionItem
-					{
-						Name = "Niclas Gunnarsson"
-					}
-				}
-			},
-			new PollItem
-			{
-				Name = "Bästa mittbackskonstellationen?",
-				Selections = new List<PollSelectionItem>
-				{
-					new PollSelectionItem
-					{
-						Name = "Danielsson & Olsson"
-					},
-					new PollSelectionItem
-					{
-						Name = "Danielsson & Une Larsson"
-					},
-					new PollSelectionItem
-					{
-						Name = "Danielsson & Gunnarsson"
-					},
-					new PollSelectionItem
-					{
-						Name = "Olsson & Une Larsson"
-					},
-					new PollSelectionItem
-					{
-						Name = "Olsson & Gunnarsson"
-					},
-					new PollSelectionItem
-					{
-						Name = "Une Larsson & Gunnarsson"
-					}
-				}
-			}
+				"Danielsson & Olsson",
+				"Danielsson & Une Larsson",
+				"Danielsson & Gunnarsson",
+				"Olsson & Une Larsson",
+				"Olsson & Gunnarsson",
+				"Une Larsson & Gunnarsson"
+			}),
+			new PollItem("Tino eller Badji", new [] { "Tino", "Badji" })
 		};
 	}
 
@@ -167,10 +57,21 @@ namespace Diffen.Helpers.Business
 	{
 		public string Name { get; set; }
 		public List<PollSelectionItem> Selections { get; set; }
+
+		public PollItem(string name, string[] selections)
+		{
+			Name = name;
+			Selections = selections.Select(selection => new PollSelectionItem(selection)).ToList();
+		}
 	}
 
 	public class PollSelectionItem
 	{
 		public string Name { get; set; }
+
+		public PollSelectionItem(string name)
+		{
+			Name = name;
+		}
 	}
 }
