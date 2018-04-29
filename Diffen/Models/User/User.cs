@@ -11,6 +11,7 @@ namespace Diffen.Models.User
 		public string Email { get; set; }
 		public string NickName { get; set; }
 		public string Avatar { get; set; }
+		public string Region { get; set; }
 
 		public int Karma { get; set; }
 		public int NumberOfPosts { get; set; }
