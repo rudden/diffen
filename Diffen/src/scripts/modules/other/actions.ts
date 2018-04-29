@@ -4,11 +4,13 @@ import { Store, ActionTree, ActionContext } from 'vuex'
 
 import { Result } from '../../model/common'
 import { Poll, PollSelection } from '../../model/other'
-import { Poll as CrudPoll, PollVote as CrudVote, Chronicle as CrudChronicle } from '../../model/other/crud'
+import { Poll as CrudPoll, PollVote as CrudVote, Chronicle as CrudChronicle, Region as CrudRegion } from '../../model/other/crud'
 
 import { 
+	FETCH_POLL,
 	FETCH_POLLS,
 	FETCH_ACTIVE_POLLS,
+	SET_POLL,
 	SET_POLLS,
 	CREATE_POLL,
 	CREATE_POLL_VOTE,
@@ -17,11 +19,19 @@ import {
 	FETCH_CHRONICLES,
 	SET_CHRONICLE,
 	SET_CHRONICLES,
-	UPDATE_CHRONICLE
+	UPDATE_CHRONICLE,
+	SET_VOTES_ON_POLL,
+    FETCH_REGIONS,
+	SET_REGIONS,
+    CREATE_REGION
 } from './types'
 
 // export everything compliant to the vuex specification for actions
 export const Actions: ActionTree<State, any> = {
+	[FETCH_POLL]: (store: ActionContext<State, any>, payload: { slug: string }): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/polls/${payload.slug}`)
+			.then((res) => store.commit(SET_POLL, res.data)).catch((error) => console.warn(error))
+	},
 	[FETCH_POLLS]: (store: ActionContext<State, any>): Promise<void> => {
 		return axios.get(`${store.rootState.vm.api}/polls`)
 			.then((res) => store.commit(SET_POLLS, res.data)).catch((error) => console.warn(error))
@@ -34,12 +44,7 @@ export const Actions: ActionTree<State, any> = {
 		return new Promise<Result[]>((resolve, reject) => {
 			return axios.post(`${store.rootState.vm.api}/polls/${payload.pollId}/vote`, payload.vote) 
 				.then((res) => {
-					store.state.polls.filter((p: Poll) => p.id == payload.pollId)[0]
-						.selections.filter((s: PollSelection) => s.id == payload.vote.pollSelectionId)[0]
-							.votes.push({
-								id: payload.vote.votedByUserId,
-								nickName: store.rootState.vm.loggedInUser.nickName
-							})
+					store.commit(SET_VOTES_ON_POLL, { vote: payload.vote, pollId: payload.pollId, byUserNickName: store.rootState.vm.loggedInUser.nickName })
 					resolve(res.data)
 				}).catch((error) => console.warn(error))
 		})
@@ -58,6 +63,10 @@ export const Actions: ActionTree<State, any> = {
 		return axios.get(`${store.rootState.vm.api}/chronicles?amount=${payload.amount}`)
 			.then((res) => store.commit(SET_CHRONICLES, res.data)).catch((error) => console.warn(error))
 	},
+	[FETCH_REGIONS]: (store: ActionContext<State, any>): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/regions`)
+			.then((res) => store.commit(SET_REGIONS, res.data)).catch((error) => console.warn(error))
+	},
 	[CREATE_CHRONICLE]: (store: ActionContext<State, any>, payload: { chronicle: CrudChronicle }): Promise<Result[]> => {
 		return new Promise<Result[]>((resolve, reject) => {
 			return axios.post(`${store.rootState.vm.api}/chronicles/create`, payload.chronicle)
@@ -67,6 +76,12 @@ export const Actions: ActionTree<State, any> = {
 	[UPDATE_CHRONICLE]: (store: ActionContext<State, any>, payload: { chronicle: CrudChronicle }): Promise<Result[]> => {
 		return new Promise<Result[]>((resolve, reject) => {
 			return axios.post(`${store.rootState.vm.api}/chronicles/update`, payload.chronicle)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[CREATE_REGION]: (store: ActionContext<State, any>, payload: { region: CrudRegion }): Promise<Result[]> => {
+		return new Promise<Result[]>((resolve, reject) => {
+			return axios.post(`${store.rootState.vm.api}/regions/create`, payload.region)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},
