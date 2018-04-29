@@ -1,6 +1,9 @@
 <template>
-	<div class="container pt-3 pb-4" v-if="!loading">
-		<component :is="active.component" v-bind="active.attributes ? active.attributes : {}" />
+	<div>
+		<navbar />
+		<div class="container pt-3 pb-4" v-if="!loading">
+			<component :is="active.component" v-bind="active.attributes ? active.attributes : {}" />
+		</div>
 	</div>
 </template>
 
