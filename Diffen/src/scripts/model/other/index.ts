@@ -3,6 +3,7 @@ import { IdAndNickNameUser } from '../common'
 export class Poll {
     id: number
     name: string
+    slug: string
     selections: PollSelection[]
     byUser: IdAndNickNameUser
     created: string
@@ -25,4 +26,13 @@ export class Chronicle {
     writtenByUser: IdAndNickNameUser
     created: string
     updated: string
+    published: string
+}
+
+export class Region {
+    id: number
+    name: string
+    longitud: number
+    latitud: number
+    users: IdAndNickNameUser[] = []
 }
