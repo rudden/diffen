@@ -12,7 +12,7 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    [Migration("20180423162341_initial")]
+    [Migration("20180429095922_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,21 +25,17 @@ namespace Diffen.Migrations
             modelBuilder.Entity("Diffen.Database.Entities.Forum.Post", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("Id");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnName("Created");
+                    b.Property<DateTime>("Created");
 
                     b.Property<string>("CreatedByUserId");
 
-                    b.Property<string>("Message")
-                        .HasColumnName("Message");
+                    b.Property<string>("Message");
 
                     b.Property<int?>("ParentPostId");
 
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnName("Updated");
+                    b.Property<DateTime?>("Updated");
 
                     b.HasKey("Id");
 
@@ -135,6 +131,8 @@ namespace Diffen.Migrations
 
                     b.Property<string>("HeaderFileName");
 
+                    b.Property<DateTime>("Published");
+
                     b.Property<string>("Slug");
 
                     b.Property<string>("Text");
@@ -162,6 +160,8 @@ namespace Diffen.Migrations
                     b.Property<string>("CreatedByUserId");
 
                     b.Property<string>("Name");
+
+                    b.Property<string>("Slug");
 
                     b.HasKey("Id");
 
@@ -204,6 +204,44 @@ namespace Diffen.Migrations
                     b.HasIndex("VotedByUserId");
 
                     b.ToTable("PollVotes");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.Region", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<double>("Latitud");
+
+                    b.Property<double>("Longitud");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Regions");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.RegionToUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("RegionId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RegionId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("UsersToRegions");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Squad.Formation", b =>
@@ -353,7 +391,7 @@ namespace Diffen.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed");
 
-                    b.Property<DateTime>("SecludedUntil");
+                    b.Property<DateTime?>("SecludedUntil");
 
                     b.Property<string>("SecurityStamp");
 
@@ -689,6 +727,18 @@ namespace Diffen.Migrations
                     b.HasOne("Diffen.Database.Entities.User.AppUser", "VotedByUser")
                         .WithMany()
                         .HasForeignKey("VotedByUserId");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.RegionToUser", b =>
+                {
+                    b.HasOne("Diffen.Database.Entities.Other.Region", "Region")
+                        .WithMany("UsersInRegion")
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Diffen.Database.Entities.User.AppUser", "User")
+                        .WithOne("Region")
+                        .HasForeignKey("Diffen.Database.Entities.Other.RegionToUser", "UserId");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Squad.Lineup", b =>

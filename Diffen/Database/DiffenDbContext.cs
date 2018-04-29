@@ -38,6 +38,9 @@ namespace Diffen.Database
 		public DbSet<PollVote> PollVotes { get; set; }
 		public DbSet<Chronicle> Chronicles { get; set; }
 
+		public DbSet<Region> Regions { get; set; }
+		public DbSet<RegionToUser> UsersToRegions { get; set; }
+
 		public DiffenDbContext(IConfigurationRoot configuration, DbContextOptions options) : base(options)
 		{
 			_configuration = configuration;

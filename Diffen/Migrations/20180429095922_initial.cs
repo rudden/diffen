@@ -42,7 +42,7 @@ namespace Diffen.Migrations
                     PasswordHash = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
-                    SecludedUntil = table.Column<DateTime>(nullable: false),
+                    SecludedUntil = table.Column<DateTime>(nullable: true),
                     SecurityStamp = table.Column<string>(nullable: true),
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     UserName = table.Column<string>(maxLength: 256, nullable: true)
@@ -96,6 +96,22 @@ namespace Diffen.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Positions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Regions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Created = table.Column<DateTime>(nullable: false),
+                    Latitud = table.Column<double>(nullable: false),
+                    Longitud = table.Column<double>(nullable: false),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Regions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -212,6 +228,7 @@ namespace Diffen.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Created = table.Column<DateTime>(nullable: false),
                     HeaderFileName = table.Column<string>(nullable: true),
+                    Published = table.Column<DateTime>(nullable: false),
                     Slug = table.Column<string>(nullable: true),
                     Text = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: true),
@@ -309,7 +326,8 @@ namespace Diffen.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Created = table.Column<DateTime>(nullable: false),
                     CreatedByUserId = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    Slug = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -449,6 +467,32 @@ namespace Diffen.Migrations
                         principalTable: "Positions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UsersToRegions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RegionId = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UsersToRegions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UsersToRegions_Regions_RegionId",
+                        column: x => x.RegionId,
+                        principalTable: "Regions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UsersToRegions_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -834,6 +878,18 @@ namespace Diffen.Migrations
                 filter: "[UserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UsersToRegions_RegionId",
+                table: "UsersToRegions",
+                column: "RegionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsersToRegions_UserId",
+                table: "UsersToRegions",
+                column: "UserId",
+                unique: true,
+                filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Votes_CreatedByUserId",
                 table: "Votes",
                 column: "CreatedByUserId");
@@ -901,6 +957,9 @@ namespace Diffen.Migrations
                 name: "UserFilters");
 
             migrationBuilder.DropTable(
+                name: "UsersToRegions");
+
+            migrationBuilder.DropTable(
                 name: "Votes");
 
             migrationBuilder.DropTable(
@@ -917,6 +976,9 @@ namespace Diffen.Migrations
 
             migrationBuilder.DropTable(
                 name: "PollSelections");
+
+            migrationBuilder.DropTable(
+                name: "Regions");
 
             migrationBuilder.DropTable(
                 name: "Posts");
