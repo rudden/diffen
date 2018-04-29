@@ -43,7 +43,6 @@ import { Post } from '../../model/forum'
 import PostComponent from './item.vue'
 
 import { Pagination } from 'vue-pagination-2'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
 	props: {
@@ -60,7 +59,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 		paging: Function
 	},
 	components: {
-		PostComponent, Pagination, Loader
+		PostComponent, Pagination
 	}
 })
 export default class PostStream extends Vue {

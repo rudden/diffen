@@ -50,8 +50,6 @@ import FiveThreeTwo from './5-atb/532.vue'
 import FiveFourOne from './5-atb/541.vue'
 import FiveTwoOneTwo from './5-atb/5212.vue'
 
-import { Stretch as Loader } from 'vue-loading-spinner'
-
 @Component({
 	props: {
 		players: Array,
@@ -60,8 +58,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
 	components: {
 		ThreeFourThree, ThreeOneFourTwo, ThreeFiveTwo, ThreeFourOneTwo,
 		FourFourTwo, FourFiveOne, FourFourOneOne, FourThreeThree, FourThreeTwoOne, FourThreeOneTwo, FourTwoThreeOne, FourOneFourOne, FourOneTwoOneTwo,
-		FiveThreeTwo, FiveFourOne, FiveTwoOneTwo,
-		Loader
+		FiveThreeTwo, FiveFourOne, FiveTwoOneTwo
 	}
 })
 export default class FormationComponent extends Vue {

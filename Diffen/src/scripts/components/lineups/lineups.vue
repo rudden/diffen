@@ -72,7 +72,6 @@ import { Lineup as CrudLineup } from '../../model/squad/crud'
 import { ProfileViewModel, Result, ResultType } from '../../model/common'
 
 import Results from '../../components/results.vue'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 import {
 	GET_PLAYERS,
@@ -101,7 +100,7 @@ import FormationComponent from './formation.vue'
 		}
 	},
 	components: {
-		Loader, FormationComponent, Results
+		FormationComponent, Results
 	}
 })
 export default class Lineups extends Vue {

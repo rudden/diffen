@@ -30,7 +30,6 @@ import { Conversation } from '../../model/forum'
 import { PageViewModel } from '../../model/common'
 
 import Embeds from './embeds.vue'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
 	props: {
@@ -38,7 +37,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
         selectedPostId: Number
 	},
 	components: {
-		Loader, Embeds
+		Embeds
 	}
 })
 export default class Children extends Vue {

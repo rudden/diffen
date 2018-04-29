@@ -29,11 +29,10 @@ import NewPost from '../../../components/post/new.vue'
 import PostStream from '../../../components/post/stream.vue'
 
 import { Pagination } from 'vue-pagination-2'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
     components: {
-        Pagination, NewPost, Loader, PostStream
+        Pagination, NewPost, PostStream
     }
 })
 export default class Middle extends Vue {

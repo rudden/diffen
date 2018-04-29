@@ -48,14 +48,13 @@ import { Post, Conversation } from '../../model/forum'
 
 import Embeds from './embeds.vue'
 import Children from './children.vue'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
 	props: {
         selectedPostId: Number
 	},
 	components: {
-		Loader, Children, Embeds
+		Children, Embeds
 	}
 })
 export default class FullConversation extends Vue {

@@ -84,11 +84,10 @@ import { FETCH_KVP_USERS, FETCH_CONVERSATION_KVP_USERS, FETCH_PERSONAL_MESSAGES,
 import Results from '../../../components/results.vue'
 
 import { Typeahead } from 'uiv'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
 	components: {
-		Typeahead, Results, Loader
+		Typeahead, Results
 	}
 })
 export default class Pm extends Vue {

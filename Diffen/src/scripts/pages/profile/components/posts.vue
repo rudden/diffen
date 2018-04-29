@@ -39,11 +39,10 @@ import { GET_CREATED_POSTS, GET_SAVED_POSTS, FETCH_POSTS, FETCH_SAVED_POSTS } fr
 import PostStream from '../../../components/post/stream.vue'
 
 import { Pagination } from 'vue-pagination-2'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
 	components: {
-		Pagination, Loader, PostStream
+		Pagination, PostStream
 	}
 })
 export default class Posts extends Vue {

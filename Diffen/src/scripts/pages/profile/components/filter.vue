@@ -69,11 +69,10 @@ import { GET_USER, FETCH_USER, FETCH_KVP_USERS, CHANGE_FILTER } from '../../../m
 import Results from '../../../components/results.vue'
 
 import { Typeahead } from 'uiv'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
 	components: {
-		Typeahead, Loader, Results
+		Typeahead, Results
 	}
 })
 export default class FilterComponent extends Vue {
