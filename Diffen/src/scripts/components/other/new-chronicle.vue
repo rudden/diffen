@@ -28,6 +28,9 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <date-picker v-model="publishDate" :config="dpConfig" :placeholder="'publiceringsdatum (direkt om inget väljs)'" />
+                        </div>
+                        <div class="form-group">
                             <vue-editor v-model="content" :placeholder="'din krönika'" :editor-toolbar="customToolbar" />
                         </div>
                         <results :items="results" class="pb-3" />
@@ -77,15 +80,15 @@ import { GET_CHRONICLE, FETCH_CHRONICLE, CREATE_CHRONICLE, UPDATE_CHRONICLE } fr
 
 import Results from '../results.vue'
 
-import { Stretch as Loader } from 'vue-loading-spinner'
 import { VueEditor } from 'vue2-editor'
+import DatePicker from 'vue-bootstrap-datetimepicker'
 
 @Component({
     props: {
         selectedChronicleSlug: String
     },
 	components: {
-        Loader, Results, VueEditor
+        Results, VueEditor, DatePicker
 	}
 })
 export default class NewChronicle extends Vue {
@@ -109,6 +112,8 @@ export default class NewChronicle extends Vue {
     headerFileName: string = ''
     headerFileSrcPreview: string = ''
 
+    publishDate: Date = new Date('')
+
     customToolbar = [
         [ { 'size': [ 'small', false, 'large', 'huge' ] } ],
         [ 'bold', 'italic', 'underline', 'strike' ],
@@ -118,6 +123,21 @@ export default class NewChronicle extends Vue {
         [ { 'list': 'ordered' }, { 'list': 'bullet' } ],
         [ 'link', 'video' ]
     ]
+
+    dpConfig: any = { 
+		format: 'YYYY-MM-DD', 
+		useCurrent: false, 
+		locale: 'sv', 
+		icons: { 
+			next: 'icon icon-arrow-right',
+			previous: 'icon icon-arrow-left' 
+        },
+        widgetPositioning: {
+            vertical: 'bottom',
+            horizontal: 'left'
+        },
+        minDate: new Date(new Date().toISOString().slice(0, 10).toString() + ' 00:00')
+    }
 
     private directoryName: string = 'chronicles'
 
@@ -130,13 +150,16 @@ export default class NewChronicle extends Vue {
                         id: this.chronicle.id,
                         title: this.chronicle.title,
                         text: this.chronicle.text,
-                        writtenByUserId: this.chronicle.writtenByUser.id
+                        writtenByUserId: this.chronicle.writtenByUser.id,
+                        published: this.chronicle.published
                     }
+                    this.publishDate = new Date(this.chronicle.published)
                     this.content = this.chronicle.text
                     this.headerFileName = this.friendlyFileName(this.chronicle.headerFileName)
                     this.loading = false
                 })
         }
+
         this.newChronicle.writtenByUserId = this.vm.loggedInUser.id
     }
 
@@ -173,12 +196,15 @@ export default class NewChronicle extends Vue {
 
     save() {
         this.loading = true
+        this.newChronicle.published = this.publishDate.toString()
         if (this.newChronicle.id) {
             this.updateChronicle({ chronicle: this.newChronicle })
                 .then((results: Result[]) => {
                     this.results = results
                     if (this.headerFileName !== this.friendlyFileName(this.chronicle.headerFileName)) {
                         this.uploadFile().then(() => this.loading = false)
+                    } else {
+                        this.loading = false
                     }
                 })
         } else {
