@@ -4,7 +4,7 @@ import Mutations from './mutations'
 import Getters from './getters'
 import Actions from './actions'
 
-export const Forum: Module<State, any> = {
+export const Squad: Module<State, any> = {
 	namespaced: true,
 
 	state: new State(),
@@ -13,4 +13,4 @@ export const Forum: Module<State, any> = {
 	mutations: Mutations
 }
 
-export default Forum
+export default Squad
