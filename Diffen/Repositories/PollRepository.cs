@@ -46,6 +46,11 @@ namespace Diffen.Repositories
 			return _mapper.Map<Poll>(await _dbClient.GetPollOnIdAsync(pollId));
 		}
 
+		public async Task<Poll> GetPollOnSlugAsync(string slug)
+		{
+			return _mapper.Map<Poll>(await _dbClient.GetPollOnSlugAsync(slug));
+		}
+
 		public async Task<List<Result>> CreateNewPollAsync(Models.Other.CRUD.Poll poll)
 		{
 			var newPoll = _mapper.Map<Database.Entities.Other.Poll>(poll);
@@ -68,9 +73,16 @@ namespace Diffen.Repositories
 			return results;
 		}
 
-		public Task<List<Result>> CreateVoteOnPollAsync(Models.Other.CRUD.PollVote pollVote)
+		public async Task<List<Result>> CreateVoteOnPollAsync(Models.Other.CRUD.PollVote pollVote)
 		{
-			return new List<Result>().Get(_dbClient.CreateVoteOnPollAsync(_mapper.Map<Database.Entities.Other.PollVote>(pollVote)), ResultMessages.CreatePollVote);
+			if (await _dbClient.UserHasAlreadyVotedOnPollAsync(pollVote))
+			{
+				return new List<Result>
+				{
+					new Result(false, "Du har redan röstat!")
+				};
+			}
+			return await new List<Result>().Get(_dbClient.CreateVoteOnPollAsync(_mapper.Map<Database.Entities.Other.PollVote>(pollVote)), ResultMessages.CreatePollVote);
 		}
 	}
 }
