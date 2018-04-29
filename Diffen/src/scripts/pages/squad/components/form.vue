@@ -89,7 +89,6 @@ import {
 
 import Modal from '../../../components/modal.vue'
 import Results from '../../../components/results.vue'
-import { Stretch as Loader } from 'vue-loading-spinner'
 
 @Component({
     props: {
@@ -97,7 +96,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
         save: Function
     },
 	components: {
-		Loader, Modal, Results
+		Modal, Results
 	}
 })
 export default class FormComponent extends Vue {

@@ -41,13 +41,7 @@ import { Chronicle } from '../../model/other'
 
 import { GET_CHRONICLE, FETCH_CHRONICLE } from '../../modules/other/types'
 
-import { Stretch as Loader } from 'vue-loading-spinner'
-
-@Component({
-	components: {
-        Loader
-	}
-})
+@Component({})
 export default class ChronicleComponent extends Vue {
     @State(state => state.vm) vm: ChronicleViewModel
     @ModuleGetter(GET_CHRONICLE) chronicle: Chronicle
