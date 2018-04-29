@@ -13,8 +13,28 @@
             <loader v-bind="{ background: '#699ED0' }" />
         </li>
         <div v-show="!loading">
-            <template v-if="chronicles.length > 0">
-                <li class="list-group-item media"  :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="chronicle in chronicles" :key="chronicle.id">
+            <li class="media list-group-item p-4" v-if="!isSmall && loggedInUserIsAuthor">
+                <div class="col pl-0">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="published" value="Published">
+                        <label class="form-check-label" for="published">publicerade</label>
+                    </div>
+                    <div class="form-check form-check-inline" v-if="loggedInUserIsAdmin">
+                        <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="unpublished" value="UnPublished">
+                        <label class="form-check-label" for="unpublished">ej publicerade</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="my" value="My">
+                        <label class="form-check-label" for="my">mina</label>
+                    </div>
+                    <div class="form-check form-check-inline" v-if="loggedInUserIsAdmin">
+                        <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="all" value="All">
+                        <label class="form-check-label" for="all">alla</label>
+                    </div>
+                </div>
+            </li>
+            <template v-if="filteredChronicles.length > 0">
+                <li class="list-group-item media"  :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="chronicle in filteredChronicles" :key="chronicle.id">
                     <span class="icon icon-pencil text-muted mr-2" v-if="!isSmall"></span>
                     <div class="media-body">
                         <div class="media-heading">
@@ -24,11 +44,12 @@
                                 </template>
                                 <template v-else>
                                     <strong>{{ chronicle.title }}</strong>
+                                    <span class="badge badge-danger ml-2" v-if="chronicle.published > today">inte publicerad än</span>
                                 </template>
                             </a>
                         </div>
                         <div>
-                            <small class="text-muted float-right">{{ chronicle.created }}</small>
+                            <small class="text-muted float-right">{{ chronicle.published }}</small>
                             <small class="text-muted">av: {{ chronicle.writtenByUser.nickName }}</small>
                         </div>
                     </div>
@@ -52,7 +73,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Component } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import { Getter, Action, State, namespace } from 'vuex-class'
 
 const ModuleGetter = namespace('other', Getter)
@@ -64,7 +85,10 @@ import { Chronicle } from '../../model/other'
 import { GET_CHRONICLES, FETCH_CHRONICLES } from '../../modules/other/types'
 
 import Modal from '../modal.vue'
-import { Stretch as Loader } from 'vue-loading-spinner'
+
+enum ChroniclesFilter {
+    All, My, Published, UnPublished
+}
 
 @Component({
     props: {
@@ -78,7 +102,7 @@ import { Stretch as Loader } from 'vue-loading-spinner'
         }
     },
 	components: {
-        Loader, Modal
+        Modal
 	}
 })
 export default class Chronicles extends Vue {
@@ -91,12 +115,43 @@ export default class Chronicles extends Vue {
 
     loading: boolean = true
 
+    chroniclesFilter: string = ''
+    filteredChronicles: Chronicle[] = []
+
+    today: string = new Date().toISOString().slice(0, 10)
+
 	mounted() {
-        this.loadChronicles({ amount: this.amountOfChronicles }).then(() => this.loading = false)
+        this.loadChronicles({ amount: this.amountOfChronicles }).then(() => {
+            this.chroniclesFilter = ChroniclesFilter[ChroniclesFilter.Published]
+            this.loading = false
+        })
     }
+
+    @Watch('chroniclesFilter')
+        onChange() {
+            let selected = ChroniclesFilter[this.chroniclesFilter as keyof typeof ChroniclesFilter]
+            switch (selected) {
+                case ChroniclesFilter.My:
+                    this.filteredChronicles = this.chronicles.filter((c: Chronicle) => c.writtenByUser.id == this.vm.loggedInUser.id)
+                    break
+                case ChroniclesFilter.Published:
+                    this.filteredChronicles = this.chronicles.filter((c: Chronicle) => c.published <= this.today)
+                    break
+                case ChroniclesFilter.UnPublished:
+                    this.filteredChronicles = this.chronicles.filter((c: Chronicle) => c.published > this.today)
+                    break
+                case ChroniclesFilter.All:
+                    this.filteredChronicles = this.chronicles
+                    break
+            }
+        }
 
     get loggedInUserIsAuthor() {
         return this.vm.loggedInUser.inRoles.some(role => role == 'Author' || role == 'Admin')
+    }
+
+     get loggedInUserIsAdmin() {
+        return this.vm.loggedInUser.inRoles.some(role => role == 'Admin')
     }
 }
 </script>
