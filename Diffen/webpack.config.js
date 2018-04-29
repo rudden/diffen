@@ -15,8 +15,8 @@ module.exports = {
 		'squad': './src/scripts/pages/squad',
 		'profile': './src/scripts/pages/profile',
 		'chronicle': './src/scripts/pages/chronicle',
-		
-		'navbar': './src/scripts/pages/sub/navbar',
+		'poll': './src/scripts/pages/poll',
+		'region': './src/scripts/pages/region',
 		
 		'style': './src/styles/app.scss'
 	},
