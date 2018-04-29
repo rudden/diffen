@@ -11,6 +11,7 @@ module.exports = {
 		'theme': './src/scripts/javascript/theme.js',
 		'avatar': './src/scripts/javascript/avatar.js',
 		
+		'home': './src/scripts/pages/home',
 		'forum': './src/scripts/pages/forum',
 		'squad': './src/scripts/pages/squad',
 		'profile': './src/scripts/pages/profile',
