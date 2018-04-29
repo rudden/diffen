@@ -79,6 +79,7 @@ namespace Diffen
 			services.AddScoped<IPollRepository, PollRepository>();
 			services.AddScoped<IChronicleRepository, ChronicleRepository>();
 			services.AddScoped<IUploadRepository, UploadRepository>();
+			services.AddScoped<IRegionRepository, RegionRepository>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
