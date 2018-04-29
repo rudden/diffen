@@ -40,7 +40,7 @@
 						</google-map>
 					</li>
 					<li class="media list-group-item p-4">
-						<span class="icon icon-globe text-muted mr-2"></span>
+						<span class="icon icon-location-pin text-muted mr-2"></span>
 						<div class="media-body">
 							<div class="form-group float-right mb-0">
 								<input type="text" class="form-control form-control-sm" v-model="regionSearch" placeholder="sök">
@@ -56,7 +56,7 @@
 					<div v-show="!loading">
 						<template v-if="filteredRegions.length > 0">
 							<li class="list-group-item media p-4" v-for="region in filteredRegions" :key="region.id">
-								<span class="icon icon-globe text-muted mr-2"></span>
+								<span class="icon icon-location-pin text-muted mr-2"></span>
 								<div class="media-body">
 									<span class="text-muted float-right">
 										<template v-if="region.users.length > 0">
