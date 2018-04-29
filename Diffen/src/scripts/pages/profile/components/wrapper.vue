@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<navbar />
 		<div class="profile-header" style="background-image: url(/bg.jpg);" v-if="!loading">
 			<user-component />
 			<nav class="profile-header-nav">
