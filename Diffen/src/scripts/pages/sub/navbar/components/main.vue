@@ -17,6 +17,12 @@
 				<li class="nav-item" :class="{ 'active': this.active('chronicle') }">
 					<a class="nav-link" href="/chronicle">krönikor</a>
 				</li>
+				<li class="nav-item" :class="{ 'active': this.active('poll') }">
+					<a class="nav-link" href="/poll">omröstningar</a>
+				</li>
+				<li class="nav-item" :class="{ 'active': this.active('region') }">
+					<a class="nav-link" href="/region">områden</a>
+				</li>
 				<li class="navbar-divider"></li>
 				<li class="nav-item" :class="{ 'active': this.active('profile') }">
 					<a class="nav-link" href="/profile">profil</a>
