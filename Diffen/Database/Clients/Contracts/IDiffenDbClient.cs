@@ -88,6 +88,8 @@ namespace Diffen.Database.Clients.Contracts
 		Task<List<Poll>> GetLastNthActivePollsAsync(int amount = 5);
 		Task<List<Poll>> GetPollsOnUserIdAsync(string userId);
 		Task<Poll> GetPollOnIdAsync(int pollId);
+		Task<Poll> GetPollOnSlugAsync(string slug);
+		Task<bool> UserHasAlreadyVotedOnPollAsync(Models.Other.CRUD.PollVote pollVote);
 		Task<bool> CreatePollAsync(Poll poll);
 		Task<bool> CreatePollSelectionsAsync(IEnumerable<PollSelection> selections);
 		Task<bool> CreateVoteOnPollAsync(PollVote vote);

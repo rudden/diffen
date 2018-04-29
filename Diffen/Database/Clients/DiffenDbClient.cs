@@ -573,6 +573,17 @@ namespace Diffen.Database.Clients
 			return _dbContext.Polls.IncludeAll().FirstOrDefaultAsync(poll => poll.Id == pollId);
 		}
 
+		public Task<Poll> GetPollOnSlugAsync(string slug)
+		{
+			return _dbContext.Polls.IncludeAll().FirstOrDefaultAsync(poll => poll.Slug == slug);
+		}
+
+		public async Task<bool> UserHasAlreadyVotedOnPollAsync(Models.Other.CRUD.PollVote pollVote)
+		{
+			var poll = await _dbContext.Polls.IncludeAll().FirstOrDefaultAsync(x => x.Selections.Select(y => y.Id).Contains(pollVote.PollSelectionId));
+			return poll != null && poll.Selections.Any(selection => selection.Votes.Select(x => x.VotedByUserId).Contains(pollVote.VotedByUserId));
+		}
+
 		public Task<bool> CreatePollAsync(Poll poll)
 		{
 			_dbContext.Polls.Add(poll);
