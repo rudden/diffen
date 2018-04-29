@@ -23,5 +23,6 @@ namespace Diffen.Database.Entities.Other
 
 		public DateTime Created { get; set; }
 		public DateTime Updated { get; set; }
+		public DateTime Published { get; set; }
 	}
 }
