@@ -35,7 +35,7 @@ namespace Diffen.Controllers.Api
 			return _chronicleRepository.GetChroniclesAsync(amount);
 		}
 
-		[HttpGet("{userId}")]
+		[HttpGet("user/{userId}")]
 		public Task<List<Chronicle>> GetOnUserId(string userId)
 		{
 			_logger.Debug("Requesting all chronicles created by user with id {userId}", userId);
