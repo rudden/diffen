@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+using Slugify;
+
 namespace Diffen.Database
 {
 	using Helpers;
@@ -964,6 +966,7 @@ namespace Diffen.Database
 					var poll = new Poll
 					{
 						Name = pollItem.Name,
+						Slug = new SlugHelper().GenerateSlug(pollItem.Name),
 						CreatedByUserId = user.Id,
 						Created = created
 					};
