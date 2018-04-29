@@ -49,6 +49,7 @@ namespace Diffen.Database
 			await SeedUserFiltersAsync(dbContext);
 			await SeedScissoredPostsAsync(dbContext);
 			await SeedPollsAsync(dbContext);
+			await SeedRegionsAsync(dbContext);
 		}
 
 		private static async Task SeedUsersAndNickNamesAsync(DiffenDbContext dbContext, UserManager<AppUser> userManager)
@@ -1001,6 +1002,35 @@ namespace Diffen.Database
 							dbContext.PollVotes.Add(vote);
 						}
 					}
+				}
+				await dbContext.SaveChangesAsync();
+			}
+		}
+
+		private static async Task SeedRegionsAsync(DiffenDbContext dbContext)
+		{
+			if (!dbContext.Regions.Any())
+			{
+				foreach (var regionItem in RegionList.All())
+				{
+					var region = new Region
+					{
+						Name = regionItem.Name,
+						Latitud = regionItem.Latitud,
+						Longitud = regionItem.Longitud,
+						Created = DateTime.Now
+					};
+					dbContext.Regions.Add(region);
+				}
+				await dbContext.SaveChangesAsync();
+				foreach (var user in dbContext.Users)
+				{
+					var userToRegion = new RegionToUser
+					{
+						UserId = user.Id,
+						RegionId = dbContext.Regions.PickRandom().Id
+					};
+					dbContext.UsersToRegions.Add(userToRegion);
 				}
 				await dbContext.SaveChangesAsync();
 			}
