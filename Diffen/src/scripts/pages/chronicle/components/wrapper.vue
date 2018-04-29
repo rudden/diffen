@@ -1,9 +1,12 @@
 <template>
-	<div class="container pt-4 pb-5 chronicle">
-		<div class="row" v-if="!loading">
-            <div class="col">
-    			<component :is="active.component" v-bind="active.attributes ? active.attributes : {}" />
-            </div>
+	<div>
+		<navbar />
+		<div class="container pt-4 pb-5 chronicle">
+			<div class="row" v-if="!loading">
+				<div class="col">
+					<component :is="active.component" v-bind="active.attributes ? active.attributes : {}" />
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -13,18 +16,15 @@ import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 import { State, namespace } from 'vuex-class'
 
-import { ChronicleViewModel, Result, ResultType, NavItem } from '../../../model/common'
+import { ChronicleViewModel, NavItem } from '../../../model/common'
 
 import Chronicle from '../../../components/other/chronicle.vue'
 import Chronicles from '../../../components/other/chronicles.vue'
 import NewChronicle from '../../../components/other/new-chronicle.vue'
-import { Stretch as Loader } from 'vue-loading-spinner'
-
-import { Component as VueComponent } from 'vue/types/options'
 
 @Component({
 	components: {
-        Loader, Chronicles, NewChronicle
+        Chronicles, NewChronicle
 	}
 })
 export default class Wrapper extends Vue {
