@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 using AutoMapper;
-using Diffen.Helpers.Extensions;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +15,8 @@ namespace Diffen.Repositories
 	using Models;
 	using Models.User;
 	using Models.Squad;
+	using Models.Other;
+	using Helpers.Extensions;
 	using Database.Clients.Contracts;
 
 	using AppUser = Database.Entities.User.AppUser;
@@ -57,7 +59,7 @@ namespace Diffen.Repositories
 		public async Task<List<Result>> UpdateUserAsync(string userId, Models.User.CRUD.User user)
 		{
 			// user is fetched with user manager due to issue with entity framework (entity is already being tracked...)
-			var currentUser = await _userManager.Users.Include(x => x.NickNames).Include(x => x.FavoritePlayer).FirstOrDefaultAsync(x => x.Id == userId);
+			var currentUser = await _userManager.Users.Include(x => x.NickNames).Include(x => x.FavoritePlayer).Include(x => x.Region).ThenInclude(x => x.Region).FirstOrDefaultAsync(x => x.Id == userId);
 			var currentNick = currentUser.NickNames.Current();
 
 			var results = new List<Result>();
@@ -79,11 +81,44 @@ namespace Diffen.Repositories
 				results.Update(await _dbClient.UpdateUserBioAsync(userId, user.Bio), ResultMessages.UpdateBio);
 			}
 
-			var currentRoles = await _userManager.GetRolesAsync(currentUser);
-			if (!currentRoles.Equals(user.Roles))
+			if (!string.IsNullOrEmpty(user.Region))
 			{
-				await _userManager.RemoveFromRolesAsync(currentUser, currentRoles);
-				await _userManager.AddToRolesAsync(currentUser, user.Roles);
+				if (currentUser.Region?.Region?.Name != user.Region)
+				{
+					results.Update(await _dbClient.UpdateRegionForUserAsync(userId, user.Region), ResultMessages.UpdateRegion);
+				}
+			}
+			else
+			{
+				if (await _dbClient.UserHasRegionSelectedAsync(userId))
+				{
+					results.Update(await _dbClient.DeleteRegionForUserAsync(userId), ResultMessages.UpdateRegion);
+				}
+			}
+
+			if (string.IsNullOrEmpty(user.SecludeUntil) && currentUser.SecludedUntil != null)
+			{
+				currentUser.SecludedUntil = null;
+				results.Update(await _dbClient.UpdateUserAsync(currentUser), ResultMessages.RemoveSeclude);
+			}
+			else
+			{
+				if (!string.IsNullOrEmpty(user.SecludeUntil))
+				{
+					if (Convert.ToDateTime(user.SecludeUntil).Date != Convert.ToDateTime(currentUser.SecludedUntil).Date)
+					{
+						currentUser.SecludedUntil = Convert.ToDateTime(user.SecludeUntil);
+						results.Update(await _dbClient.UpdateUserAsync(currentUser), ResultMessages.CreateSeclude);
+					}
+				}
+			}
+
+			var currentRoles = await _userManager.GetRolesAsync(currentUser);
+			if (!currentRoles.SequenceEqual(user.Roles))
+			{
+				var removeResult = await _userManager.RemoveFromRolesAsync(currentUser, currentRoles);
+				var addResult = await _userManager.AddToRolesAsync(currentUser, user.Roles);
+				results.Update(removeResult.Succeeded && addResult.Succeeded, ResultMessages.UpdateRoles);
 			}
 
 			if (currentUser.FavoritePlayer != null)
@@ -258,6 +293,11 @@ namespace Diffen.Repositories
 				_uploadRepository.DeleteFilesInDirectory("avatars", x => x.Name.Contains(userId));
 			}
 			return results;
+		}
+
+		public Task<bool> CreateRegionToUserAsync(string userId, int regionId)
+		{
+			return _dbClient.CreateRegionToUserAsync(userId, regionId);
 		}
 	}
 }

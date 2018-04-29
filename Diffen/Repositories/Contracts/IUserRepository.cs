@@ -6,7 +6,8 @@ namespace Diffen.Repositories.Contracts
 	using Models;
 	using Models.User;
 	using Models.Squad;
-	
+	using Models.Other;
+
 	public interface IUserRepository
 	{
 		Task<List<KeyValuePair<string, string>>> GetUsersAsKeyValuePairAsync();
@@ -28,5 +29,6 @@ namespace Diffen.Repositories.Contracts
 		Task<List<KeyValuePair<string, string>>> GetUsersInRoleAsKeyValuePairAsync(string roleName);
 		Task<List<Result>> UpdateAvatarFileNameForUserWithIdAsync(string userId, string fileName);
 		Task<List<Result>> ResetUsersAvatarToGenericAsync(string userId);
+		Task<bool> CreateRegionToUserAsync(string userId, int regionId);
 	}
 }
