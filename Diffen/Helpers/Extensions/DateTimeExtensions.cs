@@ -36,9 +36,11 @@ namespace Diffen.Helpers.Extensions
 			return dtn == null ? null : Convert.ToDateTime(dtn).GetSinceStamp();
 		}
 
-		public static string GetSecluded(this DateTime dt)
+		public static string GetSecluded(this DateTime? dt)
 		{
-			return dt < DateTime.Now ? "" : dt.ToString("yyyy-MM-dd");
+			if (dt != null)
+				return dt.Value < DateTime.Now ? "" : dt.Value.ToString("yyyy-MM-dd");
+			return "";
 		}
 	}
 }
