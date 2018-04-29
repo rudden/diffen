@@ -1,10 +1,7 @@
 <template>
     <ul class="list-group media-list media-list-stream">
         <li class="list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }">
-            <modal v-bind="{ id: 'new-poll', header: 'ny omröstning' }">
-                <template slot="btn">
-                    <button class="btn btn-sm btn-success" :class="{ 'float-right': !isSmall, 'btn-block': isSmall }" data-toggle="modal" data-target="#new-poll">ny poll</button>
-                </template>
+            <modal v-bind="modalAttributes.newPoll">
                 <template slot="body">
                     <template v-if="creating">
                         <loader v-bind="{ background: '#699ED0' }" />
@@ -55,21 +52,67 @@
             <loader v-bind="{ background: '#699ED0' }" />
         </li>
         <div v-show="!loading">
-            <li class="list-group-item media" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="poll in polls" :key="poll.id">
-                <poll-component :poll="poll" :is-small="isSmall" />
+            <li class="media list-group-item p-4" v-if="!isSmall && typeOfPolls == 'all'">
+                <div class="col pl-0">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" v-model="pollsFilter" id="open" value="Open">
+                        <label class="form-check-label" for="open">öppna</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" v-model="pollsFilter" id="closed" value="Closed">
+                        <label class="form-check-label" for="closed">stängda</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" v-model="pollsFilter" id="all" value="All">
+                        <label class="form-check-label" for="all">alla</label>
+                    </div>
+                </div>
             </li>
+            <template v-if="filteredPolls.length > 0">
+                <li class="list-group-item media" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="poll in filteredPolls" :key="poll.id">
+                    <span class="icon icon-hand text-muted mr-2" v-if="!isSmall"></span>
+                    <div class="media-body">
+                        <span class="text-muted float-right">
+                            <span class="badge" :class="{ 'badge-success': poll.isOpen, 'badge-danger': !poll.isOpen }">
+                                {{ poll.isOpen ? 'öppen' : 'stängd' }}
+                            </span>
+                        </span>
+                        <template v-if="openInModal">
+                            <div class="media-heading">
+                                <modal v-bind="{ attributes: { name: `poll-${poll.id}` }, header: poll.name, button: { classes: 'font-weight-bold small on-click', text: poll.name }, onClose: () => isCopied = false }">
+                                    <template slot="body">
+                                        <poll-content :poll="poll" />
+                                    </template>
+                                    <template slot="footer">
+                                        <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">
+                                            {{ isCopied ? `kopierade ${pollUrl}/${poll.slug}` : 'kopiera länk till omröstningen' }}
+                                        </button>
+                                    </template>
+                                </modal>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <a :href="`/poll/${poll.slug}`">{{ poll.name }}</a>
+                        </template>
+                    </div>
+                </li>
+            </template>
+            <template v-else>
+                <li class="list-group-item media p-4">
+                    <div class="alert alert-warning mb-0">hittade inga polls</div>
+                </li>
+            </template>
         </div>
     </ul>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { Component } from 'vue-property-decorator'
-import { Getter, Action, Mutation, State, namespace } from 'vuex-class'
+import { Component, Watch } from 'vue-property-decorator'
+import { Getter, Action, State, namespace } from 'vuex-class'
 
 const ModuleGetter = namespace('other', Getter)
 const ModuleAction = namespace('other', Action)
-const ModuleMutation = namespace('other', Mutation)
 
 import { PageViewModel, Result, ResultType } from '../../model/common'
 import { Poll, PollSelection } from '../../model/other'
@@ -77,10 +120,13 @@ import { Poll as CrudPoll } from '../../model/other/crud'
 
 import { GET_POLLS, FETCH_POLLS, FETCH_ACTIVE_POLLS, CREATE_POLL } from '../../modules/other/types'
 
-import PollComponent from './poll.vue'
-import Modal from '../modal.vue'
+import PollContent from './poll-content.vue'
 import Results from '../results.vue'
-import { Stretch as Loader } from 'vue-loading-spinner'
+import Modal from '../modal.vue'
+
+enum PollFilter {
+    Open, Closed, All
+}
 
 @Component({
     props: {
@@ -91,10 +137,14 @@ import { Stretch as Loader } from 'vue-loading-spinner'
         isSmall: {
             type: Boolean,
             default: false
+        },
+        openInModal: {
+            type: Boolean,
+            default: true
         }
     },
 	components: {
-        Loader, PollComponent, Modal, Results
+        PollContent, Results, Modal
 	}
 })
 export default class Polls extends Vue {
@@ -109,15 +159,38 @@ export default class Polls extends Vue {
 
     loading: boolean = false
     creating: boolean = false
+    isCopied: boolean = false
 
     newPoll: CrudPoll = new CrudPoll()
     newSelection: string = ''
 
     results: Result[] = []
 
+    modalAttributes: any = {
+        newPoll: {
+            attributes: {
+                name: 'new-poll'
+            },
+            header: 'ny omröstning',
+            button: {
+                classes: `btn btn-sm btn-primary ${this.isSmall ? 'btn-block' : 'float-right'}`,
+                text: 'skapa ny poll'
+            }
+        }
+    }
+
+    pollsFilter: string = ''
+    filteredPolls: Poll[] = []
+
+    private pollUrl: string = ''
+
 	mounted() {
-        this.load()
+        var getUrl = window.location
+        this.pollUrl = getUrl .protocol + '//' + getUrl.host + '/' + getUrl.pathname.split('/')[0] + 'poll'
+
         this.newPoll.createdByUserId = this.vm.loggedInUser.id
+
+        this.load()
     }
 
     get canCreate(): boolean {
@@ -132,6 +205,22 @@ export default class Polls extends Vue {
         return this.maxNumberOfSelections ? 'max antal alternativ' : 'nytt alternativ'
     }
 
+    @Watch('pollsFilter')
+        onChange() {
+            let selected = PollFilter[this.pollsFilter as keyof typeof PollFilter]
+            switch (selected) {
+                case PollFilter.Open:
+                    this.filteredPolls = this.polls.filter((p: Poll) => p.isOpen)
+                    break
+                case PollFilter.Closed:
+                    this.filteredPolls = this.polls.filter((p: Poll) => !p.isOpen)
+                    break
+                case PollFilter.All:
+                    this.filteredPolls = this.polls
+                    break
+            }
+        }
+
     load() {
         switch (this.typeOfPolls) {
             case 'all':
@@ -145,12 +234,20 @@ export default class Polls extends Vue {
 
     loadAllPolls() {
         this.loading = true
-		this.loadPolls().then(() => this.loading = false)
+        this.loadPolls()
+            .then(() => {
+                this.pollsFilter = PollFilter[PollFilter.Open]
+                this.loading = false
+            })
     }
 
     loadAllActivePolls() {
         this.loading = true
-		this.loadActivePolls({ amount: 5 }).then(() => this.loading = false)
+        this.loadActivePolls({ amount: 5 })
+            .then(() => {
+                this.filteredPolls = this.polls
+                this.loading = false
+            })
     }
 
     addToSelections() {
