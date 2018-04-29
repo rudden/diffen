@@ -32,6 +32,7 @@ namespace Diffen.Controllers.Api
 			return _regionRepository.GetRegionsAsync();
 		}
 
+		[Authorize(Policy = "IsManager")]
 		[HttpPost("create")]
 		public Task<List<Result>> Create([FromBody] Models.Other.CRUD.Region region)
 		{

@@ -51,6 +51,7 @@ namespace Diffen.Controllers.Api
 			return _chronicleRepository.GetChronicleOnSlugAsync(slug);
 		}
 
+		[Authorize(Policy = "IsAuthor")]
 		[HttpPost("create")]
 		public Task<List<Result>> Create([FromBody] Models.Other.CRUD.Chronicle chronicle)
 		{
@@ -58,6 +59,7 @@ namespace Diffen.Controllers.Api
 			return _chronicleRepository.CreateChronicleAsync(chronicle);
 		}
 
+		[Authorize(Policy = "IsAuthor")]
 		[HttpPost("update")]
 		public Task<List<Result>> Update([FromBody] Models.Other.CRUD.Chronicle chronicle)
 		{
@@ -65,6 +67,7 @@ namespace Diffen.Controllers.Api
 			return _chronicleRepository.UpdateChronicleAsync(chronicle);
 		}
 
+		[Authorize(Policy = "IsAuthor")]
 		[HttpPost("image/header/update/{fileName}")]
 		public async Task<bool> UpdateHeaderFileName(string fileName)
 		{

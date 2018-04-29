@@ -32,6 +32,7 @@ namespace Diffen.Controllers.Api
 			return _squadRepository.GetPlayersAsync();
 		}
 
+		[Authorize(Policy = "IsManager")]
 		[HttpPost("players/create")]
 		public Task<List<Result>> CreatePlayer([FromBody] Models.Squad.CRUD.Player player)
 		{
@@ -39,6 +40,7 @@ namespace Diffen.Controllers.Api
 			return _squadRepository.CreatePlayerAsync(player);
 		}
 
+		[Authorize(Policy = "IsManager")]
 		[HttpPost("players/update")]
 		public Task<List<Result>> UpdatePlayer([FromBody] Models.Squad.CRUD.Player player)
 		{

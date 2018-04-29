@@ -12,6 +12,7 @@ using Serilog;
 namespace Diffen.Controllers.Api
 {
 	using Helpers;
+	using Helpers.Authorize;
 	using Models;
 	using Models.User;
 	using Models.Forum;
@@ -66,6 +67,7 @@ namespace Diffen.Controllers.Api
 			return _postRepository.GetPagedSavedPostsAsync(userId, pageNumber);
 		}
 
+		[Authorize(Policy = "IsManager")]
 		[HttpPost("{userId}/seclude")]
 		public Task<List<Result>> Seclude(string userId, string to)
 		{
@@ -94,6 +96,7 @@ namespace Diffen.Controllers.Api
 			return _userRepository.GetUsersInRoleAsKeyValuePairAsync(roleName);
 		}
 
+		[Authorize(Policy = "IsManager")]
 		[HttpGet("invites")]
 		public Task<List<Invite>> GetInvites()
 		{
@@ -108,6 +111,7 @@ namespace Diffen.Controllers.Api
 			return _userRepository.CreateInviteAsync(invite);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpPost("{userId}/filter")]
 		public Task<List<Result>> ChangeFilter(string userId, [FromBody] Models.User.Filter filter)
 		{
@@ -136,6 +140,7 @@ namespace Diffen.Controllers.Api
 			return _pmRepository.CreatePersonalMessageAsync(pm);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpPost("{userId}/avatar/{fileName}")]
 		public Task<List<Result>> UpdateAvatarFileName(string userId, string fileName)
 		{
@@ -143,6 +148,7 @@ namespace Diffen.Controllers.Api
 			return _userRepository.UpdateAvatarFileNameForUserWithIdAsync(userId, fileName);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpDelete("{userId}/avatar")]
 		public Task<List<Result>> DeleteAvatarForUser(string userId)
 		{

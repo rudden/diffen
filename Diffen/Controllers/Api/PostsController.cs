@@ -11,6 +11,7 @@ namespace Diffen.Controllers.Api
 {
 	using Models;
 	using Helpers;
+	using Helpers.Authorize;
 	using Models.Forum;
 	using Repositories.Contracts;
 
@@ -51,6 +52,7 @@ namespace Diffen.Controllers.Api
 				: _postRepository.GetPagedPostsOnFilterAsync(pageNumber, pageSize, serializedFilter);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpPost("{userId}/create")]
 		public Task<List<Result>> CreatePost(string userId, [FromBody] Models.Forum.CRUD.Post post)
 		{
@@ -58,6 +60,7 @@ namespace Diffen.Controllers.Api
 			return _postRepository.CreatePostAsync(post);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpPost("{userId}/update")]
 		public Task<List<Result>> UpdatePost(string userId, [FromBody] Models.Forum.CRUD.Post post)
 		{
@@ -65,6 +68,7 @@ namespace Diffen.Controllers.Api
 			return _postRepository.UpdatePostAsync(post);
 		}
 
+		[Authorize(Policy = "IsManager")]
 		[HttpPost("{postId}/scissor")]
 		public Task<bool> Scissor(int postId)
 		{
