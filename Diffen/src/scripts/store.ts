@@ -33,7 +33,7 @@ const store = new Vuex.Store({
 Vue.use(VueClipboards, store)
 Vue.use(VModal, { componentName: "v-modal", dynamic: true, dialog: true }, store)
 
-import Navbar from './pages/sub/navbar/components/main.vue'
+import Navbar from './components/navbar.vue'
 Vue.component('navbar', Navbar)
 
 import { Stretch } from 'vue-loading-spinner'
