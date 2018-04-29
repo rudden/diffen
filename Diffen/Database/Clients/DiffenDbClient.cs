@@ -645,6 +645,71 @@ namespace Diffen.Database.Clients
 			return result;
 		}
 
+		public async Task<List<Region>> GetRegionsAsync()
+		{
+			var regions = await _dbContext.Regions.IncludeAll().ToListAsync();
+			return regions.OrderByDescending(x => x.UsersInRegion.Count).ToList();
+		}
+
+		public async Task<bool> UserHasRegionSelectedAsync(string userId)
+		{
+			var currentRegionSelection = await _dbContext.UsersToRegions.FirstOrDefaultAsync(x => x.UserId == userId);
+			return currentRegionSelection != null;
+		}
+
+		private bool RegionWithSameNameAlreadyExistsAsync(string newRegionName)
+		{
+			return _dbContext.Regions.Any(r => string.Equals(r.Name, newRegionName, StringComparison.OrdinalIgnoreCase));
+		}
+
+		public Task<bool> CreateRegionAsync(Region region)
+		{
+			if (RegionWithSameNameAlreadyExistsAsync(region.Name))
+			{
+				return Task.FromResult(false);
+			}
+			_dbContext.Regions.Add(region);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<bool> CreateRegionToUserAsync(string userId, int regionId)
+		{
+			var entity = new Database.Entities.Other.RegionToUser
+			{
+				UserId = userId,
+				RegionId = regionId
+			};
+			_dbContext.UsersToRegions.Add(entity);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public async Task<bool> UpdateRegionForUserAsync(string userId, string newRegion)
+		{
+			var currentRegionSelection = await _dbContext.UsersToRegions.FirstOrDefaultAsync(x => x.UserId == userId);
+			if (currentRegionSelection != null)
+			{
+				_dbContext.UsersToRegions.Remove(currentRegionSelection);
+				await _dbContext.SaveChangesAsync();
+			}
+			_dbContext.UsersToRegions.Add(new Database.Entities.Other.RegionToUser
+			{
+				RegionId = (await _dbContext.Regions.FirstOrDefaultAsync(x => x.Name == newRegion)).Id,
+				UserId = userId
+			});
+			return await CommitedResultIsSuccessfulAsync();
+		}
+
+		public async Task<bool> DeleteRegionForUserAsync(string userId)
+		{
+			var currentRegionSelection = await _dbContext.UsersToRegions.FirstOrDefaultAsync(x => x.UserId == userId);
+			if (currentRegionSelection == null)
+			{
+				return false;
+			}
+			_dbContext.UsersToRegions.Remove(currentRegionSelection);
+			return await CommitedResultIsSuccessfulAsync();
+		}
+
 		private async Task<bool> CommitedResultIsSuccessfulAsync()
 		{
 			return await _dbContext.SaveChangesAsync() >= 0;
