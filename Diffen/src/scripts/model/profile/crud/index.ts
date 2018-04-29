@@ -8,7 +8,9 @@ export class User {
     nickName: string = ''
     bio: string = ''
     roles: string[] = []
+    region: string
     favoritePlayerId: number = 0
+    secludeUntil: string = ''
 }
 
 export class Invite {

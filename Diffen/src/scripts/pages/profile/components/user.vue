@@ -2,21 +2,26 @@
     <div class="container">
         <div class="container-inner" v-if="!loading">
             <img class="rounded-circle media-object" :src="user.avatar" data-action="zoom">
-            <a v-if="(isLoggedIn || loggedInUserIsAdmin) && !inEdit" v-on:click="inEdit = true" class="edit-btn">
-                <span class="icon icon-pencil"></span>
-            </a>
-            <h3 class="profile-header-user">
-                <span v-if="!inEdit">{{ user.nickName }}</span>
-            </h3>
             <template v-if="!inEdit">
+                <a v-if="(isLoggedIn || loggedInUserIsAdmin)" v-on:click="inEdit = true" class="edit-btn">
+                    <span class="icon icon-pencil"></span>
+                </a>
+                <h3 class="profile-header-user">{{ user.nickName }}</h3>
                 <p class="profile-header-bio">{{ user.bio }}</p>
                 <p v-if="user.inRoles && user.inRoles.length > 0">
                     <span class="badge badge-pill badge-light mr-1" v-for="role in user.inRoles">{{ role.toLowerCase() }}</span>
                 </p>
+                <p v-if="user.region">
+                    <span class="icon icon-globe mr-2" style="color: green"></span>
+                    <span class="badge badge-pill badge-primary text-uppercase">DIF {{ user.region }}</span>
+                </p>
                 <p v-if="user.favoritePlayer">
+                    <span class="icon icon-heart mr-2" style="color: red"></span>
                     <span class="badge badge-pill badge-primary">{{ user.favoritePlayer.fullName }}</span>
                 </p>
-                <seclude />
+                <p v-if="user.secludedUntil">
+                    <span class="badge badge-pill badge-danger">{{ `spärrad till ${user.secludedUntil}` }}</span>
+                </p>
             </template>
             <template v-if="inEdit">
                 <template v-if="isLoggedIn">
@@ -39,6 +44,12 @@
                         <input type="text" class="form-control" v-model="crudUser.bio" placeholder="din nya bio" />
                     </div>
                     <div class="form-group">
+                        <select class="form-control form-control-sm" v-model="selectedRegionName">
+                            <option value="">välj ett område</option>
+                            <option v-for="region in regions" :value="region.name">{{ region.name }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <select class="form-control form-control-sm" v-model="favoritePlayerId">
                             <option value="0">välj en spelare</option>
                             <option v-for="player in players" :value="player.id">{{ player.fullName }}</option>
@@ -52,6 +63,11 @@
                             <label class="form-check-label" :for="role" style="color: white">{{ role.toLowerCase() }}</label>
                         </div>
                     </div>
+                    <template v-if="!selectedUserIsScissorOrAdmin">
+                        <div class="form-group">
+                            <date-picker v-model="secludeDate" :config="dpConfig" :placeholder="'spärra till datum'" />
+                        </div>
+                    </template>
                 </template>
                 <div class="form-group">
                     <div class="row">
@@ -84,16 +100,18 @@ const ModuleAction = namespace('profile', Action)
 const SquadModuleGetter = namespace('squad', Getter)
 const SquadModuleAction = namespace('squad', Action)
 
+const OtherModuleGetter = namespace('other', Getter)
+const OtherModuleAction = namespace('other', Action)
+
 import { User } from '../../../model/profile/'
 import { User as CrudUser } from '../../../model/profile/crud'
 import { Player } from '../../../model/squad/'
+import { Region } from '../../../model/other/'
 import { PageViewModel, Result, ResultType } from '../../../model/common'
 
-import Seclude from './seclude.vue'
 import Modal from '../../../components/modal.vue'
 import Results from '../../../components/results.vue'
 
-import { Stretch as Loader } from 'vue-loading-spinner'
 import DatePicker from 'vue-bootstrap-datetimepicker'
 
 import {
@@ -108,9 +126,14 @@ import {
     FETCH_PLAYERS
 } from '../../../modules/squad/types'
 
+import {
+    GET_REGIONS,
+    FETCH_REGIONS
+} from '../../../modules/other/types'
+
 @Component({
     components: {
-        Results, Loader, DatePicker, Modal, Seclude
+        Results, DatePicker, Modal
     }
 })
 export default class UserComponent extends Vue {
@@ -121,7 +144,10 @@ export default class UserComponent extends Vue {
     @ModuleAction(UPDATE_USER) updateUser: (payload: { userId: string, user: CrudUser }) => Promise<Result[]>
 
     @SquadModuleGetter(GET_PLAYERS) players: Player[]
-	@SquadModuleAction(FETCH_PLAYERS) loadPlayers: () => Promise<void>
+    @SquadModuleAction(FETCH_PLAYERS) loadPlayers: () => Promise<void>
+    
+    @OtherModuleGetter(GET_REGIONS) regions: Region[]
+	@OtherModuleAction(FETCH_REGIONS) loadRegions: () => Promise<void>
 
     inEdit: boolean = false
     loading: boolean = false
@@ -129,22 +155,47 @@ export default class UserComponent extends Vue {
     roles: string[] = []
     crudUser: CrudUser = new CrudUser()
     favoritePlayerId: number = 0
+    selectedRegionName: string = ''
     
     results: Result[] = []
 
     avatarFile: FormData = new FormData()
     avatarFileName: string = ''
 
+    secludeDate: Date = new Date('')
+    dpConfig: any = { 
+		format: 'YYYY-MM-DD', 
+		useCurrent: false, 
+		locale: 'sv', 
+		icons: { 
+			next: 'icon icon-arrow-right',
+			previous: 'icon icon-arrow-left' 
+        },
+        widgetPositioning: {
+            vertical: 'bottom',
+            horizontal: 'left'
+        }
+    }
+
     private directoryName: string = 'avatars'
     private genericAvatarSrc: string = '/uploads/avatars/generic/logo.png'
 
 	created() {
+        this.loadRegions()
         this.loadPlayers()
         this.loadRoles().then((roles: string[]) => this.roles = roles)
 
         if (this.user.favoritePlayer) {
             this.favoritePlayerId = this.user.favoritePlayer.id
         }
+
+        if (this.user.region) {
+            this.selectedRegionName = this.user.region
+        }
+
+        if (this.user.secludedUntil) {
+			this.secludeDate = new Date(this.user.secludedUntil)
+		}
 
         this.setCrudUser()
 
@@ -156,6 +207,9 @@ export default class UserComponent extends Vue {
     }
 	get loggedInUserIsAdmin(): boolean {
         return this.vm.loggedInUser.inRoles.some(role => role == 'Admin')
+    }
+    get selectedUserIsScissorOrAdmin(): boolean {
+        return this.user.inRoles.some(role => role == 'Admin' || role == 'Scissor')
     }
     get canSave() {
 		return this.crudUser.nickName && this.crudUser.nickName.length > 1 && this.crudUser.bio.length <= 100
@@ -172,13 +226,17 @@ export default class UserComponent extends Vue {
             nickName: this.user.nickName,
             bio: this.user.bio ? this.user.bio : '',
             roles: this.user.inRoles,
-            favoritePlayerId: this.favoritePlayerId
+            favoritePlayerId: this.favoritePlayerId,
+            region: this.selectedRegionName,
+            secludeUntil: this.user.secludedUntil
         }
     }
 
 	save() {
         this.loading = true
+        this.crudUser.region = this.selectedRegionName
         this.crudUser.favoritePlayerId = this.favoritePlayerId
+        this.crudUser.secludeUntil = this.secludeDate ? this.secludeDate.toString() : ''
         this.updateUser({ userId: this.user.id, user: this.crudUser })
             .then((results: Result[]) => {
                 this.results = results
@@ -192,12 +250,15 @@ export default class UserComponent extends Vue {
                             })
                     }
                     else if (this.user.avatar.split('_____')[1] !== this.avatarFileName)
-                        this.uploadFile().then(() => this.loadUser({ id: this.user.id }).then(() => resolve()))
+                        this.uploadFile().then(() => resolve())
                     else resolve()
                 }).then(() => {
-                    this.setCrudUser()
-                    this.inEdit = false
-                    this.loading = false
+                    this.loadUser({ id: this.user.id })
+                        .then(() => {
+                            this.setCrudUser()
+                            this.inEdit = false
+                            this.loading = false
+                        })
                 })
             })
     }
