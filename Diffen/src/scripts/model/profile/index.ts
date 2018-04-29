@@ -7,6 +7,7 @@ export class User {
 	bio: string
 	nickName: string
 	avatar: string
+    region: string
 
     karma: number
     numberOfPosts: number
