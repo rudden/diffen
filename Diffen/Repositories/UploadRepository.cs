@@ -39,7 +39,7 @@ namespace Diffen.Repositories
 				}
 				return null;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				return null;
 			}
@@ -60,7 +60,7 @@ namespace Diffen.Repositories
 				}
 				return true;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				return false;
 			}
