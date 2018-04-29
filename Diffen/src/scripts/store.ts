@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Vuex, { Module } from 'vuex'
 
+import VModal from 'vue-js-modal'
+import VueClipboards from 'vue-clipboards'
+
 import Forum from './modules/forum'
 import Profile from './modules/profile'
 import Squad from './modules/squad'
@@ -26,5 +29,14 @@ const store = new Vuex.Store({
 		other: <Module<any, State>> Other
 	}
 })
+
+Vue.use(VueClipboards, store)
+Vue.use(VModal, { componentName: "v-modal", dynamic: true, dialog: true }, store)
+
+import Navbar from './pages/sub/navbar/components/main.vue'
+Vue.component('navbar', Navbar)
+
+import { Stretch } from 'vue-loading-spinner'
+Vue.component('loader', Stretch)
 
 export default store
