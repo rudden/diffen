@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
+using Slugify;
 using AutoMapper;
 
 namespace Diffen.Helpers.Mapper.Resolvers
@@ -22,6 +23,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				Id = source.Id,
 				Name = source.Name,
+				Slug = source.Slug,
 				Selections = context.Mapper.Map<IEnumerable<Models.Other.PollSelection>>(source.Selections),
 				ByUser = new IdAndNickNameUser
 				{
@@ -64,6 +66,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			return new Database.Entities.Other.Poll
 			{
 				Name = source.Name,
+				Slug = new SlugHelper().GenerateSlug(source.Name),
 				CreatedByUserId = source.CreatedByUserId,
 				Created = DateTime.Now
 			};

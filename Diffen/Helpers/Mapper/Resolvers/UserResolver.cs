@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 
 using AutoMapper;
@@ -25,7 +24,6 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		private readonly UserManager<Database.Entities.User.AppUser> _userManager;
 		private readonly IUserRepository _userRepository;
 
-
 		private const string BasePathForAvatars = "/uploads/avatars/";
 		private readonly string _genericAvatarPath;
 
@@ -45,6 +43,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Email = source.Email,
 				NickName = source.NickNames.Current() ?? "anonymous",
 				Avatar = GetAvatar(source),
+				Region = source.Region?.Region?.Name,
 				Karma = GetKarma(source.Posts),
 				NumberOfPosts = source.Posts.Count,
 				Filter = context.Mapper.Map<Filter>(source.Filter) ?? new Filter(source),

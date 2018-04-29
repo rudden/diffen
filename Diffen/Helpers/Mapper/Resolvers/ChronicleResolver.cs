@@ -27,7 +27,8 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					NickName = source.WrittenByUser.NickNames.Current()
 				},
 				Created = source.Created.ToShortDateString(),
-				Updated = source.Updated.ToShortDateString()
+				Updated = source.Updated.ToShortDateString(),
+				Published = source.Published.ToShortDateString()
 			};
 		}
 
@@ -40,7 +41,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Text = source.Text,
 				Slug = new SlugHelper().GenerateSlug(source.Title),
 				WrittenByUserId = source.WrittenByUserId,
-				Created = DateTime.Now
+				Published = !string.IsNullOrEmpty(source.Published) ? System.Convert.ToDateTime(source.Published) : DateTime.Now
 			};
 		}
 	}
