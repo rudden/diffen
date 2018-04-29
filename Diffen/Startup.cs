@@ -47,6 +47,22 @@ namespace Diffen
 		{
 			services.AddAuthentication();
 
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("IsAdmin", policy =>
+				{
+					policy.RequireAssertion(ctx => ctx.User.IsInRole("Admin"));
+				});
+				options.AddPolicy("IsAuthor", policy =>
+				{
+					policy.RequireAssertion(ctx => ctx.User.IsInRole("Author"));
+				});
+				options.AddPolicy("IsManager", policy =>
+				{
+					policy.RequireAssertion(ctx => ctx.User.IsInRole("Admin") || ctx.User.IsInRole("Scissor"));
+				});
+			});
+
 			services.AddSingleton(Configuration);
 
 			services.AddDbContext<DiffenDbContext>();
