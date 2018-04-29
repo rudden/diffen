@@ -76,6 +76,7 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.Posts).ThenInclude(x => x.Lineup)
 				.Include(x => x.Posts).ThenInclude(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.Lineups)
+				.Include(x => x.Region).ThenInclude(x => x.Region)
 				.AsNoTracking();
 		}
 
@@ -98,6 +99,11 @@ namespace Diffen.Helpers.Extensions
 		public static IQueryable<Chronicle> IncludeAll(this DbSet<Chronicle> source)
 		{
 			return source.Include(x => x.WrittenByUser).ThenInclude(x => x.NickNames);
+		}
+
+		public static IQueryable<Region> IncludeAll(this DbSet<Region> source)
+		{
+			return source.Include(x => x.UsersInRegion).ThenInclude(x => x.User).ThenInclude(x => x.NickNames);
 		}
 	}
 }
