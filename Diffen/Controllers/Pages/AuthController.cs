@@ -21,18 +21,17 @@ namespace Diffen.Controllers.Pages
 		private readonly UserManager<AppUser> _userManager;
 		private readonly SignInManager<AppUser> _signInManager;
 		private readonly IUploadRepository _uploadRepository;
-
-		private readonly IHostingEnvironment _environment;
+		private readonly IRegionRepository _regionRepository;
 
 		private readonly ILogger _logger = Log.ForContext<AuthController>();
 
-		public AuthController(IUserRepository userRepository, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IHostingEnvironment environment, IUploadRepository uploadRepository)
+		public AuthController(IUserRepository userRepository, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IUploadRepository uploadRepository, IRegionRepository regionRepository)
 		{
 			_userRepository = userRepository;
 			_userManager = userManager;
 			_signInManager = signInManager;
-			_environment = environment;
 			_uploadRepository = uploadRepository;
+			_regionRepository = regionRepository;
 		}
 
 		public IActionResult Login()
@@ -86,13 +85,17 @@ namespace Diffen.Controllers.Pages
 			return View();
 		}
 
-		public IActionResult Register()
+		public async Task<IActionResult> Register()
 		{
 			if (User.Identity.IsAuthenticated)
 			{
 				return RedirectToAction("index", "forum");
 			}
-			return View();
+			var model = new RegisterViewModel
+			{
+				Regions = await _regionRepository.GetRegionsAsync()
+			};
+			return View(model);
 		}
 
 		[HttpPost]
@@ -133,6 +136,11 @@ namespace Diffen.Controllers.Pages
 					{
 						var fileName = await _uploadRepository.UploadFileAsync("avatars", vm.Avatar, user.Id);
 						await _userRepository.UpdateAvatarFileNameForUserWithIdAsync(user.Id, fileName);
+					}
+
+					if (vm.RegionId > 0)
+					{
+						await _userRepository.CreateRegionToUserAsync(user.Id, vm.RegionId);
 					}
 
 					await _signInManager.SignInAsync(user, isPersistent: false);

@@ -1,9 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 using Microsoft.AspNetCore.Http;
 
 namespace Diffen.ViewModels
 {
+	using Models.Other;
+
 	public class RegisterViewModel
 	{
 		[Required]
@@ -15,6 +18,9 @@ namespace Diffen.ViewModels
 		[Required]
 		public string Password { get; set; }
 
+		public int RegionId { get; set; }
+		public string NewRegionName { get; set; }
+
 		[Required]
 		public string ConfirmPassword { get; set; }
 
@@ -22,5 +28,7 @@ namespace Diffen.ViewModels
 		public string Bio { get; set; }
 
 		public IFormFile Avatar { get; set; }
+
+		public List<Region> Regions { get; set; }
 	}
 }
