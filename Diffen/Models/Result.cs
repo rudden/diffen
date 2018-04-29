@@ -93,6 +93,12 @@ namespace Diffen.Models
 			Failure = "Kunde inte ändra bio"
 		};
 
+		public static Message UpdateRegion { get; } = new Message
+		{
+			Success = "Ändrade region",
+			Failure = "Kunde inte ändra region"
+		};
+
 		public static Message CreateInvite { get; } = new Message
 		{
 			Success = "Skickade invite",
@@ -141,6 +147,12 @@ namespace Diffen.Models
 			Failure = "Kunde inte spärra användaren"
 		};
 
+		public static Message RemoveSeclude { get; } = new Message
+		{
+			Success = "Tog bort spärren",
+			Failure = "Kunde inte ta bort spärren"
+		};
+
 		public static Message CreatePoll { get; } = new Message
 		{
 			Success = "Skapade en ny poll",
@@ -175,6 +187,12 @@ namespace Diffen.Models
 		{
 			Success = "Bytte profilbild",
 			Failure = "Kunde inte byta profilbild"
+		};
+
+		public static Message CreateRegion { get; } = new Message
+		{
+			Success = "Skapade en ny region/område",
+			Failure = "Kunde inte skapa regionen/området"
 		};
 	}
 
