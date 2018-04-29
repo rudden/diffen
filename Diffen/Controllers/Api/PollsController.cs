@@ -30,6 +30,13 @@ namespace Diffen.Controllers.Api
 			return _pollRepository.GetAllPollsAsync();
 		}
 
+		[HttpGet("{slug}")]
+		public Task<Poll> Get(string slug)
+		{
+			_logger.Debug("Requesting poll with slug {slug}", slug);
+			return _pollRepository.GetPollOnSlugAsync(slug);
+		}
+
 		[HttpGet("active")]
 		public Task<List<Poll>> GetActive(int amount)
 		{
@@ -39,18 +46,11 @@ namespace Diffen.Controllers.Api
 				: _pollRepository.GetLastNthActivePollsAsync(amount);
 		}
 
-		[HttpGet("{userId}")]
+		[HttpGet("user/{userId}")]
 		public Task<List<Poll>> GetOnUserId(string userId)
 		{
 			_logger.Debug("Requesting all polls created by user with id {userId}", userId);
 			return _pollRepository.GetPollsForUserWithIdAsync(userId);
-		}
-
-		[HttpGet("{pollId}")]
-		public Task<Poll> Get(int pollId)
-		{
-			_logger.Debug("Requesting poll with id {pollId}", pollId);
-			return _pollRepository.GetPollOnIdAsync(pollId);
 		}
 
 		[HttpPost("create")]
