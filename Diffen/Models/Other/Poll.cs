@@ -6,6 +6,7 @@ namespace Diffen.Models.Other
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
+		public string Slug { get; set; }
 		public IEnumerable<PollSelection> Selections { get; set; }
 		public IdAndNickNameUser ByUser { get; set; }
 		public string Created { get; set; }
