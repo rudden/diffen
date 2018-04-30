@@ -99,7 +99,9 @@
             </template>
             <template v-else>
                 <li class="list-group-item media p-4">
-                    <div class="alert alert-warning mb-0">hittade inga polls</div>
+                    <div class="col pl-0 pr-0">
+                        <div class="alert alert-warning mb-0">hittade inga polls</div>
+                    </div>
                 </li>
             </template>
         </div>
