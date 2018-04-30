@@ -48,7 +48,7 @@ export const Actions: ActionTree<State, any> = {
 	[FETCH_PERSONAL_MESSAGES]: (store: ActionContext<State, any>, payload: { to?: string }): Promise<PersonalMessage[]> => {
 		return new Promise<PersonalMessage[]>((resolve, reject) => {
 			return axios.get(`${store.rootState.vm.api}/users/${store.rootState.vm.loggedInUser.id}/pm${payload.to ? `?to=${payload.to}` : ''}`)
-				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+				.then((res) => resolve(res.data)).catch((error) => reject())
 		})
 	},
 	[CREATE_PM]: (store: ActionContext<State, any>, payload: { pm: CrudPm }): Promise<Result[]> => {

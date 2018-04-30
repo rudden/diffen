@@ -16,51 +16,54 @@
 					<a href="#" v-on:click="selectedUser = convUser" v-for="convUser in conversationUsers" :key="convUser.key">
 						<span class="badge badge-secondary mr-2">{{ convUser.value }}</span>
 					</a>
+					<results :items="loadResults" class="pt-3" />
 				</div>
 			</div>
-			<template v-if="selectedUser && selectedUser.key || !userIsLoggedInUser">
-				<div class="row" :class="{ 'mt-3' : userIsLoggedInUser }">
-					<div class="col">
-						<div class="form-group">
-							<textarea class="form-control" v-model="newPmMessage" rows="2" placeholder="ditt pm"></textarea>
-						</div>
-						<div class="form-group mb-0">
-							<div class="row">
-								<div class="col">
-									<button class="btn btn-sm btn-success btn-block" v-on:click="submit" :disabled="!canCreate">skicka</button>
+			<template v-if="loadResults.length == 0">
+				<template v-if="selectedUser && selectedUser.key || !userIsLoggedInUser">
+					<div class="row" :class="{ 'mt-3' : userIsLoggedInUser }">
+						<div class="col">
+							<div class="form-group">
+								<textarea class="form-control" v-model="newPmMessage" rows="2" placeholder="ditt pm"></textarea>
+							</div>
+							<div class="form-group mb-0">
+								<div class="row">
+									<div class="col">
+										<button class="btn btn-sm btn-success btn-block" v-on:click="submit" :disabled="!canCreate">skicka</button>
+									</div>
 								</div>
 							</div>
+							<results :items="results" class="pt-3" />
 						</div>
-        				<results :items="results" class="pt-3" />
 					</div>
-				</div>
-			</template>
-			<template v-if="pms.length > 0">
-				<ul class="media-list media-list-conversation c-w-md mt-3 mb-0">
-					<li class="media mb-4" v-for="pm in pms" :key="pm.id" :class="{ 'media-current-user': pm.from.id == vm.loggedInUser.id }">
-						<template v-if="pm.from.id !== vm.loggedInUser.id">
-							<img class="rounded-circle media-object ml-3" :src="pm.from.avatar">
-						</template>
-						<div class="media-body">
-							<div class="media-body-text">
-								<span>{{ pm.message }}</span>
+				</template>
+				<template v-if="pms.length > 0">
+					<ul class="media-list media-list-conversation c-w-md mt-3 mb-0">
+						<li class="media mb-4" v-for="pm in pms" :key="pm.id" :class="{ 'media-current-user': pm.from.id == vm.loggedInUser.id }">
+							<template v-if="pm.from.id !== vm.loggedInUser.id">
+								<img class="rounded-circle media-object ml-3" :src="pm.from.avatar">
+							</template>
+							<div class="media-body">
+								<div class="media-body-text">
+									<span>{{ pm.message }}</span>
+								</div>
+								<div class="media-footer">
+									<small class="text-muted">
+										<a :href="'/profile/' + pm.from.id">{{ pm.from.nickName }}</a> · {{ pm.since }}
+									</small>
+								</div>
 							</div>
-							<div class="media-footer">
-								<small class="text-muted">
-									<a :href="'/profile/' + pm.from.id">{{ pm.from.nickName }}</a> · {{ pm.since }}
-								</small>
-							</div>
-						</div>
-						<template v-if="pm.from.id == vm.loggedInUser.id">
-							<img class="rounded-circle media-object ml-3" :src="pm.from.avatar">
-						</template>
-					</li>
-				</ul>
-			</template>
-			<template v-if="pms.length == 0 && selectedUser && selectedUser.key">
-				<div class="alert alert-warning mb-0 mt-3">
-					hittade ingen konversation mellan dig och <strong>{{ selectedUser.value }}</strong>
-				</div>
+							<template v-if="pm.from.id == vm.loggedInUser.id">
+								<img class="rounded-circle media-object ml-3" :src="pm.from.avatar">
+							</template>
+						</li>
+					</ul>
+				</template>
+				<template v-if="pms.length == 0 && selectedUser && selectedUser.key">
+					<div class="alert alert-warning mb-0 mt-3">
+						hittade ingen konversation mellan dig och <strong>{{ selectedUser.value }}</strong>
+					</div>
+				</template>
 			</template>
 		</div>
 	</div>
@@ -101,6 +104,8 @@ export default class Pm extends Vue {
 	selectedUser: any = ''
 	loading: boolean = false
 	results: Result[] = []
+
+	loadResults: Result[] = []
 	
 	pms: PersonalMessage[] = []
 	users: KeyValuePair[] = []
@@ -121,7 +126,7 @@ export default class Pm extends Vue {
 					.then((pms: PersonalMessage[]) => {
 						this.pms = pms
 						this.loading = false
-					})
+					}).catch(() => this.setLoadResults(this.selectedUser.value))
 			}
 		}
 
@@ -133,7 +138,7 @@ export default class Pm extends Vue {
 				.then((pms: PersonalMessage[]) => {
 						this.pms = pms
 						this.$forceUpdate()
-					})
+					}).catch(() => this.setLoadResults())
 		} else {
 			this.loadUsers()
 				.then((users: KeyValuePair[]) => this.users = users)
@@ -155,6 +160,12 @@ export default class Pm extends Vue {
 						this.$forceUpdate()
 					})
 			})
+	}
+
+	setLoadResults(withUserNickName: string = '') {
+		this.loadResults = []
+		this.loadResults.push({ type: ResultType.Failure, message: `kunde inte ladda pm med ${withUserNickName ? withUserNickName : ''}` })
+		this.loading = false
 	}
 }
 </script>
