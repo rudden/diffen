@@ -48,9 +48,9 @@ import { Getter, Action, Mutation, State, namespace } from 'vuex-class'
 
 const ModuleAction = namespace('profile', Action)
 
-import { FETCH_KVP_USERS } from '../../../../modules/profile/types'
+import { FETCH_KVP_USERS } from '../modules/profile/types'
 
-import { ProfileViewModel, PageViewModel, KeyValuePair } from '../../../../model/common'
+import { ProfileViewModel, PageViewModel, KeyValuePair } from '../model/common'
 
 import { Typeahead } from 'uiv'
 
