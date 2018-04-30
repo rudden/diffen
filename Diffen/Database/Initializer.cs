@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
+using System.Net.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
+using Newtonsoft.Json;
 using Slugify;
 
 namespace Diffen.Database
@@ -21,13 +21,26 @@ namespace Diffen.Database
 	using Entities.Forum;
 	using Entities.Other;
 
+	internal class FillTextNickName
+	{
+		public string NickName { get; set; }
+	}
+
 	public class Initializer
 	{
+		private const int NumberOfUsers = 20;
+		private const int NumberOfPosts = 50;
+		private static string[] _nickNames;
+		private static string[] _postMessages;
+
 		public static async Task SeedAsync(IServiceProvider services)
 		{
 			var dbContext = services.GetRequiredService<DiffenDbContext>();
 			var userManager = services.GetRequiredService<UserManager<AppUser>>();
 			var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+			_nickNames = await GetRandomNickNamesFromFillTextApiAsync();
+			_postMessages = await GetRandomMessageForPostsAsync();
 
 			await SeedUsersAndNickNamesAsync(dbContext, userManager);
 			await SeedRolesAsync(roleManager);
@@ -52,12 +65,34 @@ namespace Diffen.Database
 			await SeedRegionsAsync(dbContext);
 		}
 
+		private static async Task<string[]> GetRandomNickNamesFromFillTextApiAsync()
+		{
+			using (var client = new HttpClient())
+			{
+				var uri = "http://www.filltext.com/?rows=&nickName={username}&pretty=true".Replace("rows=", $"rows={NumberOfUsers}");
+				var response = await client.GetAsync(uri);
+
+				var nickNames = JsonConvert.DeserializeObject<IEnumerable<FillTextNickName>>(await response.Content.ReadAsStringAsync());
+				return nickNames.Select(x => x.NickName).ToArray();
+			}
+		}
+
+		private static async Task<string[]> GetRandomMessageForPostsAsync()
+		{
+			using (var client = new HttpClient())
+			{
+				var uri = "https://baconipsum.com/api/?type=all-meat&paras=".Replace("paras=", $"paras={NumberOfPosts}");
+				var response = await client.GetAsync(uri);
+				return JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+			}
+		}
+
 		private static async Task SeedUsersAndNickNamesAsync(DiffenDbContext dbContext, UserManager<AppUser> userManager)
 		{
 			if (userManager.Users.Any())
 				return;
 
-			for (var i = 1; i <= 20; i++)
+			for (var i = 0; i < NumberOfUsers; i++)
 			{
 				var user = new AppUser
 				{
@@ -71,7 +106,7 @@ namespace Diffen.Database
 				var nickName = new NickName
 				{
 					UserId = user.Id,
-					Nick = $"seeded_user_{i}",
+					Nick = _nickNames[i],
 					Created = user.Joined
 				};
 				dbContext.NickNames.Add(nickName);
@@ -690,13 +725,12 @@ namespace Diffen.Database
 		{
 			if (!dbContext.Posts.Any())
 			{
-				for (var i = 0; i <= 50; i++)
+				for (var i = 0; i < NumberOfPosts; i++)
 				{
 					var randomUser = dbContext.Users.PickRandom();
-					var randomUserNick = randomUser.NickNames.Current();
 					var post = new Post
 					{
-						Message = $"Autogenererat inlägg för {randomUserNick}. Scrolla vidare! \n\nMvh Admin",
+						Message = _postMessages[i],
 						CreatedByUserId = randomUser.Id,
 						Created = RandomDateTime.Get(randomUser.Joined, DateTime.Now)
 					};
