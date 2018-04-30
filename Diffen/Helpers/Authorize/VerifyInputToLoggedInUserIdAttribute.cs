@@ -7,17 +7,28 @@ namespace Diffen.Helpers.Authorize
 
 	public class VerifyInputToLoggedInUserIdAttribute : ActionFilterAttribute
 	{
-		private readonly string _requestUserId;
+		private readonly string _key;
+		private readonly string _value;
 
-		public VerifyInputToLoggedInUserIdAttribute(string requestUserId)
+		public VerifyInputToLoggedInUserIdAttribute(string key, string value = null)
 		{
-			_requestUserId = requestUserId;
+			_key = key;
+			_value = value;
 		}
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
-			context.ActionArguments.TryGetValue(_requestUserId, out var value);
-			var requestUserId = value as string;
+			context.ActionArguments.TryGetValue(_key, out var value);
+
+			string requestUserId;
+			if (!string.IsNullOrEmpty(_value))
+			{
+				requestUserId = value?.GetType().GetProperty(_value).GetValue(value, null) as string;
+			}
+			else
+			{
+				requestUserId = value as string;
+			}
 
 			var loggedInUserId = context.HttpContext.User.GetUserId();
 			if (!string.IsNullOrWhiteSpace(requestUserId) && !string.IsNullOrWhiteSpace(loggedInUserId))
