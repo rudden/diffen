@@ -104,21 +104,23 @@ namespace Diffen.Controllers.Api
 			return _userRepository.GetInvitesAsync();
 		}
 
-		[HttpPost("{userId}/invites/create")]
-		public Task<List<Result>> AddInvite(string userId, [FromBody] Models.User.CRUD.Invite invite)
+		[VerifyInputToLoggedInUserId("invite", "InvitedByUserId")]
+		[HttpPost("invites/create")]
+		public Task<List<Result>> AddInvite([FromBody] Models.User.CRUD.Invite invite)
 		{
 			_logger.Debug("Requesting to create an invite");
 			return _userRepository.CreateInviteAsync(invite);
 		}
 
-		[VerifyInputToLoggedInUserId("userId")]
-		[HttpPost("{userId}/filter")]
-		public Task<List<Result>> ChangeFilter(string userId, [FromBody] Models.User.Filter filter)
+		[VerifyInputToLoggedInUserId("filter", "userId")]
+		[HttpPost("filter")]
+		public Task<List<Result>> ChangeFilter([FromBody] Models.User.Filter filter)
 		{
-			_logger.Debug("Requesting to change filter for user with id {userId}", userId);
-			return _userRepository.UpdateUserFilterAsync(userId, filter);
+			_logger.Debug("Requesting to change filter for user with id {userId}", filter.UserId);
+			return _userRepository.UpdateUserFilterAsync(filter);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpGet, Route("{userId}/pm")]
 		public Task<List<PersonalMessage>> GetPersonalMessages(string userId, string to = null)
 		{
@@ -133,6 +135,7 @@ namespace Diffen.Controllers.Api
 			return _pmRepository.GetUsersWithConversationForUserAsKeyValuePairAsync(userId);
 		}
 
+		[VerifyInputToLoggedInUserId("pm", "FromUserId")]
 		[HttpPost("pm/create")]
 		public Task<List<Result>> CreatePm([FromBody] Models.User.CRUD.PersonalMessage pm)
 		{

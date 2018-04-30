@@ -39,7 +39,7 @@ export const Actions: ActionTree<State, any> = {
 	},
 	[CREATE_POST]: (store: ActionContext<State, any>, payload: { post: CrudPost }): Promise<Result[]> => {
 		return new Promise<Result[]>((resolve, reject) => {
-			return axios.post(`${store.rootState.vm.api}/posts/${store.rootState.vm.loggedInUser.id}/create`, payload.post)
+			return axios.post(`${store.rootState.vm.api}/posts/create`, payload.post)
 				.then((res) => {
 					store.rootState.vm.loggedInUser.numberOfPosts++
 					resolve(res.data)
@@ -48,7 +48,7 @@ export const Actions: ActionTree<State, any> = {
 	},
 	[UPDATE_POST]: (store: ActionContext<State, any>, payload: { post: CrudPost }): Promise<Result[]> => {
 		return new Promise<Result[]>((resolve, reject) => {
-			return axios.post(`${store.rootState.vm.api}/posts/${store.rootState.vm.loggedInUser.id}/update`, payload.post)
+			return axios.post(`${store.rootState.vm.api}/posts/update`, payload.post)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},

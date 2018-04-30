@@ -63,9 +63,9 @@ export const Actions: ActionTree<State, any> = {
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},
-	[CHANGE_FILTER]: (store: ActionContext<State, any>, payload: { userId: string, filter: Filter }): Promise<Result[]> => {
+	[CHANGE_FILTER]: (store: ActionContext<State, any>, payload: { filter: Filter }): Promise<Result[]> => {
 		return new Promise<Result[]>((resolve, reject) => {
-			return axios.post(`${store.rootState.vm.api}/users/${payload.userId}/filter`, payload.filter)
+			return axios.post(`${store.rootState.vm.api}/users/filter`, payload.filter)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},
@@ -91,7 +91,7 @@ export const Actions: ActionTree<State, any> = {
 	},
 	[CREATE_INVITE]: (store: ActionContext<State, any>, payload: { invite: CrudInvite }): Promise<Result[]> => {
 		return new Promise<Result[]>((resolve, reject) => {
-			return axios.post(`${store.rootState.vm.api}/users/${store.rootState.vm.loggedInUser.id}/invites/create`, payload.invite)
+			return axios.post(`${store.rootState.vm.api}/users/invites/create`, payload.invite)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},

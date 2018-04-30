@@ -191,14 +191,14 @@ namespace Diffen.Repositories
 			return _dbClient.SetSelectedAvatarFileNameForUserAsync(userId, fileName);
 		}
 
-		public async Task<List<Result>> UpdateUserFilterAsync(string userId, Filter filter)
+		public async Task<List<Result>> UpdateUserFilterAsync(Filter filter)
 		{
-			var currentFilter = await _dbClient.GetBaseFilterForForumOnUserIdAsync(userId);
+			var currentFilter = await _dbClient.GetBaseFilterForForumOnUserIdAsync(filter.UserId);
 			if (currentFilter == null)
 			{
 				var newFilter = new Database.Entities.User.Filter
 				{
-					UserId = userId,
+					UserId = filter.UserId,
 					PostsPerPage = filter.PostsPerPage,
 					ExcludedUserIds = string.Join(",", filter.ExcludedUsers.Select(x => x.Key))
 				};

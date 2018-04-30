@@ -685,7 +685,7 @@ namespace Diffen.Database.Clients
 
 		public Task<bool> CreateRegionToUserAsync(string userId, int regionId)
 		{
-			var entity = new Database.Entities.Other.RegionToUser
+			var entity = new RegionToUser
 			{
 				UserId = userId,
 				RegionId = regionId
@@ -702,7 +702,7 @@ namespace Diffen.Database.Clients
 				_dbContext.UsersToRegions.Remove(currentRegionSelection);
 				await _dbContext.SaveChangesAsync();
 			}
-			_dbContext.UsersToRegions.Add(new Database.Entities.Other.RegionToUser
+			_dbContext.UsersToRegions.Add(new RegionToUser
 			{
 				RegionId = (await _dbContext.Regions.FirstOrDefaultAsync(x => x.Name == newRegion)).Id,
 				UserId = userId

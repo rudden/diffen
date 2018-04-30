@@ -78,7 +78,7 @@ import { Typeahead } from 'uiv'
 export default class FilterComponent extends Vue {
 	@State(state => state.vm) vm: PageViewModel
 	@ModuleAction(FETCH_KVP_USERS) loadUsers: () => Promise<KeyValuePair[]>
-	@ModuleAction(CHANGE_FILTER) changeFilter: (payload: { userId: string, filter: Filter }) => Promise<Result[]>
+	@ModuleAction(CHANGE_FILTER) changeFilter: (payload: { filter: Filter }) => Promise<Result[]>
 
 	users: KeyValuePair[] = []
 	excludedUsers: KeyValuePair[] = []
@@ -115,7 +115,7 @@ export default class FilterComponent extends Vue {
 
 	save() {
 		this.loading = true
-		this.changeFilter({ userId: this.vm.loggedInUser.id, filter: {
+		this.changeFilter({ filter: {
 			userId: this.vm.loggedInUser.id,
 			postsPerPage: this.pageSize,
 			excludedUsers: this.excludedUsers

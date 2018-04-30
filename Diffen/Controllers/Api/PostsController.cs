@@ -52,17 +52,17 @@ namespace Diffen.Controllers.Api
 				: _postRepository.GetPagedPostsOnFilterAsync(pageNumber, pageSize, serializedFilter);
 		}
 
-		[VerifyInputToLoggedInUserId("userId")]
-		[HttpPost("{userId}/create")]
-		public Task<List<Result>> CreatePost(string userId, [FromBody] Models.Forum.CRUD.Post post)
+		[VerifyInputToLoggedInUserId("post", "CreatedByUserId")]
+		[HttpPost("create")]
+		public Task<List<Result>> CreatePost([FromBody] Models.Forum.CRUD.Post post)
 		{
 			_logger.Debug("Requesting to create a new post");
 			return _postRepository.CreatePostAsync(post);
 		}
 
-		[VerifyInputToLoggedInUserId("userId")]
-		[HttpPost("{userId}/update")]
-		public Task<List<Result>> UpdatePost(string userId, [FromBody] Models.Forum.CRUD.Post post)
+		[VerifyInputToLoggedInUserId("post", "CreatedByUserId")]
+		[HttpPost("update")]
+		public Task<List<Result>> UpdatePost([FromBody] Models.Forum.CRUD.Post post)
 		{
 			_logger.Debug("Requesting to update an existing post");
 			return _postRepository.UpdatePostAsync(post);
@@ -76,6 +76,7 @@ namespace Diffen.Controllers.Api
 			return _postRepository.ScissorPostAsync(postId);
 		}
 
+		[VerifyInputToLoggedInUserId("vote", "CreatedByUserId")]
 		[HttpPost("vote")]
 		public Task<bool> Vote([FromBody] Models.Forum.CRUD.Vote vote)
 		{

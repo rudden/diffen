@@ -19,7 +19,7 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> NickExistsAsync(string nickName);
 		Task<bool> CreateNewNickNameAsync(string userId, string nickName);
 		Task<bool> SetSelectedAvatarForUserAsync(string userId, string fileName);
-		Task<List<Result>> UpdateUserFilterAsync(string userId, Filter filter);
+		Task<List<Result>> UpdateUserFilterAsync(Filter filter);
 		Task<bool> EmailHasInvite(string email);
 		Task<Invite> GetInviteOnEmailAsync(string email);
 		Task<List<Invite>> GetInvitesAsync();

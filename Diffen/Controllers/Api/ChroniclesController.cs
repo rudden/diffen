@@ -13,6 +13,7 @@ namespace Diffen.Controllers.Api
 {
 	using Models;
 	using Models.Other;
+	using Helpers.Authorize;
 	using Repositories.Contracts;
 
 	[Authorize]
@@ -52,6 +53,7 @@ namespace Diffen.Controllers.Api
 		}
 
 		[Authorize(Policy = "IsAuthor")]
+		[VerifyInputToLoggedInUserId("chronicle", "WrittenByUserId")]
 		[HttpPost("create")]
 		public Task<List<Result>> Create([FromBody] Models.Other.CRUD.Chronicle chronicle)
 		{
@@ -60,6 +62,7 @@ namespace Diffen.Controllers.Api
 		}
 
 		[Authorize(Policy = "IsAuthor")]
+		[VerifyInputToLoggedInUserId("chronicle", "WrittenByUserId")]
 		[HttpPost("update")]
 		public Task<List<Result>> Update([FromBody] Models.Other.CRUD.Chronicle chronicle)
 		{

@@ -10,6 +10,7 @@ namespace Diffen.Controllers.Api
 {
 	using Models;
 	using Models.Other;
+	using Helpers.Authorize;
 	using Repositories.Contracts;
 
 	[Authorize]
@@ -55,6 +56,7 @@ namespace Diffen.Controllers.Api
 			return _pollRepository.GetPollsForUserWithIdAsync(userId);
 		}
 
+		[VerifyInputToLoggedInUserId("poll", "CreatedByUserId")]
 		[HttpPost("create")]
 		public Task<List<Result>> Create([FromBody] Models.Other.CRUD.Poll poll)
 		{
@@ -62,6 +64,7 @@ namespace Diffen.Controllers.Api
 			return _pollRepository.CreateNewPollAsync(poll);
 		}
 
+		[VerifyInputToLoggedInUserId("pollVote", "VotedByUserId")]
 		[HttpPost("{pollId}/vote")]
 		public Task<List<Result>> Vote(int pollId, [FromBody] Models.Other.CRUD.PollVote pollVote)
 		{

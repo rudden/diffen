@@ -10,6 +10,7 @@ namespace Diffen.Controllers.Api
 {
 	using Models;
 	using Models.Squad;
+	using Helpers.Authorize;
 	using Repositories.Contracts;
 
 	[Authorize]
@@ -83,6 +84,7 @@ namespace Diffen.Controllers.Api
 			return _squadRepository.GetPositionsAsync();
 		}
 
+		[VerifyInputToLoggedInUserId("lineup", "CreatedByUserId")]
 		[HttpPost, Route("lineups/create")]
 		public Task<List<Result>> CreateLineup([FromBody] Models.Squad.CRUD.Lineup lineup)
 		{
