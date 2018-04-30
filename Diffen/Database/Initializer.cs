@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Net.Http;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+
 using Slugify;
+using Newtonsoft.Json;
 
 namespace Diffen.Database
 {
@@ -30,17 +32,12 @@ namespace Diffen.Database
 	{
 		private const int NumberOfUsers = 20;
 		private const int NumberOfPosts = 50;
-		private static string[] _nickNames;
-		private static string[] _postMessages;
 
 		public static async Task SeedAsync(IServiceProvider services)
 		{
 			var dbContext = services.GetRequiredService<DiffenDbContext>();
 			var userManager = services.GetRequiredService<UserManager<AppUser>>();
 			var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-			_nickNames = await GetRandomNickNamesFromFillTextApiAsync();
-			_postMessages = await GetRandomMessageForPostsAsync();
 
 			await SeedUsersAndNickNamesAsync(dbContext, userManager);
 			await SeedRolesAsync(roleManager);
@@ -92,6 +89,8 @@ namespace Diffen.Database
 			if (userManager.Users.Any())
 				return;
 
+			var nickNames = await GetRandomNickNamesFromFillTextApiAsync();
+
 			for (var i = 0; i < NumberOfUsers; i++)
 			{
 				var user = new AppUser
@@ -106,7 +105,7 @@ namespace Diffen.Database
 				var nickName = new NickName
 				{
 					UserId = user.Id,
-					Nick = _nickNames[i],
+					Nick = nickNames[i],
 					Created = user.Joined
 				};
 				dbContext.NickNames.Add(nickName);
@@ -725,12 +724,14 @@ namespace Diffen.Database
 		{
 			if (!dbContext.Posts.Any())
 			{
+				var postMessages = await GetRandomMessageForPostsAsync();
+
 				for (var i = 0; i < NumberOfPosts; i++)
 				{
 					var randomUser = dbContext.Users.PickRandom();
 					var post = new Post
 					{
-						Message = _postMessages[i],
+						Message = postMessages[i],
 						CreatedByUserId = randomUser.Id,
 						Created = RandomDateTime.Get(randomUser.Joined, DateTime.Now)
 					};
