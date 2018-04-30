@@ -39,7 +39,7 @@ namespace Diffen.Helpers.Authorize
 					return;
 				}
 			}
-			context.Result = new ForbidResult();
+			context.Result = new BadRequestResult();
 		}
 	}
 }
