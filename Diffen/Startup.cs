@@ -9,9 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.DependencyInjection;
 
-using AutoMapper;
-
 using Serilog;
+using AutoMapper;
 
 namespace Diffen
 {
@@ -107,7 +106,7 @@ namespace Diffen
 			}
 			else
 			{
-				app.UseExceptionHandler("Home/Error");
+				app.UseExceptionHandler("/Home/Error");
 			}
 
 			app.UseStaticFiles();
