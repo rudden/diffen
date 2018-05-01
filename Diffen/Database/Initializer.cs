@@ -60,6 +60,7 @@ namespace Diffen.Database
 			await SeedScissoredPostsAsync(dbContext);
 			await SeedPollsAsync(dbContext);
 			await SeedRegionsAsync(dbContext);
+			await SeedChroniclesAsync(dbContext, userManager);
 		}
 
 		private static async Task<string[]> GetRandomNickNamesFromFillTextApiAsync()
@@ -74,11 +75,11 @@ namespace Diffen.Database
 			}
 		}
 
-		private static async Task<string[]> GetRandomMessageForPostsAsync()
+		private static async Task<string[]> GetRandomTextAsync(int amount)
 		{
 			using (var client = new HttpClient())
 			{
-				var uri = "https://baconipsum.com/api/?type=all-meat&paras=".Replace("paras=", $"paras={NumberOfPosts}");
+				var uri = "https://baconipsum.com/api/?type=all-meat&paras=".Replace("paras=", $"paras={amount}");
 				var response = await client.GetAsync(uri);
 				return JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
 			}
@@ -724,7 +725,7 @@ namespace Diffen.Database
 		{
 			if (!dbContext.Posts.Any())
 			{
-				var postMessages = await GetRandomMessageForPostsAsync();
+				var postMessages = await GetRandomTextAsync(NumberOfPosts);
 
 				for (var i = 0; i < NumberOfPosts; i++)
 				{
@@ -745,16 +746,18 @@ namespace Diffen.Database
 		{
 			if (dbContext.Posts.All(x => x.ParentPost == null))
 			{
-				var posts = dbContext.Posts.ToList().PickRandom(20);
-				foreach (var post in posts)
+				var posts = dbContext.Posts.PickRandom(20).ToList();
+				var postMessages = await GetRandomTextAsync(20);
+				for (var i = 0; i < posts.Count; i++)
 				{
+					var post = posts[i];
 					var randomUser = dbContext.Users.Where(u => u.Id != post.CreatedByUserId).PickRandom();
 					var answer = new Post
 					{
-						Message = $"Autogenererat svar till inlägg {post.Id}. Scrolla vidare! \n\nMvh Admin",
+						Message = postMessages[i],
 						CreatedByUserId = randomUser.Id,
 						ParentPostId = post.Id,
-						Created = RandomDateTime.Get(post.Created, post.Created.AddMinutes(30))
+						Created = RandomDateTime.Get(posts[i].Created, post.Created.AddMinutes(30))
 					};
 					dbContext.Posts.Add(answer);
 					await dbContext.SaveChangesAsync();
@@ -939,6 +942,7 @@ namespace Diffen.Database
 				for (var i = 0; i < 10; i++)
 				{
 					var users = dbContext.Users.PickRandom(dbContext.Users.Count() / 3);
+					var pmMessages = await GetRandomTextAsync(10);
 					foreach (var user in users)
 					{
 						var randomUser = dbContext.Users.Where(toUser => toUser.Id != user.Id).PickRandom();
@@ -946,7 +950,7 @@ namespace Diffen.Database
 						{
 							FromUserId = user.Id,
 							ToUserId = randomUser.Id,
-							Message = $"Ville bara säga hej {randomUser.NickNames.Current()}!\n\nLorem ipsum dolor amet prism intelligentsia fashion axe skateboard, tilde etsy small batch distillery. Yuccie cornhole artisan taxidermy iceland raclette prism drinking vinegar truffaut health goth ennui.\n\nMvh {user.NickNames.Current()}",
+							Message = pmMessages[i],
 							Created = RandomDateTime.Get(user.Joined, DateTime.Now)
 						};
 						dbContext.PersonalMessages.Add(personalMessage);
@@ -1066,6 +1070,38 @@ namespace Diffen.Database
 						RegionId = dbContext.Regions.PickRandom().Id
 					};
 					dbContext.UsersToRegions.Add(userToRegion);
+				}
+				await dbContext.SaveChangesAsync();
+			}
+		}
+
+		private static async Task SeedChroniclesAsync(DiffenDbContext dbContext, UserManager<AppUser> userManager)
+		{
+			if (!dbContext.Chronicles.Any())
+			{
+				var chronicleTexts = new List<KeyValuePair<string, string>>
+				{
+					new KeyValuePair<string, string>("Tre nycklar i derbyt",
+						"<p><br></p><p><strong style=\"color: rgb(0, 0, 0);\">Hur ska Djurgården lyckas att vinna derbyt? Vad kommer bli avgörande? Här är tre nycklar inför derbyt mot Hammarby.</strong></p><p><br></p><p><strong>Presspelet</strong></p><p>Här handlar det om båda lagens presspel. Djurgårdens presspel med Kerim Mrabti var väldigt lyckat, mindre lyckat med Badji på banan. Men man har ändå lyckats slipa presspelet i senaste matcherna. Hammarbys presspel har också fungerat väl ut men också straffat dem. Bolltap eller genombrottspassningar igenom deras presspel kan såra Hammarby enormt. Titta bara på senaste matchen mot Häcken.</p><p><br></p><p><strong>Kanterna</strong></p><p>Djurgården är skickliga via kanterna, inte minst med Jonathan Ring på planen. Men det är kanske inte nödvändigtvis inlägg utan inspel från kanterna och att spelare som Ring kliver in från kanten och in centralt i banan. Defensivt kommer Djurgården försöka trycka ut Hammarby på kanterna för att tvingas slå inlägg, något Blårändernas nickstarka mittbackar bör klara av. Det kräver att Radetinac och Ring kliver in centralt när Djurgården tappar boll och måste försvara. Hos Bajen finns en tydlig svag punkt och det är på deras vänsterkant. Neto Borges har varit lyckosam offensivt, men han visar också brister i det defensiva. Där kommer det finnas luckor.</p><p><br></p><p><strong>Mod</strong></p><p>Derbyn handlar mycket om mod. Att våga leva med tempot, att ha modet att göra sitt jobb och det lilla extra. Att tro på sin gameplan och njuta. Inte gömma sig i skuggor och tro att någon annan ska lösa problemen.</p><p><br></p><p>***</p><p><br></p><p><strong>Bonus-nyckel: stödet från läktarna</strong></p><p>Mod måste också komma från läktarhåll. Att från sittplats till klacken, från junis till klackrävar visa alla andra vilka som ska vinna det här derbyt.</p><p><br></p><p>Avspark 15:00.</p>"),
+					new KeyValuePair<string, string>("Krönika: Allt vi drömde om på Östra 2010", "<p><br></p><blockquote><strong style=\"color: rgb(0, 0, 0);\">\"Två år senare är vi snart framme vid toppmatcher som tidigare endast fanns på ett teoretiskt plan, över en öl på Östra efter en match\", skriver Gustaf Nilsson i en krönika.</strong></blockquote><p><br></p><p><strong>Det är bara några dagar</strong>&nbsp;kvar av april. En månad som för DIF fotboll får ett medelbetyg med plus i kanten.</p><p><br></p><p>Och ena sidan spelade vi skjortan av de regerande mästarna och tagit ner Östersund på jorden. Och andra sidan gjorde vi ett uselt derby sång- och spelmässigt mot aik. Med de senaste tio åren i nära minne, där man behövt käka magsårstabletter inför varenda kortpassning inom laget, är det lättare att fastna med det som är negativt just nu.</p><p><br></p><p>Att vi saknar ett given anfallsuppsättning, att vi tappar onödiga poäng mot Trelleborg och Elfsborg. Att läktarinsatserna varit ojämna på både Sofia och Slaktis i år. Men vi får inte glömma bort var vi befinner oss idag.</p><p><br></p><p><strong>Om exakt två veckor</strong>&nbsp;väntar en cupfinal mot Malmö och en chans att ta vår första stora titel sedan 2005 – dessutom på hemmaplan. Vi ska ut i Europa mitt i sommarvärmen – något jag och polarna bokstavligt bara drömde om åren 2008-2013. Att det SKULLE inträffa en dag enades vi om – men då skulle vi troligen vara väldigt, väldigt gamla.</p><p><br></p><p>För ibland glömmer vi att allt har gått väldigt fort. För mindre än två år sen dansade vi i botten av tabellen och tvingades sparka en tränare (Pelle Olsson) som vi nyligen hade förlängt med. Två år senare är vi snart framme vid toppmatcher som tidigare endast fanns på ett teoretiskt plan, över en öl på Östra Station efter en match. På söndag väntar Bajen på hemmaplan. Allt talar för utsålda läktare, 15 grader varmt och strålande sol. När du tar dig till arenan och kanske tar dig en öl för att lugna derbynerverna: Passa på att stanna upp och njut av den tid vi har framför oss.</p><p><br></p><p>Sen går du ut på läktaren och sjunger utav bara satan.&nbsp;<strong>Ur spår bönder, vi är DIF.</strong></p>"),
+					new KeyValuePair<string, string>("Elfsborg - Djurgården 2-2: Passivt Djurgården tappade segern", "<p><br></p><p><strong style=\"color: rgb(0, 0, 0);\">Blåränderna tappade segern i slutminuterna efter en passiv andra halvlek där bytena lämnade frågetecken.</strong></p><p><br></p><p>Som Forum 1891 rapporterade inför matchen valde Özcan Melkemichel att rotera i laget. Marcus Danielsson och Jacob Une Larsson in som mittbackspar och Jesper Karlström och Kevin Walker centralt på mittfältet.</p><p><br></p><p>Matchen inleddes med ganska högt tempo där båda lagen ville styra matchen, men det var Elfsborg som skulle ta ledningen tidigt efter ett snyggt distansskott av Simon Lundevall. Efter målet tog Djurgården över matchbilden och efter drygt 20 minuter snappade Jesper Karlström upp en boll efter misstag av Jon Jönsson och spelade fram Jonathan Ring som drog en tåpaj i mål.</p><p><br></p><p>Djurgården fortsatte att trycka framåt och strax innan halvtidspaus spelade Jonathan Ring fram Aliou Badji som sköt ett stenhårt skott i mål.</p><p><br></p><p>I andra halvlek fortsatte Djurgården att dominera och trycka ner Elfsborg. Men efter halva andra halvlek blev Djurgården väldigt passiva och gav initiativet till hemmalaget som blev allt mer desperata och skapade fler lägen. Tränare Özcan Melkemichel gjorde defensiva byten för att krympa ytorna, men det gjorde laget än mer passivt.&nbsp;</p><blockquote>– Det var så sent in och det var så trötta ben. Vi var tvungna att göra något, sade Özcan Melkemichel till C More efter matchen som menade att det inte var meningen att laget skulle bli så passiva.</blockquote><p><br></p><p>Kvitteringsmålet låg i luften och i 90:e minuten sköt Jon Jönsson in bollen ottagbart för målvakt Andreas Isaksson</p><blockquote>– Det känns som en förlust, summerade Özcan Melkemichel efter matchen.</blockquote><p><br></p><p>Djurgården gör en bra match i ungefär 60 minuter, men blir sedan alldeles för passiva och ger bort den här matchen. Båda anfallarna byttes ut för defensiva spelare och så här i efterhand var det inget lyckat drag. Till Özcan Melkemichels försvar fanns det ingen (!) forward på bänken.</p><p><br></p><p>Härnäst väntar Hammarby på Tele2 Arena på söndag klockan 15:00.</p><p><br></p><p><strong>Elfsborg - Djurgården 2-2</strong></p><p>1-0 Simon Lundevall (9 min)</p><p>1-1 Jonathan Ring (21 min)</p><p>1-2 Aliou Badji (45 min)</p><p>2-2 Jon Jönsson (90 min)</p><p><br></p>"),
+					new KeyValuePair<string, string>("Kerim Mrabti närmar sig comeback", "<p><br></p><p><strong style=\"color: rgb(0, 0, 0);\">En av Djurgårdens viktigaste spelare, Kerim Mrabti, närmar sig comeback.</strong></p><p><br></p><p>Det var i derbyt mot AIK som Kerim Mrabti skadade sig när han drog baksida lår. Prognosen sade att den offensive mittfältaren skulle bli borta några veckor. Nu har det snart gått två veckor sedan skadan och 23-åringen upplever en bra rehabperiod.</p><blockquote>– Det känns väldigt bra, säger Kerim Mrabti till DIFTV.</blockquote><p><br></p><p>Mrabti kommer missa derbyt mot Hammarby och förmodligen stå över bortamatchen mot Malmö FF på torsdag, men han har siktet inställt på att spela Svenska cupen-finalen mot Malmö FF 10 maj.</p><blockquote>– Det är klart man önskar att man hade kunnat spela nu på söndag, men jag tror förmodligen att vi kommer få stå över den så det inte blir en risk att jag inte kan spela de andra matcherna här under våren. Vi har en tuff match veckan efter mot Malmö som är minst lika viktig och även en Svenska cupen-final som jag definitivt siktar in på, berättar Kerim Mrabti.</blockquote><p><br></p><p>Över 24 000 biljetter är sålda till söndagens derby mot Hammarby. Avspark 15:00 på Tele2 Arena.</p>"),
+					new KeyValuePair<string, string>("Yura Movsisyan stängs av mot Elfsborg", "<p><br></p><p><strong style=\"color: rgb(0, 0, 0);\">Djurgårdens anfallare Yura Movsisyan tilldelades rött kort i derbyt mot AIK och blev automatiskt avstängd mot Malmö FF. Nu har disciplinnämnden fastställt att anfallaren även stängs av i nästa match, mot Elfsborg.</strong></p><p><br></p><p>Det var i slutet av matchen mot AIK som&nbsp;Yura Movsisyan satte sin panna mot Daniel Sundgren och visades ut. Rött kort och avstängning i nästkommande match som naturlig påföljd. Nu har disciplinnämnden beslutat att anfallaren blir avstängd ytterligare en match, alltså mot Elfsborg på måndag.</p><blockquote>– Därför att vi menar att han uppträtt olämpligt. Det betyder en match till. Sedan var det en ledamot som ville bestraffa honom med tre matcher, men det var skiljeaktigt, då majoriteten tyckte att det räckte med en match,&nbsp;säger Kerstin Elserth, ordförande i disciplinnämnden till SportExpressen.</blockquote><p><br></p><p>Djurgården kommer inte överklaga beslutet.&nbsp;</p><blockquote>– Vi har tagit del av beslutet som vi respekterar och kommer inte att överklaga det, säger sportchef Bosse Andersson till Djurgårdens hemsida.</blockquote><p><br></p>")
+				};
+				foreach (var chronicleText in chronicleTexts)
+				{
+					var randomUser = userManager.GetUsersInRoleAsync("Author").Result.PickRandom();
+					var created = RandomDateTime.Get(randomUser.Joined, DateTime.Now);
+					var chronicle = new Chronicle
+					{
+						Title = chronicleText.Key,
+						Text = chronicleText.Value,
+						Slug = new SlugHelper().GenerateSlug(chronicleText.Key),
+						WrittenByUserId = randomUser.Id,
+						Created = created,
+						Published = RandomDateTime.Get(created, created.AddDays(5))
+					};
+					dbContext.Chronicles.Add(chronicle);
 				}
 				await dbContext.SaveChangesAsync();
 			}
