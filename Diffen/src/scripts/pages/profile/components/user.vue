@@ -183,7 +183,10 @@ export default class UserComponent extends Vue {
 	created() {
         this.loadRegions()
         this.loadPlayers()
-        this.loadRoles().then((roles: string[]) => this.roles = roles)
+
+        if (this.loggedInUserIsAdmin) {
+            this.loadRoles().then((roles: string[]) => this.roles = roles)
+        }
 
         if (this.user.favoritePlayer) {
             this.favoritePlayerId = this.user.favoritePlayer.id
@@ -236,7 +239,16 @@ export default class UserComponent extends Vue {
         this.loading = true
         this.crudUser.region = this.selectedRegionName
         this.crudUser.favoritePlayerId = this.favoritePlayerId
-        this.crudUser.secludeUntil = this.secludeDate ? this.secludeDate.toString() : ''
+        // this.crudUser.secludeUntil = this.secludeDate ? this.secludeDate.toString() : ''
+        if (this.secludeDate)
+            if (isNaN(Date.parse(this.secludeDate.toString()))) {
+                this.crudUser.secludeUntil = ''    
+            } else {
+                this.crudUser.secludeUntil = this.secludeDate.toString()
+            }
+        else {
+            this.crudUser.secludeUntil = ''
+        }
         this.updateUser({ userId: this.user.id, user: this.crudUser })
             .then((results: Result[]) => {
                 this.results = results
@@ -300,7 +312,7 @@ export default class UserComponent extends Vue {
 <style lang="scss" scoped>
 .edit-btn {
     // color: #699ED0 !important;
-    color: white;
+    color: white !important;
     font-size: 150%;
     cursor: pointer;
     display: block;
