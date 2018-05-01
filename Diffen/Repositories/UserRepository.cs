@@ -15,7 +15,6 @@ namespace Diffen.Repositories
 	using Models;
 	using Models.User;
 	using Models.Squad;
-	using Models.Other;
 	using Helpers.Extensions;
 	using Database.Clients.Contracts;
 

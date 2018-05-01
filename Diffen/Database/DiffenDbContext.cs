@@ -37,7 +37,6 @@ namespace Diffen.Database
 		public DbSet<PollSelection> PollSelections { get; set; }
 		public DbSet<PollVote> PollVotes { get; set; }
 		public DbSet<Chronicle> Chronicles { get; set; }
-
 		public DbSet<Region> Regions { get; set; }
 		public DbSet<RegionToUser> UsersToRegions { get; set; }
 
