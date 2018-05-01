@@ -20,7 +20,7 @@ namespace Diffen.Controllers.Pages
 		[Authorize]
 		public IActionResult Index()
 		{
-			return View(Model);
+			return View("_Page", Model);
 		}
 
 		[Authorize]
@@ -28,7 +28,7 @@ namespace Diffen.Controllers.Pages
 		public IActionResult Index(string slug)
 		{
 			Model.SelectedPollSlug = slug;
-			return View("index", Model);
+			return View("_Page", Model);
 		}
 	}
 }

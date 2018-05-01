@@ -24,7 +24,7 @@ namespace Diffen.Controllers.Pages
 		public IActionResult Index()
 		{
 			Model.GoogleMapsApiKey = _configuration["GoogleMapsApi:Key"];
-			return View(Model);
+			return View("_Page", Model);
 		}
 	}
 }

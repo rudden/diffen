@@ -20,7 +20,7 @@ namespace Diffen.Controllers.Pages
 		[Authorize]
 		public IActionResult Index()
 		{
-			return View(Model);
+			return View("_Page", Model);
 		}
 	}
 }

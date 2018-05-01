@@ -1,0 +1,10 @@
+﻿@using Diffen.Helpers.Extensions
+@model Diffen.ViewModels.PageViewModel
+
+@{
+	var scriptName = $"{Model.Page}.js";
+}
+
+<div id="@Model.Page" view-model="@Model.AsJson()"></div>
+
+<script src="~/dist/js/@scriptName"></script>

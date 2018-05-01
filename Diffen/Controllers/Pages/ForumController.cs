@@ -20,7 +20,7 @@ namespace Diffen.Controllers.Pages
 		[Authorize]
 		public IActionResult Index()
 		{
-			return View(Model);
+			return View("_Page", Model);
 		}
 
 		[Authorize]
@@ -28,7 +28,7 @@ namespace Diffen.Controllers.Pages
 		public IActionResult Index(int id)
 		{
 			Model.SelectedPostId = id;
-			return View(Model);
+			return View("_Page", Model);
 		}
 	}
 }
