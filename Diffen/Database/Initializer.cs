@@ -1002,7 +1002,7 @@ namespace Diffen.Database
 				foreach (var pollItem in PollList.All())
 				{
 					var user = dbContext.Users.PickRandom();
-					var created = RandomDateTime.Get(user.Joined, DateTime.Now);
+					var created = RandomDateTime.Get(DateTime.Now.AddDays(-10), DateTime.Now);
 					var poll = new Poll
 					{
 						Name = pollItem.Name,
