@@ -1,0 +1,38 @@
+.formation {
+	width: 540px;
+	margin: 0 auto;
+	.formation-section-wrapper {
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+    	justify-content: center;
+	}
+	.formation-section-wrapper-normal {
+		margin: 0 auto;
+		display: flow-root;
+		align-items: normal;
+    	justify-content: normal;
+	}
+
+	::-webkit-input-placeholder {
+		text-align: center;
+	}
+	:-moz-placeholder { /* Firefox 18- */
+		text-align: center;  
+	}
+	::-moz-placeholder {  /* Firefox 19+ */
+		text-align: center;  
+	}
+	:-ms-input-placeholder {  
+		text-align: center; 
+	}
+}
+@media (max-width: 768px) {
+	.formation {
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+		input.form-control {
+			border: none;
+		}
+	}
+}

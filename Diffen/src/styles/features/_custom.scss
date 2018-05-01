@@ -56,18 +56,6 @@
 	}
 }
 
-/* formation */
-.formation {
-	.row [class*="col-"]:first-child {
-		padding-left: 0.5rem !important;
-		padding-right: 0.5rem !important;
-	}
-	.row [class*="col-"]:last-child {
-		padding-left: 0.5rem !important;
-		padding-right: 0.5rem !important;
-	}
-}
-
 /* authentication */
 .auth-validation {
 	ul {
