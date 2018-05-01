@@ -12,7 +12,7 @@
             </template>
         </a>
         <v-modal v-bind="attributes" @before-open="open" @before-close="close">
-            <div class="modal-header">
+            <div class="modal-header" v-if="header">
                 <h4 class="modal-title">{{ header }}</h4>
             </div>
             <div class="modal-body">
