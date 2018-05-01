@@ -1,22 +1,18 @@
 <template>
 	<div>
 		<!-- attack -->
-		<div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0 pr-0"><player-card :player="canf.player" :position="canf.position" /></div>
-			<div class="col-lg col-md"></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="canf.player" :position="canf.position" />
 		</div>
 		<!-- midfield -->
-		<div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0 pr-0"><player-card :player="com.player" :position="com.position" /></div>
-			<div class="col-lg col-md"></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="com.player" :position="com.position" />
 		</div>
-		<div class="row">
-			<div class="col-sm col-lg-3 col-md-3"><player-card :player="vm.player" :position="vm.position" /></div>
-			<div class="col-sm col-lg-3 col-md-3 pl-0 pr-1"><player-card :player="vcm.player" :position="vcm.position" /></div>
-			<div class="col-sm col-lg-3 col-md-3 pr-0 pl-1"><player-card :player="hcm.player" :position="hcm.position" /></div>
-			<div class="col-sm col-lg-3 col-md-3"><player-card :player="hm.player" :position="hm.position" /></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="vm.player" :position="vm.position" />
+			<player-card :player="vcm.player" :position="vcm.position" />
+			<player-card :player="hcm.player" :position="hcm.position" />
+			<player-card :player="hm.player" :position="hm.position" />
 		</div>
 		<!-- defense -->
 		<defense :players="players" :get-player="getPlayer" />

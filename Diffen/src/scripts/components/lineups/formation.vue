@@ -6,8 +6,13 @@
 					{{ formation.name }}
 				</div>
 				<div class="card-body pb-0 formation">
-					<component v-bind:is="formation.componentName" :get-player="getPlayer" />
-				</div> 
+					<component :is="formation.componentName" :get-player="getPlayer" />
+				</div>
+				<div class="card-footer small-device p-0">
+					<div class="alert alert-warning mb-0 p-1">
+						<small>gör sig bättre ut på större skärm</small>
+					</div>
+				</div>
 			</div>
 		</template>
 		<template v-else>

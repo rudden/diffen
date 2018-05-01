@@ -1,21 +1,16 @@
 <template>
 	<div>
-		<div class="row">
-			<div class="col-sm col-lg-3 col-md-3"><player-card :player="vyb.player" :position="vyb.position" /></div>
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-3 col-md-3"><player-card :player="hyb.player" :position="hyb.position" /></div>
+		<div class="formation-section-wrapper-normal">
+			<player-card :player="vyb.player" :position="vyb.position" class="float-left" />
+			<player-card :player="hyb.player" :position="hyb.position" class="float-right" />
 		</div>
-		<div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-3 col-md-3"><player-card :player="vmb.player" :position="vmb.position" /></div>
-			<div class="col-sm col-lg-4 col-md-4"><player-card :player="cmb.player" :position="cmb.position" /></div>
-			<div class="col-sm col-lg-3 col-md-3"><player-card :player="hmb.player" :position="hmb.position" /></div>
-			<div class="col-lg col-md"></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="vmb.player" :position="vmb.position" />
+			<player-card :player="cmb.player" :position="cmb.position" />
+			<player-card :player="hmb.player" :position="hmb.position" />
 		</div>
-		<div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4"><player-card :player="mv.player" :position="mv.position" /></div>
-			<div class="col-lg col-md"></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="mv.player" :position="mv.position" />
 		</div>
 	</div>
 </template>

@@ -299,7 +299,8 @@ export default class UserComponent extends Vue {
 
 <style lang="scss" scoped>
 .edit-btn {
-    color: #699ED0 !important;
+    // color: #699ED0 !important;
+    color: white;
     font-size: 150%;
     cursor: pointer;
     display: block;

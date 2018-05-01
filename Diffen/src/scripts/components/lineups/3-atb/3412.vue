@@ -1,29 +1,21 @@
 <template>
 	<div>
 		<!-- attack -->
-		<div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0"><player-card :player="vanf.player" :position="vanf.position" /></div>
-			<div class="col-sm col-lg-4 col-md-4 pr-0"><player-card :player="hanf.player" :position="hanf.position" /></div>
-			<div class="col-lg col-md"></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="vanf.player" :position="vanf.position" />
+			<player-card :player="hanf.player" :position="hanf.position" />
 		</div>
-        <div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0 pr-0"><player-card :player="com.player" :position="com.position" /></div>
-			<div class="col-lg col-md"></div>
+        <div class="formation-section-wrapper">
+			<player-card :player="com.player" :position="com.position" />
 		</div>
 		<!-- midfield -->
-		<div class="row">
-			<div class="col-sm col-lg-3 col-md-3 pr-0"><player-card :player="vyb.player" :position="vyb.position" /></div>
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-3 col-md-3 pl-0"><player-card :player="hyb.player" :position="hyb.position" /></div>
+		<div class="formation-section-wrapper-normal">
+			<player-card :player="hyb.player" :position="hyb.position" class="float-left" style="margin-top: -1rem"  />
+			<player-card :player="vyb.player" :position="vyb.position" class="float-right" style="margin-top: -1rem"  />
 		</div>
-		<div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0 pr-0"><player-card :player="vcdm.player" :position="vcdm.position" /></div>
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0 pr-0"><player-card :player="hcdm.player" :position="hcdm.position" /></div>
-			<div class="col-lg col-md"></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="vcdm.player" :position="vcdm.position" />
+			<player-card :player="hcdm.player" :position="hcdm.position" />
 		</div>
 		<!-- defense -->
 		<defense :players="players" :get-player="getPlayer" />

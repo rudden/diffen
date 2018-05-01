@@ -145,7 +145,8 @@ export default class PostComponent extends Vue {
         startingEleven: {
             attributes: {
                 name: `lineup-${this.post.id}`,
-                draggable: true
+                draggable: true,
+                scrollable: true
             },
             header: 'startelva',
             button: {
@@ -156,7 +157,8 @@ export default class PostComponent extends Vue {
         },
         editPost: {
             attributes: {
-                name: `edit-${this.post.id}`
+                name: `edit-${this.post.id}`,
+                scrollable: true
             },
             header: 'editera inlägg',
             button: {
@@ -168,7 +170,8 @@ export default class PostComponent extends Vue {
         replyPost: {
             attributes: {
                 name: `reply-${this.post.id}`,
-                resizable: true
+                resizable: true,
+                scrollable: true
             },
             header: 'svara inlägg',
             button: {

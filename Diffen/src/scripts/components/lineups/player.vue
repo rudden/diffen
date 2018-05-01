@@ -1,36 +1,38 @@
 <template>
-	<div class="card mb-3">
+	<div class="m-1">
 		<template v-if="player.name">
-			<div class="card-header small-device p-0">
-				{{ position.name }}
-			</div>
-			<div class="card-body">
-				<h6 class="card-title">
-					{{ player.name }}
-					<span class="ml-2" v-if="hasAttribute">
-						<span class="badge badge-primary" v-if="player.isCaptain">kapten</span>
-						<span class="badge badge-danger" v-else-if="player.isHereOnLoan">inlånad</span>
-						<span class="badge badge-warning" v-else-if="player.isOutOnLoan">utlånad</span>
-						<span class="badge badge-danger" v-else-if="player.isSold">såld</span>
-					</span>
-				</h6>
+			<div class="card mb-3">
+				<div class="card-body">
+					<h6 class="card-title">
+						{{ player.name }}
+						<span class="ml-2" v-if="hasAttribute">
+							<span class="badge badge-primary" v-if="player.isCaptain">kapten</span>
+							<span class="badge badge-danger" v-else-if="player.isHereOnLoan">inlånad</span>
+							<span class="badge badge-warning" v-else-if="player.isOutOnLoan">utlånad</span>
+							<span class="badge badge-danger" v-else-if="player.isSold">såld</span>
+						</span>
+					</h6>
+				</div>
 			</div>
 		</template>
 		<template v-else>
 			<template v-if="kvpPlayers.length > 0">
-				<div class="card-header small-device p-0">
-					{{ position.name }}
-				</div>
 				<template v-if="!selected">
-					<input :id="position.name" class="form-control form-control-sm" type="text" placeholder="sök efter en spelare..">
-					<typeahead v-model="selected" :target="'#' + position.name" :data="kvpPlayers" item-key="value" force-select />
+					<div class="card" style="width: 100%">
+						<div class="card-body p-0">
+							<input :id="position.name" class="form-control mr-sm-2" type="text" :placeholder="position.name">
+							<typeahead v-model="selected" :target="'#' + position.name" :data="kvpPlayers" item-key="value" force-select />
+						</div>
+					</div>
 				</template>
 				<template v-else>
-					<div class="alert alert-primary alert-dismissible fade show">
-						<strong>{{ selectedPlayerName }}</strong>
-						<button type="button" class="close" data-dismiss="alert" v-on:click="deSelect" style="padding: 2px 5px">
-							<span aria-hidden="true">&times;</span>
-						</button>
+					<div class="card mb-3">
+						<div class="card-body pt-1 pb-1">
+							<strong>{{ selectedPlayerName }}</strong>
+							<a v-on:click="deSelect" class="float-right ml-2" style="cursor: pointer">
+								<span class="icon icon-trash"></span>
+							</a>
+						</div>
 					</div>
 				</template>
 			</template>
@@ -117,26 +119,6 @@ export default class PlayerCard extends Vue {
 	padding: 10px;
 	.card-title {
 		margin-bottom: 0;
-	}
-}
-.alert {
-	padding: 3px;
-	padding-left: 10px;
-	margin-bottom: 0;
-	strong {
-		float: left;
-		max-width: 80%;
-		white-space: nowrap;
-    	overflow: hidden;
-    	text-overflow: ellipsis;
-	}
-}
-@media (max-width: 768px) {
-	input {
-		border: none;
-	}
-	.alert {
-		border-radius: 0 !important;
 	}
 }
 </style>

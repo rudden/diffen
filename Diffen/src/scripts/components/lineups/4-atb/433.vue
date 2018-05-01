@@ -1,28 +1,20 @@
 <template>
 	<div>
 		<!-- attack -->
-		<div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0 pr-0"><player-card :player="canf.player" :position="canf.position" /></div>
-			<div class="col-lg col-md"></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="canf.player" :position="canf.position" />
 		</div>
-		<div class="row">
-			<div class="col-sm col-lg-3 col-md-3"><player-card :player="vy.player" :position="vy.position" /></div>
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-3 col-md-3"><player-card :player="hy.player" :position="hy.position" /></div>
+		<div class="formation-section-wrapper-normal">
+			<player-card :player="vy.player" :position="vy.position" class="float-left" />
+			<player-card :player="hy.player" :position="hy.position" class="float-right" />
 		</div>
 		<!-- midfield -->
-		<div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0 pr-0"><player-card :player="cm.player" :position="cm.position" /></div>
-			<div class="col-lg col-md"></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="cm.player" :position="cm.position" />
 		</div>
-		<div class="row">
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0 pr-0"><player-card :player="vcm.player" :position="vcm.position" /></div>
-			<div class="col-lg col-md"></div>
-			<div class="col-sm col-lg-4 col-md-4 pl-0 pr-0"><player-card :player="hcm.player" :position="hcm.position" /></div>
-			<div class="col-lg col-md"></div>
+		<div class="formation-section-wrapper">
+			<player-card :player="vcm.player" :position="vcm.position" class="mr-3" />
+			<player-card :player="hcm.player" :position="hcm.position" class="ml-3" />
 		</div>
 		<!-- defense -->
 		<defense :players="players" :get-player="getPlayer" />
