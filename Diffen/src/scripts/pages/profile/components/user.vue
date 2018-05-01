@@ -239,7 +239,6 @@ export default class UserComponent extends Vue {
         this.loading = true
         this.crudUser.region = this.selectedRegionName
         this.crudUser.favoritePlayerId = this.favoritePlayerId
-        // this.crudUser.secludeUntil = this.secludeDate ? this.secludeDate.toString() : ''
         if (this.secludeDate)
             if (isNaN(Date.parse(this.secludeDate.toString()))) {
                 this.crudUser.secludeUntil = ''    
