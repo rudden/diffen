@@ -64,7 +64,9 @@
                                     <div class="media-body-text">
                                         <div class="media-heading">
                                             <small class="float-right text-muted">{{ post.parentPost.since }}</small>
-                                            <h6>{{ post.parentPost.user.nickName }}</h6>
+                                            <a :href="`/profile/${post.user.id}`" style="color: black">
+                                                <h6>{{ post.parentPost.user.nickName }}</h6>
+                                            </a>
                                         </div>
                                         <p>{{ post.parentPost.message }}</p>
                                     </div>
@@ -148,7 +150,6 @@ export default class PostComponent extends Vue {
                 draggable: true,
                 scrollable: true
             },
-            header: 'startelva',
             button: {
                 classes: 'small',
                 text: 'visa startelva'
