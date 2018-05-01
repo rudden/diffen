@@ -135,8 +135,7 @@ export default class NewChronicle extends Vue {
         widgetPositioning: {
             vertical: 'bottom',
             horizontal: 'left'
-        },
-        minDate: new Date(new Date().toISOString().slice(0, 10).toString() + ' 00:00')
+        }
     }
 
     private directoryName: string = 'chronicles'
@@ -196,7 +195,11 @@ export default class NewChronicle extends Vue {
 
     save() {
         this.loading = true
-        this.newChronicle.published = this.publishDate.toString()
+        if (isNaN(Date.parse(this.publishDate.toString()))) {
+            this.newChronicle.published = ''    
+        } else {
+            this.newChronicle.published = this.publishDate.toString()
+        }
         if (this.newChronicle.id) {
             this.updateChronicle({ chronicle: this.newChronicle })
                 .then((results: Result[]) => {
