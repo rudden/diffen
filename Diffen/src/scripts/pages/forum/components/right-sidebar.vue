@@ -1,5 +1,5 @@
 <template>
-	<div class="col-lg-3" v-if="showRightSideBar">
+	<div class="col-lg-3" v-show="showRightSideBar">
 		<filter-component />
 		<polls-component :type-of-polls="'active'" :is-small="true" class="mb-4" />
 		<chronicles-component :is-small="true" :amount-of-chronicles="5" class="mb-4" />
