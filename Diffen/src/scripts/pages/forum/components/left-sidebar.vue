@@ -1,5 +1,5 @@
 <template>
-    <div class="col-lg-3 d-none d-lg-block">
+    <div class="col-lg-3 d-none d-lg-block" v-if="showLeftSideBar">
         <div class="card card-profile mb-4">
             <div class="card-header" style="background-image: url(bg.jpg);"></div>
             <div class="card-body text-center">
@@ -66,7 +66,7 @@ import { UrlTip } from '../../../model/forum'
 const ModuleGetter = namespace('forum', Getter)
 const ModuleAction = namespace('forum', Action)
 
-import { GET_URLTIP_TOPLIST, FETCH_URLTIP_TOPLIST } from '../../../modules/forum/types'
+import { GET_URLTIP_TOPLIST, GET_SHOW_LEFT_SIDEBAR, FETCH_URLTIP_TOPLIST } from '../../../modules/forum/types'
 
 import Url from '../../../components/url.vue'
 
@@ -78,6 +78,7 @@ import Url from '../../../components/url.vue'
 export default class LeftSidebar extends Vue {
     @State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_URLTIP_TOPLIST) urlTips: UrlTip[]
+    @ModuleGetter(GET_SHOW_LEFT_SIDEBAR) showLeftSideBar: boolean
     @ModuleAction(FETCH_URLTIP_TOPLIST) loadUrlTipTopList: () => Promise<void>
 
     mounted() {

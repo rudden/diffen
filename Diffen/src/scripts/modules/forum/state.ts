@@ -6,4 +6,6 @@ export default class State {
     isLoadingPosts: boolean = true
     filter: Filter = new Filter()
     urlTipTopList: UrlTip[] = []
+    showLeftSideBar: boolean = true
+    showRightSideBar: boolean = true
 }

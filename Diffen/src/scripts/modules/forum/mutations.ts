@@ -11,7 +11,9 @@ import {
     SET_IS_LOADING_POSTS,
     SET_REMOVE_POST_FROM_LIST,
     SET_FILTER,
-    SET_URLTIP_TOPLIST
+    SET_URLTIP_TOPLIST,
+    SET_SHOW_LEFT_SIDEBAR,
+    SET_SHOW_RIGHT_SIDEBAR
 } from './types'
 
 export const Mutations: MutationTree<State> = {
@@ -38,7 +40,9 @@ export const Mutations: MutationTree<State> = {
     [SET_FILTER]: (state: State, payload: { filter: Filter }) => { 
         state.filter = payload.filter
     },
-    [SET_URLTIP_TOPLIST]: (state: State, urlTips: UrlTip[]) => { state.urlTipTopList = urlTips },   
+    [SET_URLTIP_TOPLIST]: (state: State, urlTips: UrlTip[]) => { state.urlTipTopList = urlTips },
+    [SET_SHOW_LEFT_SIDEBAR]: (state: State, payload: { value: boolean }) => { state.showLeftSideBar = payload.value },
+    [SET_SHOW_RIGHT_SIDEBAR]: (state: State, payload: { value: boolean }) => { state.showRightSideBar = payload.value },
 }
 
 export default Mutations
