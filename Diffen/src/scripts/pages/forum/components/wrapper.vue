@@ -16,7 +16,6 @@ import MainComponent from './main.vue'
 import FullConversation from '../../../components/post/full-conversation.vue'
 
 import { ForumViewModel, NavItem } from '../../../model/common/'
-import { Component as VueComponent } from 'vue/types/options'
 
 @Component({
 	components: {
