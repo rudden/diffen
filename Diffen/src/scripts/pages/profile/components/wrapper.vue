@@ -87,35 +87,35 @@ export default class Wrapper extends Vue {
 		this.navItems = [
 			{
 				id: 1,
-				text: 'pm',
+				text: 'Pm',
 				component: Pm,
 				available: true,
 				active: true
 			},
 			{
 				id: 2,
-				text: 'startelvor',
+				text: 'Startelvor',
 				component: Lineups,
 				available: true,
 				active: false
 			},
 			{
 				id: 3,
-				text: 'inbjudningar',
+				text: 'Inbjudningar',
 				component: Invites,
 				available: this.user.id == this.vm.loggedInUser.id,
 				active: false
 			},
 			{
 				id: 4,
-				text: 'filter',
+				text: 'Filter',
 				component: FilterComponent,
 				available: this.user.id == this.vm.loggedInUser.id,
 				active: false
 			},
 			{
 				id: 5,
-				text: 'inlägg',
+				text: 'Inlägg',
 				component: Posts,
 				available: true,
 				active: false
