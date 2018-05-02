@@ -53,7 +53,10 @@
         </li>
         <div v-show="!loading">
             <li class="media list-group-item p-4" v-if="!isSmall && typeOfPolls == 'all'">
-                <div class="col pl-0">
+                <div class="col pl-0 pr-0">
+                    <div class="form-group float-right mb-0">
+                        <input type="text" class="form-control form-control-sm" v-model="pollSearch" placeholder="sök">
+                    </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" v-model="pollsFilter" id="open" value="Open">
                         <label class="form-check-label" for="open">öppna</label>
@@ -68,8 +71,8 @@
                     </div>
                 </div>
             </li>
-            <template v-if="filteredPolls.length > 0">
-                <li class="list-group-item media" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="poll in filteredPolls" :key="poll.id">
+            <template v-if="filtered.length > 0">
+                <li class="list-group-item media" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="poll in filtered" :key="poll.id">
                     <span class="icon icon-hand text-muted mr-2" v-if="!isSmall"></span>
                     <div class="media-body">
                         <span class="text-muted float-right">
@@ -223,6 +226,12 @@ export default class Polls extends Vue {
                     break
             }
         }
+
+    get filtered() {
+		return this.filteredPolls.filter((p: Poll) => {
+			return p.name.toLowerCase().includes(this.pollSearch.toLowerCase())
+		})
+	}
 
     load() {
         switch (this.typeOfPolls) {
