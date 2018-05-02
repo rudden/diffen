@@ -112,7 +112,7 @@ namespace Diffen.Controllers.Api
 			return _userRepository.CreateInviteAsync(invite);
 		}
 
-		[VerifyInputToLoggedInUserId("filter", "userId")]
+		[VerifyInputToLoggedInUserId("filter", "UserId")]
 		[HttpPost("filter")]
 		public Task<List<Result>> ChangeFilter([FromBody] Models.User.Filter filter)
 		{
