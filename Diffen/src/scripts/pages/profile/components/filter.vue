@@ -89,13 +89,16 @@ export default class FilterComponent extends Vue {
 	results: Result[] = []
 
 	mounted() {
+		this.pageSize = this.vm.loggedInUser.filter.postsPerPage
+		this.excludedUsers = this.vm.loggedInUser.filter.excludedUsers
+		
 		this.loadUsers()
 			.then((users: KeyValuePair[]) => {
-				this.users = users
+				this.users = users.filter((kvp: KeyValuePair) => {
+					return !this.excludedUsers.map((e: KeyValuePair) => e.key).includes(kvp.key)
+				})
 				this.loading = false
 			})
-		this.pageSize = this.vm.loggedInUser.filter.postsPerPage
-        this.excludedUsers = this.vm.loggedInUser.filter.excludedUsers
 	}
 
 	get canSave() {
@@ -106,6 +109,7 @@ export default class FilterComponent extends Vue {
 		onChange() {
 			if (this.selectedUser && this.selectedUser.key) {
 				this.excludedUsers.unshift(this.selectedUser)
+				this.users = this.users.filter((kvp: KeyValuePair) => kvp.key !== this.selectedUser.key)
 			}
 		}
 
