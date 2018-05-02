@@ -15,5 +15,6 @@ namespace Diffen.Repositories.Contracts
 		Task<List<Result>> CreateChronicleAsync(Models.Other.CRUD.Chronicle chronicle);
 		Task<List<Result>> UpdateChronicleAsync(Models.Other.CRUD.Chronicle chronicle);
 		Task<List<Result>> UpdateHeaderFileNameForLastAddedChronicleAsync(string fileName);
+		Task<bool> SelectedChronicleIsCreatedByLoggedInUserAsync(string slug);
 	}
 }

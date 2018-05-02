@@ -103,6 +103,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> CreateChronicleAsync(Chronicle chronicle);
 		Task<bool> UpdateChronicleAsync(Chronicle chronicle);
 		Task<bool> SetHeaderFileNameOnChronicleAsync(Chronicle chronicle);
+		Task<bool> ChronicleIsCreatedBySelectedUserAsync(string slug, string userId);
 
 		// Region Related Requests
 		Task<List<Region>> GetRegionsAsync();

@@ -656,6 +656,11 @@ namespace Diffen.Database.Clients
 			return result;
 		}
 
+		public async Task<bool> ChronicleIsCreatedBySelectedUserAsync(string slug, string userId)
+		{
+			return await _dbContext.Chronicles.CountAsync(c => c.WrittenByUserId == userId && c.Slug == slug) > 0;
+		}
+
 		public async Task<List<Region>> GetRegionsAsync()
 		{
 			var regions = await _dbContext.Regions.IncludeAll().ToListAsync();

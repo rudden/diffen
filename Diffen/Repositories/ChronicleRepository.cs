@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Microsoft.AspNetCore.Http;
+
 using AutoMapper;
 
 namespace Diffen.Repositories
@@ -8,6 +10,7 @@ namespace Diffen.Repositories
 	using Contracts;
 	using Models;
 	using Models.Other;
+	using Helpers.Extensions;
 	using Database.Clients.Contracts;
 
 	public class ChronicleRepository : IChronicleRepository
@@ -15,10 +18,13 @@ namespace Diffen.Repositories
 		private readonly IMapper _mapper;
 		private readonly IDiffenDbClient _dbClient;
 
-		public ChronicleRepository(IMapper mapper, IDiffenDbClient dbClient)
+		private readonly IHttpContextAccessor _httpContextAccessor;
+
+		public ChronicleRepository(IMapper mapper, IDiffenDbClient dbClient, IHttpContextAccessor httpContextAccessor)
 		{
 			_mapper = mapper;
 			_dbClient = dbClient;
+			_httpContextAccessor = httpContextAccessor;
 		}
 
 		public async Task<List<Chronicle>> GetChroniclesAsync(int amount = 0)
@@ -56,6 +62,11 @@ namespace Diffen.Repositories
 			var chronicle = await _dbClient.GetLastAddedChronicleAsync();
 			chronicle.HeaderFileName = fileName;
 			return await new List<Result>().Get(_dbClient.SetHeaderFileNameOnChronicleAsync(chronicle), ResultMessages.UpdateChronicleHeaderFile);
+		}
+
+		public Task<bool> SelectedChronicleIsCreatedByLoggedInUserAsync(string slug)
+		{
+			return _dbClient.ChronicleIsCreatedBySelectedUserAsync(slug, _httpContextAccessor.HttpContext.User.GetUserId());
 		}
 	}
 }
