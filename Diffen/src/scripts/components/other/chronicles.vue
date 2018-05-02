@@ -13,32 +13,37 @@
             <loader v-bind="{ background: '#699ED0' }" />
         </li>
         <div v-show="!loading">
-            <li class="media list-group-item p-4" v-if="!isSmall && loggedInUserIsAuthor">
-                <div class="col pl-0">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="published" value="Published">
-                        <label class="form-check-label" for="published">publicerade</label>
+            <li class="media list-group-item p-4" v-if="!isSmall">
+                <div class="col pl-0 pr-0">
+                    <div class="form-group mb-0" :class="{ 'float-right': loggedInUserIsAdmin }">
+                        <input type="text" class="form-control form-control-sm" v-model="chronicleSearch" placeholder="sök">
                     </div>
-                    <div class="form-check form-check-inline" v-if="loggedInUserIsAdmin">
-                        <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="unpublished" value="UnPublished">
-                        <label class="form-check-label" for="unpublished">ej publicerade</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="my" value="My">
-                        <label class="form-check-label" for="my">mina</label>
-                    </div>
-                    <div class="form-check form-check-inline" v-if="loggedInUserIsAdmin">
-                        <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="all" value="All">
-                        <label class="form-check-label" for="all">alla</label>
-                    </div>
+                    <template v-if="loggedInUserIsAuthor">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="published" value="Published">
+                            <label class="form-check-label" for="published">publicerade</label>
+                        </div>
+                        <div class="form-check form-check-inline" v-if="loggedInUserIsAdmin">
+                            <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="unpublished" value="UnPublished">
+                            <label class="form-check-label" for="unpublished">ej publicerade</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="my" value="My">
+                            <label class="form-check-label" for="my">mina</label>
+                        </div>
+                        <div class="form-check form-check-inline" v-if="loggedInUserIsAdmin">
+                            <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="all" value="All">
+                            <label class="form-check-label" for="all">alla</label>
+                        </div>
+                    </template>
                 </div>
             </li>
-            <template v-if="filteredChronicles.length > 0">
-                <li class="list-group-item media"  :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="chronicle in filteredChronicles" :key="chronicle.id">
+            <template v-if="filtered.length > 0">
+                <li class="list-group-item media"  :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="chronicle in filtered" :key="chronicle.id">
                     <span class="icon icon-pencil text-muted mr-2" v-if="!isSmall"></span>
                     <div class="media-body">
                         <div class="media-heading">
-                            <a :href="`/chronicle/${chronicle.slug}`">
+                            <a :href="`/kronika/${chronicle.slug}`">
                                 <template v-if="isSmall">
                                     <small><strong>{{ chronicle.title }}</strong></small>
                                 </template>
@@ -117,6 +122,7 @@ export default class Chronicles extends Vue {
 
     chroniclesFilter: string = ''
     filteredChronicles: Chronicle[] = []
+    chronicleSearch: string = ''
 
     today: string = new Date().toISOString().slice(0, 10)
 
@@ -145,6 +151,12 @@ export default class Chronicles extends Vue {
                     break
             }
         }
+    
+    get filtered() {
+		return this.filteredChronicles.filter((c: Chronicle) => {
+			return c.title.toLowerCase().includes(this.chronicleSearch.toLowerCase())
+		})
+	}
 
     get loggedInUserIsAuthor() {
         return this.vm.loggedInUser.inRoles.some(role => role == 'Author' || role == 'Admin')
