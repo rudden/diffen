@@ -1,7 +1,5 @@
-.modal {
-	background: rgba(0,0,0,0.5);
-}
-.modal-backdrop {
-	/* bug fix - no overlay */    
-	display: none;    
+@media (max-width: 768px) {
+    .v--modal {
+        overflow: scroll !important;
+    }
 }
