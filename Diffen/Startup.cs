@@ -106,7 +106,7 @@ namespace Diffen
 			}
 			else
 			{
-				app.UseExceptionHandler("/Home/Error");
+				app.UseExceptionHandler("/Shared/_ErrorPage");
 			}
 
 			app.UseStaticFiles();
