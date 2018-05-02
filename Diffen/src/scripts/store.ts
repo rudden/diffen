@@ -1,9 +1,6 @@
 import Vue from 'vue'
 import Vuex, { Module } from 'vuex'
 
-import VModal from 'vue-js-modal'
-import VueClipboards from 'vue-clipboards'
-
 import Forum from './modules/forum'
 import Profile from './modules/profile'
 import Squad from './modules/squad'
@@ -30,7 +27,18 @@ const store = new Vuex.Store({
 	}
 })
 
+import * as helpers from './helpers'
+const helperMethodsPlugin = {
+    install () {
+        Vue.prototype.$helpers = helpers
+    }
+}
+Vue.use(helperMethodsPlugin)
+
+import VueClipboards from 'vue-clipboards'
 Vue.use(VueClipboards, store)
+
+import VModal from 'vue-js-modal'
 Vue.use(VModal, { componentName: "v-modal", dynamic: true, dialog: true }, store)
 
 import Navbar from './components/navbar.vue'

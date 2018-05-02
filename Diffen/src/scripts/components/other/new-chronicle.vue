@@ -195,11 +195,7 @@ export default class NewChronicle extends Vue {
 
     save() {
         this.loading = true
-        if (isNaN(Date.parse(this.publishDate.toString()))) {
-            this.newChronicle.published = ''    
-        } else {
-            this.newChronicle.published = this.publishDate.toString()
-        }
+        this.newChronicle.published = (this as any).$helpers.getDateAsString(this.publishDate)
         if (this.newChronicle.id) {
             this.updateChronicle({ chronicle: this.newChronicle })
                 .then((results: Result[]) => {

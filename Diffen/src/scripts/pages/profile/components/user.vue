@@ -239,15 +239,7 @@ export default class UserComponent extends Vue {
         this.loading = true
         this.crudUser.region = this.selectedRegionName
         this.crudUser.favoritePlayerId = this.favoritePlayerId
-        if (this.secludeDate)
-            if (isNaN(Date.parse(this.secludeDate.toString()))) {
-                this.crudUser.secludeUntil = ''    
-            } else {
-                this.crudUser.secludeUntil = this.secludeDate.toString()
-            }
-        else {
-            this.crudUser.secludeUntil = ''
-        }
+        this.crudUser.secludeUntil = (this as any).$helpers.getDateAsString(this.secludeDate)
         this.updateUser({ userId: this.user.id, user: this.crudUser })
             .then((results: Result[]) => {
                 this.results = results
