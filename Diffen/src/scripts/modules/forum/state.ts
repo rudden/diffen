@@ -8,4 +8,5 @@ export default class State {
     urlTipTopList: UrlTip[] = []
     showLeftSideBar: boolean = true
     showRightSideBar: boolean = true
+    shouldReloadPostStream: boolean = false
 }

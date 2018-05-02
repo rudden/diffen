@@ -13,7 +13,8 @@ import {
     SET_FILTER,
     SET_URLTIP_TOPLIST,
     SET_SHOW_LEFT_SIDEBAR,
-    SET_SHOW_RIGHT_SIDEBAR
+    SET_SHOW_RIGHT_SIDEBAR,
+    SET_SHOULD_RELOAD_POST_STREAM
 } from './types'
 
 export const Mutations: MutationTree<State> = {
@@ -43,6 +44,7 @@ export const Mutations: MutationTree<State> = {
     [SET_URLTIP_TOPLIST]: (state: State, urlTips: UrlTip[]) => { state.urlTipTopList = urlTips },
     [SET_SHOW_LEFT_SIDEBAR]: (state: State, payload: { value: boolean }) => { state.showLeftSideBar = payload.value },
     [SET_SHOW_RIGHT_SIDEBAR]: (state: State, payload: { value: boolean }) => { state.showRightSideBar = payload.value },
+    [SET_SHOULD_RELOAD_POST_STREAM]: (state: State, payload: { value: boolean }) => { state.shouldReloadPostStream = payload.value }
 }
 
 export default Mutations

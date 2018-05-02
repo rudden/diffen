@@ -98,7 +98,16 @@ const ModuleMutation = namespace('forum', Mutation)
 const SquadModuleGetter = namespace('squad', Getter)
 const SquadModuleAction = namespace('squad', Action)
 
-import { GET_FILTER, GET_PAGED_POSTS, BOOKMARK_POST, SCISSOR_POST, FETCH_PAGED_POSTS, SET_IS_LOADING_POSTS } from '../../modules/forum/types'
+import {
+    GET_FILTER,
+    GET_PAGED_POSTS,
+    GET_SHOULD_RELOAD_POST_STREAM,
+    BOOKMARK_POST,
+    SCISSOR_POST,
+    FETCH_PAGED_POSTS,
+    SET_IS_LOADING_POSTS,
+    SET_SHOULD_RELOAD_POST_STREAM
+} from '../../modules/forum/types'
 import { FETCH_LINEUP } from '../../modules/squad/types'
 
 import { Lineup } from '../../model/squad'
@@ -130,10 +139,12 @@ export default class PostComponent extends Vue {
     @State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_FILTER) filter: Filter
     @ModuleGetter(GET_PAGED_POSTS) pagedPosts: Paging<Post>
+    @ModuleGetter(GET_SHOULD_RELOAD_POST_STREAM) shouldReloadPostStream: boolean
     @ModuleAction(BOOKMARK_POST) bookmark: (payload: { postId: number }) => Promise<void>
     @ModuleAction(SCISSOR_POST) scissor: (payload: { postId: number }) => Promise<void>
     @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
 	@ModuleMutation(SET_IS_LOADING_POSTS) setIsLoadingPosts: (payload: { value: boolean }) => void
+	@ModuleMutation(SET_SHOULD_RELOAD_POST_STREAM) setShouldReloadPostStream: (payload: { value: boolean }) => void
     
     @SquadModuleAction(FETCH_LINEUP) loadLineup: (payload: { id: number }) => Promise<Lineup>
 
@@ -147,7 +158,6 @@ export default class PostComponent extends Vue {
         startingEleven: {
             attributes: {
                 name: `lineup-${this.post.id}`,
-                draggable: true,
                 scrollable: true
             },
             button: {
@@ -232,9 +242,14 @@ export default class PostComponent extends Vue {
     }
 
     reloadPosts(pageNumber: number) {
-        this.setIsLoadingPosts({ value: true })
-        this.loadPaged({ pageNumber: pageNumber, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
-            .then(() => this.setIsLoadingPosts({ value: false }))
+        if (this.shouldReloadPostStream) {
+            this.setIsLoadingPosts({ value: true })
+            this.loadPaged({ pageNumber: pageNumber, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
+                .then(() => {
+                    this.setIsLoadingPosts({ value: false })
+                    this.setShouldReloadPostStream({ value: false })
+                })
+        }
     }
 }
 </script>

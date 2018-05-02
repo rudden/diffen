@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Component } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import { Getter, Mutation, Action, State, namespace } from 'vuex-class'
 
 const ModuleGetter = namespace('forum', Getter)
@@ -40,7 +40,7 @@ const SquadModuleGetter = namespace('squad', Getter)
 const SquadModuleAction = namespace('squad', Action)
 const SquadModuleMutation = namespace('squad', Mutation)
 
-import { GET_FILTER, CREATE_POST, UPDATE_POST, FETCH_PAGED_POSTS, SET_IS_LOADING_POSTS } from '../../modules/forum/types'
+import { GET_FILTER, CREATE_POST, UPDATE_POST, FETCH_PAGED_POSTS, SET_IS_LOADING_POSTS, SET_SHOULD_RELOAD_POST_STREAM } from '../../modules/forum/types'
 import { GET_LINEUPS, GET_SELECTED_LINEUP, FETCH_LINEUPS_ON_USER, SET_SELECTED_LINEUP } from '../../modules/squad/types'
 
 import { Post, Filter } from '../../model/forum'
@@ -71,6 +71,7 @@ export default class NewPost extends Vue {
     @ModuleAction(UPDATE_POST) update: (payload: { post: CrudPost }) => Promise<Result[]>
 	@ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
 	@ModuleMutation(SET_IS_LOADING_POSTS) setIsLoadingPosts: (payload: { value: boolean }) => void
+	@ModuleMutation(SET_SHOULD_RELOAD_POST_STREAM) setShouldReloadPostStream: (payload: { value: boolean }) => void
 
 	@SquadModuleGetter(GET_LINEUPS) lineups: Lineup[]
     @SquadModuleGetter(GET_SELECTED_LINEUP) selectedLineup: Lineup
@@ -118,6 +119,11 @@ export default class NewPost extends Vue {
     get inReplyMode() {
         return this.parentId > 0 ? true : false
     }
+
+    @Watch('results')
+        onChange() {
+            this.setShouldReloadPostStream({ value: true })
+        }
 
     fetchLineups() {
 		return this.loadLineups({ userId: this.vm.loggedInUser.id }).then(() => this.noLineupsFound = this.lineups.length == 0)
