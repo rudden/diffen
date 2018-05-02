@@ -1,5 +1,5 @@
 <template>
-    <div class="col">
+    <div :class="{ 'col': !showRightSideBar || !showLeftSideBar, 'col-lg-6': showRightSideBar && showLeftSideBar }">
         <post-stream :page-size="pageSize" :state-stored-items="pagedPosts" :paging="paging" :loader-predicate="isLoadingPosts">
             <template slot="top">
                 <li class="media list-group-item p-4" style="display: block">
