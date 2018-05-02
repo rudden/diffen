@@ -27,7 +27,7 @@
 												<tr v-for="invite in invites">
 													<td>{{ invite.email }}</td>
 													<td>
-														<a style="color: black" v-bind:href="'/profile/' + invite.invitedBy.id">{{ invite.invitedBy.nickName }}</a>
+														<a style="color: black" v-bind:href="'/profil/' + invite.invitedBy.id">{{ invite.invitedBy.nickName }}</a>
 													</td>
 													<td>{{ invite.inviteSent }}</td>
 													<td style="text-align: center">

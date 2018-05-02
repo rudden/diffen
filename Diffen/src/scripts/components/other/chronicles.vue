@@ -5,7 +5,7 @@
                 <h6 class="mb-0">krönikor</h6>
             </template>
             <template v-else>
-                <a href="/chronicle/new" class="btn btn-sm btn-success float-right" v-if="loggedInUserIsAuthor">skapa ny krönika</a>
+                <a href="/kronika/ny" class="btn btn-sm btn-success float-right" v-if="loggedInUserIsAuthor">skapa ny krönika</a>
                 <h4 class="mb-0">krönikor</h4>
             </template>
         </li>
@@ -56,7 +56,7 @@
                 </li>
                 <template v-if="isSmall">
                     <li class="list-group-item">
-                        <a href="/chronicle" class="btn btn-sm btn-primary btn-block">visa fler</a>
+                        <a href="/kronika" class="btn btn-sm btn-primary btn-block">visa fler</a>
                     </li>
                 </template>
             </template>

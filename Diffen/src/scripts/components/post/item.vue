@@ -1,6 +1,6 @@
 <template>
     <li class="media list-group-item p-4">
-        <a :href="'/profile/' + post.user.id">
+        <a :href="'/profil/' + post.user.id">
             <img class="media-object d-flex align-self-start mr-3" :src="post.user.avatar">
         </a>
         <div class="media-body">
@@ -57,14 +57,14 @@
                         <hr />
                         <ul class="media-list mt-3">
                             <li class="media">
-                                <a :href="'/profile/' + post.parentPost.user.id">
+                                <a :href="'/profil/' + post.parentPost.user.id">
                                     <img class="media-object d-flex align-self-start mr-3" :src="post.parentPost.user.avatar">
                                 </a>
                                 <div class="media-body">
                                     <div class="media-body-text">
                                         <div class="media-heading">
                                             <small class="float-right text-muted">{{ post.parentPost.since }}</small>
-                                            <a :href="`/profile/${post.user.id}`" style="color: black">
+                                            <a :href="`/profil/${post.user.id}`" style="color: black">
                                                 <h6>{{ post.parentPost.user.nickName }}</h6>
                                             </a>
                                         </div>

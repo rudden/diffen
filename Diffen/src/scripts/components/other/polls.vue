@@ -92,7 +92,7 @@
                             </div>
                         </template>
                         <template v-else>
-                            <a :href="`/poll/${poll.slug}`">{{ poll.name }}</a>
+                            <a :href="`/omrostning/${poll.slug}`">{{ poll.name }}</a>
                         </template>
                     </div>
                 </li>
@@ -183,12 +183,13 @@ export default class Polls extends Vue {
 
     pollsFilter: string = ''
     filteredPolls: Poll[] = []
+	pollSearch: string = ''
 
     private pollUrl: string = ''
 
 	mounted() {
         var getUrl = window.location
-        this.pollUrl = getUrl .protocol + '//' + getUrl.host + '/' + getUrl.pathname.split('/')[0] + 'poll'
+        this.pollUrl = getUrl .protocol + '//' + getUrl.host + '/' + getUrl.pathname.split('/')[0] + 'omrostning'
 
         this.newPoll.createdByUserId = this.vm.loggedInUser.id
 

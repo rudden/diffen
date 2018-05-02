@@ -9,7 +9,7 @@
 		</li>
         <li class="media list-group-item p-4" v-show="!loading">
             <template v-if="!loading && !nothingFound">
-                <a :href="'/profile/' + conversation.post.user.id">
+                <a :href="'/profil/' + conversation.post.user.id">
                     <img class="media-object mr-3 align-self-start" :src="conversation.post.user.avatar">
                 </a>
                 <div class="media-body">

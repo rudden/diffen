@@ -9,7 +9,7 @@ namespace Diffen.Controllers.Pages
 	using ViewModels;
 	using Repositories.Contracts;
 
-	[Route("profile")]
+	[Route("profil")]
 	public class ProfileController : CommonController<ProfilePageViewModel>
 	{
 		public ProfileController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)

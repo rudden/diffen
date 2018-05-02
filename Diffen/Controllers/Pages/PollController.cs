@@ -9,7 +9,7 @@ namespace Diffen.Controllers.Pages
 	using ViewModels;
 	using Repositories.Contracts;
 
-	[Route("poll")]
+	[Route("omrostning")]
 	public class PollController : CommonController<PollPageViewModel>
 	{
 		public PollController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)

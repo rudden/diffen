@@ -3,7 +3,7 @@
         <div class="card card-profile mb-4">
             <div class="card-header" style="background-image: url(bg.jpg);"></div>
             <div class="card-body text-center">
-                <a href="/profile">
+                <a href="/profil">
                     <img class="card-profile-img" :src="user.avatar">
                 </a>
                 <h6 class="card-title">

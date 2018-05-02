@@ -6,7 +6,7 @@
         <div v-show="!loading">
             <template v-if="!loading">
                 <li class="list-group-item p-4">
-                    <a :href="`/chronicle/new/${chronicle.slug}`" v-if="createdByLoggedInUser" class="float-right">
+                    <a :href="`/kronika/uppdatera/${chronicle.slug}`" v-if="createdByLoggedInUser" class="float-right">
                         <span class="icon icon-pencil"></span>
                     </a>
                     <h4 class="mb-0">{{ chronicle.title }}</h4>

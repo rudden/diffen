@@ -9,7 +9,7 @@ namespace Diffen.Controllers.Pages
 	using ViewModels;
 	using Repositories.Contracts;
 
-	[Route("squad")]
+	[Route("trupp")]
 	public class SquadController : CommonController<PageViewModel>
 	{
 		public SquadController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)

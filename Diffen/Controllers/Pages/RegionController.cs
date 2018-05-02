@@ -9,7 +9,7 @@ namespace Diffen.Controllers.Pages
 	using ViewModels;
 	using Repositories.Contracts;
 
-	[Route("region")]
+	[Route("omrade")]
 	public class RegionController : CommonController<RegionPageViewModel>
 	{
 		private readonly IConfigurationRoot _configuration;

@@ -16,7 +16,7 @@
 								</div>
 								<div class="list-group-item flex-column align-items-start p-2" v-for="excludedUser in excludedUsers">
 									<div class="d-flex w-100 justify-content-between">
-										<a style="color: black; font-weight: bold" v-bind:href="'/profile/' + excludedUser.key">{{ excludedUser.value }}</a>
+										<a style="color: black; font-weight: bold" v-bind:href="'/profil/' + excludedUser.key">{{ excludedUser.value }}</a>
 										<button type="button" class="close" v-on:click="removeUser(excludedUser)">
 											<span aria-hidden="true">&times;</span>
 										</button>

@@ -1,7 +1,7 @@
 <template>
     <ul class="media-list">
         <li class="media" v-for="child in children">
-            <a :href="'/profile/' + child.post.user.id">
+            <a :href="'/profil/' + child.post.user.id">
                 <img class="media-object mr-3 align-self-start" :src="child.post.user.avatar">
             </a>
             <div class="media-body">

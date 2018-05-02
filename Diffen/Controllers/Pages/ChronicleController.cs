@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 
@@ -9,12 +11,15 @@ namespace Diffen.Controllers.Pages
 	using ViewModels;
 	using Repositories.Contracts;
 
-	[Route("chronicle")]
+	[Route("kronika")]
 	public class ChronicleController : CommonController<ChroniclePageViewModel>
 	{
-		public ChronicleController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)
+		private readonly IChronicleRepository _chronicleRepository;
+
+		public ChronicleController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository, IChronicleRepository chronicleRepository)
 			: base(configuration, mapper, userRepository)
 		{
+			_chronicleRepository = chronicleRepository;
 		}
 
 		[Authorize]
@@ -31,18 +36,22 @@ namespace Diffen.Controllers.Pages
 			return View("_Page", Model);
 		}
 
-		[Authorize]
-		[Route("new")]
+		[Authorize(Policy = "IsAuthor")]
+		[Route("ny")]
 		public IActionResult New()
 		{
 			Model.InCreate = true;
 			return View("_Page", Model);
 		}
 
-		[Authorize]
-		[Route("new/{slug}")]
-		public IActionResult New(string slug)
+		[Authorize(Policy = "IsAuthor")]
+		[Route("uppdatera/{slug}")]
+		public async Task<IActionResult> New(string slug)
 		{
+			if (!await _chronicleRepository.SelectedChronicleIsCreatedByLoggedInUserAsync(slug))
+			{
+				return Forbid();
+			}
 			Model.InCreate = true;
 			Model.SelectedChronicleSlug = slug;
 			return View("_Page", Model);

@@ -3,7 +3,7 @@
         <div class="media-heading">
             <small class="float-right text-muted">{{ post.since }}</small>
             <h6>
-                <a :href="`/profile/${post.user.id}`">{{ post.user.nickName }}</a>
+                <a :href="`/profil/${post.user.id}`">{{ post.user.nickName }}</a>
                 <template v-if="post.updated">
                     <span class="badge badge-danger ml-2">editerat</span>
                 </template>

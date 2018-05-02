@@ -6,37 +6,33 @@
 		<div class="collapse navbar-collapse" id="navbarResponsive">
 			<ul class="navbar-nav mr-auto">
 				<li class="nav-item" :class="{ 'active': this.active('home') }">
-					<a class="nav-link" href="/">hem <span class="sr-only">(current)</span></a>
+					<a class="nav-link" href="/">Hem <span class="sr-only">(current)</span></a>
 				</li>
 				<li class="nav-item" :class="{ 'active': this.active('forum') }">
-					<a class="nav-link" href="/forum">forum</a>
+					<a class="nav-link" href="/forum">Forum</a>
 				</li>
 				<li class="nav-item" :class="{ 'active': this.active('squad') }">
-					<a class="nav-link" href="/squad">trupp</a>
+					<a class="nav-link" href="/trupp">Trupp</a>
 				</li>
 				<li class="nav-item" :class="{ 'active': this.active('chronicle') }">
-					<a class="nav-link" href="/chronicle">krönikor</a>
+					<a class="nav-link" href="/kronika">Krönikor</a>
 				</li>
 				<li class="nav-item" :class="{ 'active': this.active('poll') }">
-					<a class="nav-link" href="/poll">omröstningar</a>
+					<a class="nav-link" href="/omrostning">Omröstningar</a>
 				</li>
 				<li class="nav-item" :class="{ 'active': this.active('region') }">
-					<a class="nav-link" href="/region">områden</a>
+					<a class="nav-link" href="/omrade">Områden</a>
 				</li>
 				<li class="navbar-divider"></li>
 				<li class="nav-item" :class="{ 'active': this.active('profile') }">
-					<a class="nav-link" href="/profile">profil</a>
+					<a class="nav-link" href="/profil">Profil</a>
 				</li>
 			</ul>
 			<div class="form-inline">
-				<input id="search_users" class="form-control" type="text" placeholder="sök efter en användare" data-action="grow" :disabled="loading" autocomplete="off">
+				<input id="search_users" class="form-control" type="text" placeholder="Sök efter en användare" data-action="grow" :disabled="loading" autocomplete="off">
 				<typeahead v-model="selectedUser" target="#search_users" :data="users" item-key="value" force-select />
-				<a href="/auth/logout" class="btn btn-outline-primary my-2 my-sm-0 ml-3">logga ut</a>
+				<a href="/auth/logout" class="btn btn-outline-primary my-2 my-sm-0 ml-3">Logga ut</a>
 			</div>
-			<ul class="nav navbar-nav d-none" id="js-popoverContent">
-				<li class="nav-item" :class="{ 'active': this.active('profile') }"><a class="nav-link" href="/profile">visa profil</a></li>
-				<li class="nav-item"><a class="nav-link" href="/auth/logout">logga ut</a></li>
-			</ul>
 		</div>
 	</nav>
 </template>
@@ -73,7 +69,7 @@ export default class Navbar extends Vue {
 	@Watch('selectedUser')
 		onChange() {
 			if (this.selectedUser && this.selectedUser.key) {
-				let newUrl: string = `${this.baseUrl}profile/${this.selectedUser.key}`
+				let newUrl: string = `${this.baseUrl}profil/${this.selectedUser.key}`
 				if (window.location.href == newUrl)
 					return
 				this.redirectTo(newUrl)
