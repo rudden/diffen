@@ -76,6 +76,13 @@ div.flow-root {
 	display: flow-root;
 }
 
+.btn {
+	&__no-top-radius {
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+	}
+}
+
 /* navbar */
 .navbar-divider {
 	border-left: 1px solid white;
