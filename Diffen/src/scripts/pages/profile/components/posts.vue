@@ -5,7 +5,7 @@
 				<post-stream :full-size-post="false" :paging="pageCreatedPosts" :state-stored-items="createdPosts" :loader-predicate="isLoadingCreatedPosts">
 					<template slot="top">
 						<li class="media list-group-item p-4">
-							<h6 class="mb-0">skapade inlägg</h6>
+							<h6 class="mb-0">Skapade inlägg</h6>
 						</li>
 					</template>
 				</post-stream>
@@ -14,7 +14,7 @@
 				<post-stream :full-size-post="false" :paging="pageSavedPosts" :state-stored-items="savedPosts" :loader-predicate="isLoadingSavedPosts">
 					<template slot="top">
 						<li class="media list-group-item p-4">
-							<h6 class="mb-0">sparade inlägg</h6>
+							<h6 class="mb-0">Sparade inlägg</h6>
 						</li>
 					</template>
 				</post-stream>

@@ -10,7 +10,7 @@
 				</div>
 				<div class="card-footer small-device p-0">
 					<div class="alert alert-warning mb-0 p-1">
-						<small>gör sig bättre ut på större skärm</small>
+						<small>Gör sig bättre ut på större skärm</small>
 					</div>
 				</div>
 			</div>

@@ -7,7 +7,7 @@
 		<div v-show="!loaderPredicate">
 			<post-component v-for="post in paged.data" :key="post.id" :post="post" :full-size="fullSizePost" />
 			<li class="media list-group-item p-4" v-show="paged.data.length <= 0">
-				hittade inga inlägg
+				Hittade inga inlägg
 			</li>
 			<template v-if="paged.total && paged.total > 1">
 				<div class="mt-3">

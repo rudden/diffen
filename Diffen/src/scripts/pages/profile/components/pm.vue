@@ -6,13 +6,13 @@
 		<div v-show="!loading">
 			<div class="row" v-if="userIsLoggedInUser">
 				<div class="col">
-					<input id="pm-users" class="form-control" type="text" placeholder="sök på ett nick.." autocomplete="off">
+					<input id="pm-users" class="form-control" type="text" placeholder="Sök på ett nick.." autocomplete="off">
 					<typeahead v-model="selectedUser" target="#pm-users" :data="users" item-key="value" force-select />
 				</div>
 			</div>
 			<div class="row mt-3" v-if="userIsLoggedInUser && conversationUsers.length > 0">
 				<div class="col">
-					<p class="mb-0">användare som du har en pågående konversation med</p>
+					<p class="mb-0">Användare som du har en pågående konversation med</p>
 					<a href="#" v-on:click="selectedUser = convUser" v-for="convUser in conversationUsers" :key="convUser.key">
 						<span class="badge badge-secondary mr-2">{{ convUser.value }}</span>
 					</a>
@@ -24,12 +24,12 @@
 					<div class="row" :class="{ 'mt-3' : userIsLoggedInUser }">
 						<div class="col">
 							<div class="form-group">
-								<textarea class="form-control" v-model="newPmMessage" rows="2" placeholder="ditt pm"></textarea>
+								<textarea class="form-control" v-model="newPmMessage" rows="2" placeholder="Ditt pm"></textarea>
 							</div>
 							<div class="form-group mb-0">
 								<div class="row">
 									<div class="col">
-										<button class="btn btn-sm btn-success btn-block" v-on:click="submit" :disabled="!canCreate">skicka</button>
+										<button class="btn btn-sm btn-success btn-block" v-on:click="submit" :disabled="!canCreate">Skicka</button>
 									</div>
 								</div>
 							</div>
@@ -61,7 +61,7 @@
 				</template>
 				<template v-if="pms.length == 0 && selectedUser && selectedUser.key">
 					<div class="alert alert-warning mb-0 mt-3">
-						hittade ingen konversation mellan dig och <strong>{{ selectedUser.value }}</strong>
+						Hittade ingen konversation mellan dig och <strong>{{ selectedUser.value }}</strong>
 					</div>
 				</template>
 			</template>

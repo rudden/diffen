@@ -11,17 +11,17 @@
 									<form-component :save="create" />
 								</template>
 							</modal>
-							<h4 class="mb-0">spelartruppen</h4>
+							<h4 class="mb-0">Spelartruppen</h4>
 						</li>
 						<li class="list-group-item media">
 							<template v-if="!loading">
 								<table class="table table-sm mb-0">
 									<thead class="thead-dark">
 										<tr>
-											<th scope="col">namn</th>
-											<th scope="col" class="d-none d-sm-table-cell">tröjnummer</th>
-											<th scope="col" class="d-none d-sm-table-cell">i antal startelvor</th>
-											<th scope="col" class="d-none d-sm-table-cell">antal positioner</th>
+											<th scope="col">Namn</th>
+											<th scope="col" class="d-none d-sm-table-cell">Tröjnummer</th>
+											<th scope="col" class="d-none d-sm-table-cell">I antal startelvor</th>
+											<th scope="col" class="d-none d-sm-table-cell">Antal positioner</th>
 											<th scope="col" v-if="loggedInUserIsAdmin"></th>
 										</tr>
 									</thead>
@@ -102,10 +102,10 @@ export default class Wrapper extends Vue {
 			attributes: {
 				name: 'new-player'
 			},
-			header: 'ny spelare',
+			header: 'Ny spelare',
 			button: {
 				classes: 'btn btn-sm btn-primary float-right',
-				text: 'ny spelare'
+				text: 'Ny spelare'
 			}
 		}
 	}

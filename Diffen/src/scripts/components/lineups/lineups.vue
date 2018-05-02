@@ -1,7 +1,7 @@
 <template>
 	<div class="card">
 		<div class="card-header">
-			startelvor
+			Startelvor
 		</div>
 		<div class="card-body">
 			<template v-if="!loading">
@@ -9,34 +9,35 @@
 					<template v-if="lineups.length > 0 || noLineupsFound">
 						<div class="col-sm-12" :class="{ 'col-lg-6 col-md-6': userIsLoggedInUser, 'col-lg-12 col-md-6': !userIsLoggedInUser }">
 							<select class="form-control form-control-sm" v-model="selectedLineupId" @change="changeLineup" :disabled="inCreate || !lineups.length > 0">
-								<option value="0">{{ lineups.length > 0 ? 'välj en startelva' : 'hittade inga startelvor' }}</option>
+								<option value="0">{{ lineups.length > 0 ? 'Välj en startelva' : 'Hittade inga startelvor' }}</option>
 								<option v-for="lineup in lineups" :value="lineup.id">{{ lineup.formation.name }}, skapad {{ lineup.created }}</option>
 							</select>
 						</div>
 					</template>
 					<template v-else>
 						<div class="col-sm-12" :class="{ 'col-lg-6 col-md-6': userIsLoggedInUser, 'col-lg-12 col-md-6': !userIsLoggedInUser }">
-							<button class="btn btn-sm btn-primary btn-block" v-on:click="load">ladda startelvor</button>
+							<button class="btn btn-sm btn-primary btn-block" v-on:click="load">Ladda startelvor</button>
 						</div>
 					</template>
 					<template v-if="userIsLoggedInUser">
 						<div class="col-sm-12" v-if="!inCreate" :class="{ 'col-lg-6 col-md-6': userIsLoggedInUser, 'col-lg-12 col-md-6': !userIsLoggedInUser }">
-							<button class="btn btn-sm btn-success btn-block" v-on:click="setInCreate(true)">skapa ny startelva</button>
+							<button class="btn btn-sm btn-success btn-block" v-on:click="setInCreate(true)">Skapa ny startelva</button>
 						</div>
 						<div class="col-sm-12" v-if="inCreate" :class="{ 'col-lg-6 col-md-6': userIsLoggedInUser, 'col-lg-12 col-md-6': !userIsLoggedInUser }">
-							<button class="btn btn-sm btn-danger btn-block" v-on:click="setInCreate(false)">avbryt</button>
+							<button class="btn btn-sm btn-danger btn-block" v-on:click="setInCreate(false)">Avbryt</button>
 						</div>
 					</template>
 				</div>
 				<template v-if="selectedLineupId > 0">
 					<div class="mt-3">
 						<formation-component :formation="selectedLineup.formation" :players="selectedLineup.players" />
+						<results :items="results" class="pt-3" />
 					</div>
 				</template>
 				<div class="row mt-3" v-if="inCreate">
 					<div class="col">
 						<select class="form-control form-control-sm" v-model="selectedFormationId" @change="changeFormation">
-							<option value="0" selected>välj en formation</option>
+							<option value="0" selected>Välj en formation</option>
 							<option v-for="formation in formations" :value="formation.id">{{ formation.name }}</option>
 						</select>
 					</div>
@@ -45,8 +46,7 @@
 					<div class="row mt-3">
 						<div class="col">
 							<formation-component :formation="selectedFormation" />
-							<results :items="results" class="pt-3" />
-							<button class="btn btn-success btn-sm btn-block mt-3" :disabled="!canCreate" v-on:click="submit">skapa</button>
+							<button class="btn btn-success btn-sm btn-block mt-3" :disabled="!canCreate" v-on:click="submit">Skapa</button>
 						</div>
 					</div>
 				</template>

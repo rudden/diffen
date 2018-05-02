@@ -171,7 +171,7 @@ export default class PostComponent extends Vue {
                 name: `edit-${this.post.id}`,
                 scrollable: true
             },
-            header: 'editera inlägg',
+            header: 'Editera inlägg',
             button: {
                 icon: 'icon icon-edit'
             },
@@ -184,7 +184,7 @@ export default class PostComponent extends Vue {
                 resizable: true,
                 scrollable: true
             },
-            header: 'svara inlägg',
+            header: 'Svara inlägg',
             button: {
                 icon: 'icon icon-quote'
             },

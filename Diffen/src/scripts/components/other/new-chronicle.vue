@@ -2,7 +2,7 @@
     <ul class="list-group media-list media-list-stream">
         <li class="list-group-item p-4">
             <h4 class="mb-0">
-                {{ selectedChronicleSlug ? 'editera en krönika' : 'skriv en ny krönika' }}
+                {{ selectedChronicleSlug ? 'Editera en krönika' : 'Skriv en ny krönika' }}
             </h4>
         </li>
         <li class="media list-group-item p-4" v-show="loading">
@@ -13,12 +13,12 @@
                 <div class="row" style="width: 100%">
                     <div class="col" style="padding-right: 0">
                         <div class="form-group">
-                            <input type="text" v-model="newChronicle.title" class="form-control" placeholder="titel" />
+                            <input type="text" v-model="newChronicle.title" class="form-control" placeholder="Titel" />
                         </div>
                         <div class="form-group">
                             <div class="custom-file" v-if="!hasSelectedHeaderFile">
                                 <input type="file" class="custom-file-input" id="headerFile" accept=".png,.jpg,.jpeg" @change="handleImageAdded" />
-                                <label class="custom-file-label" for="headerFile">välj en bild till headern</label>
+                                <label class="custom-file-label" for="headerFile">Välj en bild till headern</label>
                             </div>
                             <div class="alert alert-primary" v-else>
                                 <strong>{{ headerFileName }}</strong>
@@ -28,20 +28,20 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <date-picker v-model="publishDate" :config="dpConfig" :placeholder="'publiceringsdatum (direkt om inget väljs)'" />
+                            <date-picker v-model="publishDate" :config="dpConfig" :placeholder="'Publiceringsdatum (direkt om inget väljs)'" />
                         </div>
                         <div class="form-group">
-                            <vue-editor v-model="content" :placeholder="'din krönika'" :editor-toolbar="customToolbar" />
+                            <vue-editor v-model="content" :placeholder="'Din krönika'" :editor-toolbar="customToolbar" />
                         </div>
                         <results :items="results" class="pb-3" />
                         <div class="row">
                             <div class="col">
                                 <button class="btn btn-sm btn-block btn-success" v-on:click="save" :disabled="!canCreate">
-                                    {{ selectedChronicleSlug ? 'spara' : 'skapa' }}
+                                    {{ selectedChronicleSlug ? 'Spara' : 'Skapa' }}
                                 </button>
                             </div>
                             <div class="col">
-                                <a class="btn btn-sm btn-block btn-secondary" href="/chronicle">visa lista med krönikor</a>
+                                <a class="btn btn-sm btn-block btn-secondary" href="/kronika">Visa lista med krönikor</a>
                             </div>
                         </div>
                     </div>

@@ -1,18 +1,18 @@
 <template>
 	<div class="container container__profile mt-3 mb-5">
 		<div class="card">
-			<div class="card-header">filter</div>
+			<div class="card-header">Filter</div>
 			<div class="card-body">
 				<div class="row" v-if="!loading">
 					<div class="col">
 						<div class="form-group">
 							<div class="mb-3">
-								<input id="filter-users" class="form-control form-control-sm" type="text" placeholder="sök på ett nick.." autocomplete="off" />
+								<input id="filter-users" class="form-control form-control-sm" type="text" placeholder="Sök på ett nick.." autocomplete="off" />
 								<typeahead v-model="selectedUser" target="#filter-users" :data="users" item-key="value" force-select />
 							</div>
 							<div class="list-group" v-if="excludedUsers.length > 0">
 								<div class="list-group-item p-2" style="background-color: #efefef">
-									användare vars inlägg filtreras bort
+									Användare vars inlägg filtreras bort
 								</div>
 								<div class="list-group-item flex-column align-items-start p-2" v-for="excludedUser in excludedUsers">
 									<div class="d-flex w-100 justify-content-between">
@@ -27,7 +27,7 @@
 						<div class="form-group">
 							<div class="row">
 								<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 pr-0">
-									<p class="mb-0">inlägg per sida</p>
+									<p class="mb-0">Inlägg per sida</p>
 								</div>
 								<div class="col">
 									<input type="number" v-model="pageSize" class="form-control form-control-sm" min="1" max="50" />
@@ -38,7 +38,7 @@
 						<div class="form-group mb-0">
 							<div class="row">
 								<div class="col">
-									<button type="button" class="btn btn-sm btn-success btn-block" :disabled="!canSave" v-on:click="save()">spara</button>
+									<button type="button" class="btn btn-sm btn-success btn-block" :disabled="!canSave" v-on:click="save()">Spara</button>
 								</div>
 							</div>
 						</div>

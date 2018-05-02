@@ -1,26 +1,26 @@
 <template>
 	<div class="container container__profile mt-3 mb-5">
 		<div class="card">
-			<div class="card-header">inbjudningar</div>
+			<div class="card-header">Inbjudningar</div>
 			<div class="card-body">
 				<div class="row" v-if="!loading">
 					<div class="col">
 						<button class="btn btn-sm btn-block" v-on:click="inCreate = !inCreate" :class="{ 'btn-success': !inCreate, 'btn-danger': inCreate }">
-							{{ inCreate ? 'avbryt' : 'ny inbjudan' }}
+							{{ inCreate ? 'Avbryt' : 'Ny inbjudan' }}
 						</button>
 					</div>
 					<template v-if="isAdmin">
 						<div class="col">
-							<modal v-bind="{ attributes: { name: 'invites', scrollable: true }, header: 'inbjudningar', button: { classes: 'btn btn-sm btn-primary btn-block', text: 'visa inbjudningar' }, onOpen: load }">
+							<modal v-bind="{ attributes: { name: 'invites', scrollable: true }, header: 'Inbjudningar', button: { classes: 'btn btn-sm btn-primary btn-block', text: 'Visa inbjudningar' }, onOpen: load }">
 								<template slot="body">
 									<template v-if="invites.length > 0">
 										<table class="table table-sm mb-0">
 											<thead class="thead-dark">
 												<tr>
-													<th scope="col">till</th>
-													<th scope="col">från</th>
-													<th scope="col">skickad</th>
-													<th scope="col">använd</th>
+													<th scope="col">Till</th>
+													<th scope="col">Från</th>
+													<th scope="col">Skickad</th>
+													<th scope="col">Använd</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -56,7 +56,7 @@
 						<results :items="results" class="mb-3" />
 						<div class="row">
 							<div class="col">
-								<button class="btn btn-success btn-block btn-sm" data-dismiss="modal" :disabled="!canSend" v-on:click="send">skicka</button>
+								<button class="btn btn-success btn-block btn-sm" data-dismiss="modal" :disabled="!canSend" v-on:click="send">Skicka</button>
 							</div>
 						</div>
 					</div>

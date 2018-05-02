@@ -1,8 +1,8 @@
 <template>
 	<ul class="media-list media-list-stream">
         <li class="list-group-item p-4">
-            <a href="/forum" class="btn btn-sm btn-primary float-right">tillbaka till forumet</a>
-            <h4 class="mb-0">konversation</h4>
+            <a href="/forum" class="btn btn-sm btn-primary float-right">Tillbaka till forumet</a>
+            <h4 class="mb-0">Konversation</h4>
         </li>
         <li class="media list-group-item p-4" v-show="loading">
 			<loader v-bind="{ background: '#699ED0' }" />
@@ -28,7 +28,7 @@
                 </div>
             </template>
             <template v-if="nothingFound">
-                <div class="alert alert-warning mb-0" style="display: block; width: 100%">hittade ingenting</div>
+                <div class="alert alert-warning mb-0" style="display: block; width: 100%">Hittade ingenting</div>
             </template>
         </li>
 	</ul>

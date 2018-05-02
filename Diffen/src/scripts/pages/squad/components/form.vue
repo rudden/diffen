@@ -2,49 +2,49 @@
     <div class="row" v-if="!saving">
         <div class="col">
             <div class="form-group row">
-                <label for="firstName" class="col-sm-2 col-form-label">förnamn</label>
+                <label for="firstName" class="col-sm-2 col-form-label">Förnamn</label>
                 <div class="col-sm-10">
-                    <input id="firstName" type="text" class="form-control" v-model="crudPlayer.firstName" placeholder="förnamn" required />
+                    <input id="firstName" type="text" class="form-control" v-model="crudPlayer.firstName" placeholder="Förnamn" required />
                 </div>
             </div>
             <div class="form-group row">
-                <label for="lastName" class="col-sm-2 col-form-label">efternamn</label>
+                <label for="lastName" class="col-sm-2 col-form-label">Efternamn</label>
                 <div class="col-sm-10">
-                    <input id="lastName" type="text" class="form-control" v-model="crudPlayer.lastName" placeholder="efternamn" required />
+                    <input id="lastName" type="text" class="form-control" v-model="crudPlayer.lastName" placeholder="Efternamn" required />
                 </div>
             </div>
             <div class="form-group row">
-                <label for="kitNumber" class="col-sm-2 col-form-label">tröjnummer</label>
+                <label for="kitNumber" class="col-sm-2 col-form-label">Tröjnummer</label>
                 <div class="col-sm-10">
-                    <input id="kitNumber" type="number" class="form-control" v-model="crudPlayer.kitNumber" placeholder="tröjnummer" required />
+                    <input id="kitNumber" type="number" class="form-control" v-model="crudPlayer.kitNumber" placeholder="Tröjnummer" required />
                 </div>
             </div>
             <fieldset class="form-group">
                 <div class="row">
-                    <legend class="col-sm-2 col-form-label pt-0">attribut</legend>
+                    <legend class="col-sm-2 col-form-label pt-0">Attribut</legend>
                     <div class="col-sm-10">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="isCaptain" v-model="crudPlayer.isCaptain" />
-                            <label class="form-check-label" for="isCaptain">kapten</label>
+                            <label class="form-check-label" for="isCaptain">Kapten</label>
                         </div>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="isOutOnLoan" v-model="crudPlayer.isOutOnLoan" />
-                            <label class="form-check-label" for="isOutOnLoan">utlånad</label>
+                            <label class="form-check-label" for="isOutOnLoan">Utlånad</label>
                         </div>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="isHereOnLoan" v-model="crudPlayer.isHereOnLoan" />
-                            <label class="form-check-label" for="isHereOnLoan">inlånad</label>
+                            <label class="form-check-label" for="isHereOnLoan">Inlånad</label>
                         </div>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="isSold" v-model="crudPlayer.isSold" />
-                            <label class="form-check-label" for="isSold">såld</label>
+                            <label class="form-check-label" for="isSold">Såld</label>
                         </div>
                     </div>
                 </div>
             </fieldset>
             <fieldset class="form-group">
                 <div class="row">
-                    <legend class="col-sm-2 col-form-label pt-0">positioner</legend>
+                    <legend class="col-sm-2 col-form-label pt-0">Positioner</legend>
                     <div class="col-sm-10">
                         <div class="form-check form-check-inline" v-for="position in positions" v-bind:key="position.id">
                             <input class="form-check-input" type="checkbox" :id="position.id" :value="position.id" v-model="crudPlayer.availablePositionsIds">
@@ -53,13 +53,11 @@
                     </div>
                 </div>
             </fieldset>
-            <div class="alert alert-danger" v-if="takenKitNumber">
-                tröjnumret är upptaget
-            </div>
+            <div class="alert alert-danger" v-if="takenKitNumber">Tröjnumret är upptaget</div>
             <results :items="results" class="mb-3" />
             <div class="row">
                 <div class="col">
-                    <button class="btn btn-success btn-block btn-sm" :disabled="!canSave" v-on:click="onSave">spara</button>
+                    <button class="btn btn-success btn-block btn-sm" :disabled="!canSave" v-on:click="onSave">Spara</button>
                 </div>
             </div>
         </div>

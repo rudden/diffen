@@ -10,13 +10,13 @@
                         <div class="row">
                             <div class="col">
                                 <div class="form-group row">
-                                    <label for="name" class="col-sm-2 col-form-label">titel</label>
+                                    <label for="name" class="col-sm-2 col-form-label">Titel</label>
                                     <div class="col-sm-10">
-                                        <input type="text" id="name" v-model="newPoll.name" class="form-control form-control-sm" placeholder="namn på omröstningen" />
+                                        <input type="text" id="name" v-model="newPoll.name" class="form-control form-control-sm" placeholder="Namn på omröstningen" />
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="selection" class="col-sm-2 col-form-label">alternativ</label>
+                                    <label for="selection" class="col-sm-2 col-form-label">Alternativ</label>
                                     <div class="col-sm-10">
                                         <input type="text" id="selection" v-model="newSelection" class="form-control form-control-sm" :placeholder="selectionPlaceholder" v-on:keyup.enter="addToSelections" :disabled="maxNumberOfSelections" />
                                     </div>
@@ -26,7 +26,7 @@
                                 <template v-if="newPoll.selections.length > 0">
                                     <hr />
                                     <ul class="list-unstyled list-spaced mb-3">
-                                        <li><strong>alternativ</strong></li>
+                                        <li><strong>Alternativ</strong></li>
                                         <li v-for="selection in newPoll.selections" :key="selection">
                                             <a class="float-right" v-on:click="removeSelection(selection)">
                                                 <span class="icon icon-trash"></span>
@@ -40,13 +40,13 @@
                         <results :items="results" class="pb-3" />
                         <div class="row">
                             <div class="col">
-                                <button class="btn btn-success btn-sm btn-block" v-on:click="create" :disabled="!canCreate">skapa</button>
+                                <button class="btn btn-success btn-sm btn-block" v-on:click="create" :disabled="!canCreate">Skapa</button>
                             </div>
                         </div>
                     </template>
                 </template>
             </modal>
-            <h4 class="mb-0" v-if="!isSmall">omröstningar</h4>
+            <h4 class="mb-0" v-if="!isSmall">Omröstningar</h4>
         </li>
         <li class="media list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-show="loading">
             <loader v-bind="{ background: '#699ED0' }" />
@@ -55,19 +55,19 @@
             <li class="media list-group-item p-4" v-if="!isSmall && typeOfPolls == 'all'">
                 <div class="col pl-0 pr-0">
                     <div class="form-group float-right mb-0">
-                        <input type="text" class="form-control form-control-sm" v-model="pollSearch" placeholder="sök">
+                        <input type="text" class="form-control form-control-sm" v-model="pollSearch" placeholder="Sök">
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" v-model="pollsFilter" id="open" value="Open">
-                        <label class="form-check-label" for="open">öppna</label>
+                        <label class="form-check-label" for="open">Öppna</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" v-model="pollsFilter" id="closed" value="Closed">
-                        <label class="form-check-label" for="closed">stängda</label>
+                        <label class="form-check-label" for="closed">Stängda</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" v-model="pollsFilter" id="all" value="All">
-                        <label class="form-check-label" for="all">alla</label>
+                        <label class="form-check-label" for="all">Alla</label>
                     </div>
                 </div>
             </li>
@@ -88,7 +88,7 @@
                                     </template>
                                     <template slot="footer">
                                         <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">
-                                            {{ isCopied ? `kopierade ${pollUrl}/${poll.slug}` : 'kopiera länk till omröstningen' }}
+                                            {{ isCopied ? `Kopierade ${pollUrl}/${poll.slug}` : 'Kopiera länk till omröstningen' }}
                                         </button>
                                     </template>
                                 </modal>
@@ -99,11 +99,16 @@
                         </template>
                     </div>
                 </li>
+                <template v-if="isSmall">
+                    <li class="list-group-item p-0">
+                        <a href="/polls" class="btn btn-sm btn-primary btn-block btn__no-top-radius">Visa fler</a>
+                    </li>
+                </template>
             </template>
             <template v-else>
                 <li class="list-group-item media p-4">
                     <div class="col pl-0 pr-0">
-                        <div class="alert alert-warning mb-0">hittade inga polls</div>
+                        <div class="alert alert-warning mb-0">Hittade inga polls</div>
                     </div>
                 </li>
             </template>
@@ -176,10 +181,10 @@ export default class Polls extends Vue {
             attributes: {
                 name: 'new-poll'
             },
-            header: 'ny omröstning',
+            header: 'Ny omröstning',
             button: {
-                classes: `btn btn-sm btn-primary ${this.isSmall ? 'btn-block' : 'float-right'}`,
-                text: 'skapa ny poll'
+                classes: `btn btn-sm btn-success ${this.isSmall ? 'btn-block' : 'float-right'}`,
+                text: 'Skapa ny omröstning'
             }
         }
     }
@@ -208,7 +213,7 @@ export default class Polls extends Vue {
     }
 
     get selectionPlaceholder(): string {
-        return this.maxNumberOfSelections ? 'max antal alternativ' : 'nytt alternativ'
+        return this.maxNumberOfSelections ? 'Max antal alternativ' : 'Nytt alternativ'
     }
 
     @Watch('pollsFilter')

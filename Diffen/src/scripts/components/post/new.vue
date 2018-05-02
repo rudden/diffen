@@ -1,18 +1,18 @@
 <template>
     <div>
         <div class="input-group">
-            <textarea rows="5" class="form-control" placeholder="ditt inlägg.." v-model="newPost.message"></textarea>
+            <textarea rows="5" class="form-control" placeholder="Ditt inlägg.." v-model="newPost.message"></textarea>
         </div>
         <div class="input-group">
-            <input type="text" class="form-control" placeholder="länktips" v-model="newPost.urlTipHref">
+            <input type="text" class="form-control" placeholder="Länktips" v-model="newPost.urlTipHref">
             <template v-if="lineups.length > 0 || noLineupsFound">
                 <select class="form-control ml-2" v-model="newPost.lineupId" :disabled="!lineups.length > 0" @change="changeLineup">
-                    <option value="0">{{ lineups.length > 0 ? 'välj en startelva' : 'hittade inga startelvor' }}</option>
+                    <option value="0">{{ lineups.length > 0 ? 'Välj en startelva' : 'Hittade inga startelvor' }}</option>
                     <option v-for="lineup in lineups" :value="lineup.id" :key="lineup.id">{{ lineup.formation.name }}, skapad {{ lineup.created }}</option>
                 </select>
             </template>
             <template v-else>
-                <button class="btn btn-primary ml-2" v-on:click="fetchLineups">ladda startelvor</button>
+                <button class="btn btn-primary ml-2" v-on:click="fetchLineups">Ladda startelvor</button>
             </template>
             <div class="input-group-btn">
                 <button class="btn btn-success align-self-stretch ml-2" v-on:click="submit" :disabled="!canSubmit">{{ btnText }}</button>
@@ -107,8 +107,8 @@ export default class NewPost extends Vue {
 
     get btnText(): string {
         if (!this.post)
-            return 'skapa inlägg'
-        return 'spara inlägg'
+            return 'Skapa inlägg'
+        return 'Spara inlägg'
     }
     get canSubmit() {
         return this.newPost.message ? this.newPost.message.length > 0 ? true : false : false

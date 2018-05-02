@@ -32,7 +32,7 @@
 								</template>
 							</template>
 						</modal>
-						<h4 class="mb-0">områden</h4>
+						<h4 class="mb-0">Områden</h4>
 					</li>
 					<li class="media list-group-item p-0">
 						<google-map :center="center" :zoom="zoom" style="width: 100%; height: 500px">
@@ -43,10 +43,10 @@
 						<span class="icon icon-location-pin text-muted mr-2"></span>
 						<div class="media-body">
 							<div class="form-group float-right mb-0">
-								<input type="text" class="form-control form-control-sm" v-model="regionSearch" placeholder="sök">
+								<input type="text" class="form-control form-control-sm" v-model="regionSearch" placeholder="Sök">
 							</div>
 							<div class="media-heading">
-								<a href="#top" @click="showAll">alla områden</a>
+								<a href="#top" @click="showAll">Alla områden</a>
 							</div>
 						</div>
 					</li>
@@ -83,7 +83,7 @@
 						<template v-else>
 							<li class="list-group-item media p-4">
 								<div class="col p-0">
-									<div class="alert alert-warning mb-0">hittade inga områden</div>
+									<div class="alert alert-warning mb-0">Hittade inga områden</div>
 								</div>
 							</li>
 						</template>

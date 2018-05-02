@@ -15,13 +15,13 @@
 			@*<a href="../index.html" class="app-brand mb-5">
 				<img src="../assets/img/brand.png" alt="brand">
 			</a>*@
-			<h4>välkommen till diffen!</h4>
+			<h4>Välkommen!</h4>
 			<hr/>
 			<div class="form-group">
 				<input type="text" class="form-control" asp-for="Email" placeholder="din@epost.com" required autofocus>
 			</div>
 			<div class="form-group mb-3">
-				<input type="password" class="form-control" asp-for="Password" placeholder="lösenord" required>
+				<input type="password" class="form-control" asp-for="Password" placeholder="Lösenord" required>
 			</div>
 			@if (!ViewData.ModelState.IsValid)
 			{
@@ -30,8 +30,8 @@
 				</div>
 			}
 			<div class="mb-5">
-				<button type="submit" class="btn btn-success"><span class="oi oi-account-login"></span> logga in</button>
-				<a href="/auth/register" class="btn btn-primary"> skapa konto</a>
+				<button type="submit" class="btn btn-success"><span class="oi oi-account-login"></span> Logga in</button>
+				<a href="/auth/register" class="btn btn-primary"> Skapa konto</a>
 			</div>
 		</form>
 	</div>

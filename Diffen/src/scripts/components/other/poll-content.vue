@@ -25,7 +25,7 @@
         </div>
         <div class="row mt-3" v-if="poll.isOpen && !placedVote">
             <div class="col pl-0 pr-0">
-                <button class="btn btn-success btn-sm btn-block" v-on:click="vote" :disabled="pollSelection == 0">rösta</button>
+                <button class="btn btn-success btn-sm btn-block" v-on:click="vote" :disabled="pollSelection == 0">Rösta</button>
             </div>
         </div>
 	</div>

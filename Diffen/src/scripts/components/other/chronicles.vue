@@ -2,11 +2,11 @@
     <ul class="list-group media-list media-list-stream">
         <li class="list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-if="loggedInUserIsAuthor || !isSmall">
             <template v-if="isSmall">
-                <h6 class="mb-0">krönikor</h6>
+                <h6 class="mb-0">Krönikor</h6>
             </template>
             <template v-else>
-                <a href="/kronika/ny" class="btn btn-sm btn-success float-right" v-if="loggedInUserIsAuthor">skapa ny krönika</a>
-                <h4 class="mb-0">krönikor</h4>
+                <a href="/kronika/ny" class="btn btn-sm btn-success float-right" v-if="loggedInUserIsAuthor">Skapa ny krönika</a>
+                <h4 class="mb-0">Krönikor</h4>
             </template>
         </li>
         <li class="media list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-show="loading">
@@ -15,25 +15,25 @@
         <div v-show="!loading">
             <li class="media list-group-item p-4" v-if="!isSmall">
                 <div class="col pl-0 pr-0">
-                    <div class="form-group mb-0" :class="{ 'float-right': loggedInUserIsAdmin }">
-                        <input type="text" class="form-control form-control-sm" v-model="chronicleSearch" placeholder="sök">
+                    <div class="form-group mb-0" :class="{ 'float-right': loggedInUserIsAuthor }">
+                        <input type="text" class="form-control form-control-sm" v-model="chronicleSearch" placeholder="Sök">
                     </div>
                     <template v-if="loggedInUserIsAuthor">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="published" value="Published">
-                            <label class="form-check-label" for="published">publicerade</label>
+                            <label class="form-check-label" for="published">Publicerade</label>
                         </div>
                         <div class="form-check form-check-inline" v-if="loggedInUserIsAdmin">
                             <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="unpublished" value="UnPublished">
-                            <label class="form-check-label" for="unpublished">ej publicerade</label>
+                            <label class="form-check-label" for="unpublished">Ej publicerade</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="my" value="My">
-                            <label class="form-check-label" for="my">mina</label>
+                            <label class="form-check-label" for="my">Mina</label>
                         </div>
                         <div class="form-check form-check-inline" v-if="loggedInUserIsAdmin">
                             <input class="form-check-input" type="radio" v-model="chroniclesFilter" id="all" value="All">
-                            <label class="form-check-label" for="all">alla</label>
+                            <label class="form-check-label" for="all">Alla</label>
                         </div>
                     </template>
                 </div>
@@ -60,15 +60,15 @@
                     </div>
                 </li>
                 <template v-if="isSmall">
-                    <li class="list-group-item">
-                        <a href="/kronika" class="btn btn-sm btn-primary btn-block">visa fler</a>
+                    <li class="list-group-item p-0">
+                        <a href="/kronika" class="btn btn-sm btn-primary btn-block btn__no-top-radius">Visa fler</a>
                     </li>
                 </template>
             </template>
             <template v-else>
                 <li class="list-group-item media" :class="{ 'p-3': isSmall, 'p-4': !isSmall }">
                     <div class="media-body">
-                        <div class="alert alert-warning mb-0">hittade inga krönikor</div>
+                        <div class="alert alert-warning mb-0">Hittade inga krönikor</div>
                     </div>
                 </li>
             </template>

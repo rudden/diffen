@@ -1,7 +1,7 @@
 <template>
     <div class="card mb-4" :class="{ 'div-disabled': isLoadingPosts }">
         <div class="card-body">
-            <h6 class="mb-3">filtrera</h6>
+            <h6 class="mb-3">Filtrera</h6>
             <hr />
             <div class="list-group mt-3">
                 <div class="mb-3">
@@ -10,7 +10,7 @@
                 </div>
                 <template v-if="includedUsers.length > 0">
                     <div class="list-group-item flex-column align-items-start" style="background-color: #efefef">
-                        <small>visar inlägg av</small>
+                        <small>Visar inlägg av</small>
                     </div>
                     <div class="list-group-item flex-column align-items-start" v-for="includedUser in includedUsers">
                         <div class="d-flex w-100 justify-content-between">
@@ -23,7 +23,7 @@
                 </template>
                 <template v-if="excludedUsers && excludedUsers.length > 0">
                     <div class="list-group-item flex-column align-items-start" style="background-color: #efefef">
-                        <small>filtrerar bort inlägg av</small>
+                        <small>Filtrerar bort inlägg av</small>
                     </div>
                     <div class="list-group-item flex-column align-items-start" v-for="excludedUser in excludedUsers">
                         <div class="d-flex w-100 justify-content-between">
@@ -34,15 +34,15 @@
                 <div class="list-group-item flex-column align-items-start">
                     <div class="form-check">
                         <input class="form-check-input" type="radio" id="hasStartingEleven" v-model="startingEleven" value="With">
-                        <label class="form-check-label" for="hasStartingEleven">inlägg med startelva</label>
+                        <label class="form-check-label" for="hasStartingEleven">Inlägg med startelva</label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" id="noStartingEleven" v-model="startingEleven" value="Without">
-                        <label class="form-check-label" for="noStartingEleven">inlägg utan startelva</label>
+                        <label class="form-check-label" for="noStartingEleven">Inlägg utan startelva</label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" id="allStartingEleven" v-model="startingEleven" value="All">
-                        <label class="form-check-label" for="allStartingEleven">både och</label>
+                        <label class="form-check-label" for="allStartingEleven">Både och</label>
                     </div>
                 </div>
                 <div class="list-group-item flex-column align-items-start">
@@ -65,15 +65,15 @@
             </div>
             <div class="row mt-3">
                 <div class="col pr-1">
-                    <button class="btn btn-outline-success btn-sm btn-block" :disabled="showDatePickerTip" v-on:click="apply">applicera</button>
+                    <button class="btn btn-outline-success btn-sm btn-block" :disabled="showDatePickerTip" v-on:click="apply">Applicera</button>
                 </div>
                 <div class="col pl-1">
-                    <button class="btn btn-outline-warning btn-sm btn-block" v-on:click="reset">återställ</button>
+                    <button class="btn btn-outline-warning btn-sm btn-block" v-on:click="reset">Återställ</button>
                 </div>
             </div>
             <div class="row mt-3">
                 <div class="col">
-                    <button class="btn btn-outline-danger btn-sm btn-block" v-on:click="all">visa allt</button>
+                    <button class="btn btn-outline-danger btn-sm btn-block" v-on:click="all">Visa allt</button>
                 </div>
             </div>
         </div>

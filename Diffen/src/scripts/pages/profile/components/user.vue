@@ -28,7 +28,7 @@
                     <div class="form-group">
                         <div class="custom-file" v-if="!hasSelectedAvatar">
                             <input type="file" class="custom-file-input" id="avatar" accept=".png,.jpg,.jpeg" @change="handleImageAdded" />
-                            <label class="custom-file-label" for="avatar" style="text-align: left">välj en profilbild</label>
+                            <label class="custom-file-label" for="avatar" style="text-align: left">Välj en profilbild</label>
                         </div>
                         <div class="alert alert-primary" style="text-align: left" v-else>
                             <strong>{{ avatarFileName }}</strong>
@@ -38,20 +38,20 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" v-model="crudUser.nickName" placeholder="ditt nya nick" />
+                        <input type="text" class="form-control" v-model="crudUser.nickName" placeholder="Ditt nya nick" />
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" v-model="crudUser.bio" placeholder="din nya bio" />
+                        <input type="text" class="form-control" v-model="crudUser.bio" placeholder="Din nya bio" />
                     </div>
                     <div class="form-group">
                         <select class="form-control form-control-sm" v-model="selectedRegionName">
-                            <option value="">välj ett område</option>
+                            <option value="">Välj ett område</option>
                             <option v-for="region in regions" :value="region.name">{{ region.name }}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <select class="form-control form-control-sm" v-model="favoritePlayerId">
-                            <option value="0">välj en spelare</option>
+                            <option value="0">Välj en favoritspelare</option>
                             <option v-for="player in players" :value="player.id">{{ player.fullName }}</option>
                         </select>
                     </div>
@@ -65,7 +65,7 @@
                     </div>
                     <template v-if="!selectedUserIsScissorOrAdmin">
                         <div class="form-group">
-                            <date-picker v-model="secludeDate" :config="dpConfig" :placeholder="'spärra till datum'" />
+                            <date-picker v-model="secludeDate" :config="dpConfig" :placeholder="'Spärra till datum'" />
                         </div>
                     </template>
                 </template>

@@ -12,11 +12,11 @@
                 <p class="mb-4">{{ user.bio }}</p>
                 <ul class="card-menu">
                     <li class="card-menu-item">
-                        inlägg
+                        Inlägg
                         <h6 class="my-0">{{ user.numberOfPosts }}</h6>
                     </li>
                     <li class="card-menu-item">
-                        karma
+                        Karma
                         <h6 class="my-0">{{ user.karma }}</h6>
                     </li>
                 </ul>
@@ -24,7 +24,7 @@
         </div>
         <div class="card mb-4 mb-4">
             <div class="card-body">
-                <h6 class="mb-3">om</h6>
+                <h6 class="mb-3">Om</h6>
                 <ul class="list-unstyled list-spaced mb-0">
                     <li><span class="text-muted icon icon-thumbs-up mr-3"></span>{{ user.voteStatistics.upVotes }} givna upptummar</li>
                     <li><span class="text-muted icon icon-thumbs-down mr-3"></span>{{ user.voteStatistics.downVotes }} givna nertummar</li>
@@ -42,7 +42,7 @@
         </div>
         <div class="card mb-4">
             <div class="card-body">
-                <h6 class="mb-3">länktipstoppen</h6>
+                <h6 class="mb-3">Länktipstoppen</h6>
                 <ul class="list-unstyled list-spaced mb-0" v-if="urlTips.length > 0">
                     <li v-for="tip in urlTips" v-bind:key="tip.href">
                         <span class="text-muted icon" :class="icon(tip.href)"></span>
