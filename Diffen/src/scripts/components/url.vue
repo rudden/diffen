@@ -1,6 +1,6 @@
 <template>
 	<small>
-		<a target="_blank" :href="href" v-on:click="click">{{ displayed }}</a>
+		<a target="_blank" :href="link" v-on:click="click">{{ displayed }}</a>
 	</small>
 </template>
 
@@ -51,18 +51,21 @@ export default class Url extends Vue {
 
 	apiSettings: Settings
 
+	link: string
+
 	created() {
 		if (!this.tip) {
 			this.apiSettings = {
 				subject: 'post',
 				id: this.postId
 			}
+			this.link = this.href
 		} else {
 			this.apiSettings = {
 				subject: 'tip',
 				id: this.tip.id
 			}
-			this.href = this.tip.href
+			this.link = this.tip.href
 		}
 	}
 
@@ -70,16 +73,15 @@ export default class Url extends Vue {
 		if (this.text)
 			return this.text
 		
-		let href: string = this.tip ? this.tip.href : this.href
-		let url: string = href
-		if (href.startsWith('http://')) { 
-			url = href.replace('http://', '')
+		let url: string = this.link
+		if (this.link.startsWith('http://')) { 
+			url = this.link.replace('http://', '')
 		}
-		else if (href.startsWith('https://')) { 
-			url = href.replace('https://', '')
+		else if (this.link.startsWith('https://')) { 
+			url = this.link.replace('https://', '')
 		}
-		if (href.includes('unv.is')) {
-			url = href.replace('https://unv.is/', '')
+		if (this.link.includes('unv.is')) {
+			url = this.link.replace('https://unv.is/', '')
 		}
 		return url
 	}
