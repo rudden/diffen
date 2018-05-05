@@ -569,8 +569,9 @@ namespace Diffen.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Clicks = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
                     Href = table.Column<string>(nullable: true),
-                    PostId = table.Column<int>(nullable: false)
+                    PostId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -580,7 +581,7 @@ namespace Diffen.Migrations
                         column: x => x.PostId,
                         principalTable: "Posts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -617,6 +618,7 @@ namespace Diffen.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Created = table.Column<DateTime>(nullable: false),
                     LineupId = table.Column<int>(nullable: false),
                     PostId = table.Column<int>(nullable: false)
                 },
@@ -776,8 +778,7 @@ namespace Diffen.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_LineupsOnPosts_PostId",
                 table: "LineupsOnPosts",
-                column: "PostId",
-                unique: true);
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NickNames_UserId",

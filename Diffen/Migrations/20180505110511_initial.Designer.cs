@@ -12,7 +12,7 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    [Migration("20180429095922_initial")]
+    [Migration("20180505110511_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,8 @@ namespace Diffen.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<DateTime>("Created");
+
                     b.Property<int>("LineupId");
 
                     b.Property<int>("PostId");
@@ -59,8 +61,7 @@ namespace Diffen.Migrations
 
                     b.HasIndex("LineupId");
 
-                    b.HasIndex("PostId")
-                        .IsUnique();
+                    b.HasIndex("PostId");
 
                     b.ToTable("LineupsOnPosts");
                 });
@@ -89,9 +90,11 @@ namespace Diffen.Migrations
 
                     b.Property<int>("Clicks");
 
+                    b.Property<DateTime>("Created");
+
                     b.Property<string>("Href");
 
-                    b.Property<int>("PostId");
+                    b.Property<int?>("PostId");
 
                     b.HasKey("Id");
 
@@ -662,8 +665,8 @@ namespace Diffen.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Diffen.Database.Entities.Forum.Post", "Post")
-                        .WithOne("Lineup")
-                        .HasForeignKey("Diffen.Database.Entities.Forum.PostToLineup", "PostId")
+                        .WithMany("Lineups")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -678,9 +681,8 @@ namespace Diffen.Migrations
             modelBuilder.Entity("Diffen.Database.Entities.Forum.UrlTip", b =>
                 {
                     b.HasOne("Diffen.Database.Entities.Forum.Post", "Post")
-                        .WithOne("UrlTip")
-                        .HasForeignKey("Diffen.Database.Entities.Forum.UrlTip", "PostId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany("UrlTips")
+                        .HasForeignKey("PostId");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Forum.Vote", b =>

@@ -19,5 +19,7 @@ namespace Diffen.Database.Entities.Forum
 		[ForeignKey("LineupId")]
 		public Lineup Lineup { get; set; }
 		public int LineupId { get; set; }
+
+		public DateTime Created { get; set; }
 	}
 }
