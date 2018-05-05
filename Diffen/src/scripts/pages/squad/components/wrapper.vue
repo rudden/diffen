@@ -38,7 +38,7 @@
 											<td class="d-none d-sm-table-cell">{{ player.inNumberOfStartingElevens }}</td>
 											<td class="d-none d-sm-table-cell">{{ player.availablePositions.length }}</td>
 											<td v-if="loggedInUserIsAdmin">
-												<modal v-bind="{ attributes: { name: `edit-${player.id}` }, header: player.name, button: { icon: 'icon icon-edit' } }">
+												<modal v-bind="{ attributes: { name: `edit-${player.id}`, scrollable: true }, header: player.name, button: { icon: 'icon icon-edit' } }">
 													<template slot="body">
 														<form-component :player="player" :save="update" />
 													</template>
@@ -100,7 +100,8 @@ export default class Wrapper extends Vue {
 	modalAttributes: any = {
 		newPlayer: {
 			attributes: {
-				name: 'new-player'
+				name: 'new-player',
+				scrollable: true
 			},
 			header: 'Ny spelare',
 			button: {
