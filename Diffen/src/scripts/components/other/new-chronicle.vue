@@ -49,7 +49,7 @@
             </li>
             <template v-if="content">
                 <li class="list-group-item p-4">
-                    <h4 class="mb-0">preview</h4>
+                    <h4 class="mb-0">Förhandsgranskning</h4>
                 </li>
                 <li class="list-group-item media p-4">
                     <div class="media-body">
