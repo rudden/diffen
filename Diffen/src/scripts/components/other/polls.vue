@@ -101,7 +101,7 @@
                 </li>
                 <template v-if="isSmall">
                     <li class="list-group-item p-0">
-                        <a href="/polls" class="btn btn-sm btn-primary btn-block btn__no-top-radius">Visa fler</a>
+                        <a href="/omrostning" class="btn btn-sm btn-primary btn-block btn__no-top-radius">Visa fler</a>
                     </li>
                 </template>
             </template>
@@ -235,7 +235,7 @@ export default class Polls extends Vue {
     get filtered() {
 		return this.filteredPolls.filter((p: Poll) => {
 			return p.name.toLowerCase().includes(this.pollSearch.toLowerCase())
-		})
+        })
 	}
 
     load() {
