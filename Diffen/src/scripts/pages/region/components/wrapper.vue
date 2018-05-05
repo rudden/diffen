@@ -60,11 +60,11 @@
 								<div class="media-body">
 									<span class="text-muted float-right">
 										<template v-if="region.users.length > 0">
-											<modal v-bind="{ attributes: { name: `${region.name}-users` }, header: `användare i ${region.name}`, button: { badge: 'badge-primary', text: `${region.users.length} användare` } }">
+											<modal v-bind="{ attributes: { name: `${region.name}-users` }, header: `Användare i ${region.name}`, button: { badge: 'badge-primary', text: `${region.users.length} användare` } }">
 												<template slot="body">
 													<ul class="list-unstyled">
 														<li v-for="user in region.users" :key="user.id">
-															<a :href="`/profile/${user.id}`">{{ user.nickName }}</a>
+															<a :href="`/profil/${user.id}`">{{ user.nickName }}</a>
 														</li>
 													</ul>
 												</template>
@@ -246,7 +246,3 @@ export default class Wrapper extends Vue {
 	}
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
