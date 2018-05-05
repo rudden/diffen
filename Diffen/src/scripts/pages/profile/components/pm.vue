@@ -49,7 +49,7 @@
 								</div>
 								<div class="media-footer">
 									<small class="text-muted">
-										<a :href="'/profile/' + pm.from.id">{{ pm.from.nickName }}</a> · {{ pm.since }}
+										<a :href="'/profil/' + pm.from.id">{{ pm.from.nickName }}</a> · {{ pm.since }}
 									</small>
 								</div>
 							</div>
