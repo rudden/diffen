@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Diffen.Helpers.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace Diffen.Controllers.Pages
@@ -171,6 +169,48 @@ namespace Diffen.Controllers.Pages
 				await _signInManager.SignOutAsync();
 			}
 			return RedirectToAction("index", "forum");
+		}
+
+		public IActionResult ResetPassword(string userId)
+		{
+			if (User.GetUserId() != userId)
+			{
+				return RedirectToAction("index", "profile");
+			}
+			var vm = new ResetPasswordViewModel
+			{
+				UserId = userId
+			};
+			return View(vm);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ResetPassword(ResetPasswordViewModel vm)
+		{
+			if (!ModelState.IsValid)
+			{
+				return View();
+			}
+			if (vm.NewPassword != vm.ConfirmNewPassword)
+			{
+				ModelState.AddModelError("", "Lösenorden matchar inte");
+				return View();
+			}
+			if (User.GetUserId() != vm.UserId)
+			{
+				ModelState.AddModelError("", "Du kan inte ändra lösenord för en annan användare");
+			}
+			var user = await _userManager.GetUserAsync(User);
+			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+			var result = await _userManager.ResetPasswordAsync(user, token, vm.NewPassword);
+
+			if (result.Succeeded)
+			{
+				return RedirectToAction("index", "profile");
+			}
+			_logger.Debug("Result errors {errors}", result.Errors);
+			return View(vm);
 		}
 	}
 }

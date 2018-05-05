@@ -70,13 +70,10 @@
                     </template>
                 </template>
                 <div class="form-group">
-                    <div class="row">
-                        <div class="col pr-1">
-                            <button class="btn btn-sm btn-success btn-block" v-on:click="save" :disabled="!canSave">spara</button>
-                        </div>
-                        <div class="col pl-1">
-                            <button class="btn btn-sm btn-danger btn-block" v-on:click="inEdit = false">avbryt</button>
-                        </div>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-success" v-on:click="save" :disabled="!canSave">Spara ändringar</button>
+                        <a :href="`/auth/resetpassword?userId=${user.id}`" class="btn btn-sm btn-warning" v-if="isLoggedIn">Byt lösenord</a>
+                        <button class="btn btn-sm btn-danger" v-on:click="inEdit = false">Avbryt</button>
                     </div>
                 </div>
             </template>
@@ -302,7 +299,6 @@ export default class UserComponent extends Vue {
 
 <style lang="scss" scoped>
 .edit-btn {
-    // color: #699ED0 !important;
     color: white !important;
     font-size: 150%;
     cursor: pointer;

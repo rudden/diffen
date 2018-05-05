@@ -70,7 +70,9 @@ namespace Diffen
 			{
 				c.User.RequireUniqueEmail = true;
 				c.Password.RequiredLength = 8;
-			}).AddEntityFrameworkStores<DiffenDbContext>();
+			})
+			.AddEntityFrameworkStores<DiffenDbContext>()
+			.AddDefaultTokenProviders();
 
 			services.ConfigureApplicationCookie(options =>
 			{
