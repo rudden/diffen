@@ -1,4 +1,4 @@
-﻿namespace Diffen.ViewModels
+﻿namespace Diffen.ViewModels.Pages
 {
 	public class PollPageViewModel : PageViewModel
 	{

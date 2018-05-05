@@ -6,7 +6,7 @@ using AutoMapper;
 
 namespace Diffen.Controllers
 {
-	using ViewModels;
+	using ViewModels.Pages;
 	using Repositories.Contracts;
 
 	public abstract class CommonController<TModel> : Controller where TModel : PageViewModel, new() 

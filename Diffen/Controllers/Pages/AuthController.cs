@@ -2,14 +2,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Diffen.Helpers.Extensions;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+
 using Serilog;
 
 namespace Diffen.Controllers.Pages
 {
-	using ViewModels;
+	using ViewModels.Auth;
 	using Repositories.Contracts;
 	using Database.Entities.User;
 

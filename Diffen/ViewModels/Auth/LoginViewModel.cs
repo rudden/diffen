@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Diffen.ViewModels
+namespace Diffen.ViewModels.Auth
 {
 	public class LoginViewModel
 	{

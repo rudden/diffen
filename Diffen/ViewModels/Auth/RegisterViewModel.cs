@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-
+using Diffen.Models.Other;
 using Microsoft.AspNetCore.Http;
 
-namespace Diffen.ViewModels
+namespace Diffen.ViewModels.Auth
 {
-	using Models.Other;
-
 	public class RegisterViewModel
 	{
 		[Required]
