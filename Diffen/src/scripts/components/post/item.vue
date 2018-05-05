@@ -64,7 +64,7 @@
                                     <div class="media-body-text">
                                         <div class="media-heading">
                                             <small class="float-right text-muted">{{ post.parentPost.since }}</small>
-                                            <a :href="`/profil/${post.user.id}`" style="color: black">
+                                            <a :href="`/profil/${post.user.id}`">
                                                 <h6>{{ post.parentPost.user.nickName }}</h6>
                                             </a>
                                         </div>

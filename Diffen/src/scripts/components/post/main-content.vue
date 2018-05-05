@@ -34,9 +34,3 @@ export default class PostMainContent extends Vue {
     post: Post
 }
 </script>
-
-<style lang="scss" scoped>
-a {
-    color: black;
-}
-</style>
