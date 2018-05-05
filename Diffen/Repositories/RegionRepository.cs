@@ -24,6 +24,13 @@ namespace Diffen.Repositories
 
 		public Task<List<Result>> CreateRegionAsync(Models.Other.CRUD.Region region)
 		{
+			if (_dbClient.RegionWithSameNameAlreadyExists(region.Name))
+			{
+				return Task.FromResult(new List<Result>
+				{
+					new Result(false, "Det här området existerar redan")
+				});
+			}
 			return new List<Result>().Get(_dbClient.CreateRegionAsync(_mapper.Map<Database.Entities.Other.Region>(region)), ResultMessages.CreateRegion);
 		}
 
