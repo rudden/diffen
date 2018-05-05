@@ -6,8 +6,8 @@
         <div v-show="!loading">
             <li class="list-group-item p-4">
                 <span class="text-muted float-right">
-                    <span class="badge" :class="{ 'badge-success': poll.isOpen, 'badge-danger': !poll.isOpen }">
-                        {{ poll.isOpen ? 'öppen' : 'stängd' }}
+                    <span class="badge" :class="{ 'badge-warning': poll.isOpen, 'badge-danger': !poll.isOpen }">
+                        {{ poll.isOpen ? `stänger om ${daysUntilPollCloses(poll)} dagar` : 'stängd' }}
                     </span>
                 </span>
                 <h4 class="mb-0">{{ poll.name }}</h4>
@@ -23,6 +23,8 @@
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 import { Getter, Action, Mutation, State, namespace } from 'vuex-class'
+
+import moment from 'moment'
 
 const ModuleGetter = namespace('other', Getter)
 const ModuleAction = namespace('other', Action)
@@ -49,6 +51,12 @@ export default class PollComponent extends Vue {
 
     mounted() {
         this.loadPoll({ slug: this.vm.selectedPollSlug }).then(() => this.loading = false)
+    }
+        
+    daysUntilPollCloses(poll: Poll) {
+        let today = moment(new Date())
+        let created = moment(poll.created)
+        return 7 - today.diff(created, 'days')
     }
 }
 </script>

@@ -236,7 +236,7 @@ export default class Polls extends Vue {
 		return this.filteredPolls.filter((p: Poll) => {
 			return p.name.toLowerCase().includes(this.pollSearch.toLowerCase())
         })
-	}
+    }
 
     load() {
         switch (this.typeOfPolls) {
