@@ -104,6 +104,8 @@ export default class LeftSidebar extends Vue {
             return 'icon-soundcloud'
         if (href.includes('dif'))
             return 'icon-heart'
+        if (href.includes('aik.se') || href.includes('aikfotboll.se'))
+            return 'icon-trash'
         return 'icon-link'
     }
 }

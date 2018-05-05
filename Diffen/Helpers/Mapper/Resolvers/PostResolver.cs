@@ -16,9 +16,19 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Database.Entities.Forum.Post, Models.Forum.ParentPost>,
 		ITypeConverter<Database.Entities.Forum.Vote, Models.Forum.Vote>, 
 		ITypeConverter<Models.Forum.CRUD.Post, Database.Entities.Forum.Post>, 
-		ITypeConverter<Models.Forum.CRUD.Vote, Database.Entities.Forum.Vote>
+		ITypeConverter<Models.Forum.CRUD.Vote, Database.Entities.Forum.Vote>,
+		ITypeConverter<Database.Entities.Forum.UrlTip, string>
 	{
 		private readonly string _loggedInUserId;
+
+		private static readonly string[] NoClicksForTheseSites = {
+			"fotbolldirekt.se",
+			"aftonbladet.se",
+			"expressen.se",
+			"aik.se",
+			"aikfotboll.se",
+			"hammarbyfotboll.se"
+		};
 
 		public PostResolver(UserManager<Database.Entities.User.AppUser> userManager, IHttpContextAccessor httpContextAccessor)
 		{
@@ -32,7 +42,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Id = source.Id,
 				Message = source.Message,
 				User = context.Mapper.Map<Models.Forum.User>(source.User),
-				UrlTipHref = source.UrlTip?.Href,
+				UrlTipHref = context.Mapper.Map<string>(source.UrlTip),
 				Votes = context.Mapper.Map<IEnumerable<Models.Forum.Vote>>(source.Votes),
 				ParentPost = source.ParentPost != null ? context.Mapper.Map<Models.Forum.ParentPost>(source.ParentPost) : null,
 				LineupId = source.Lineup?.LineupId,
@@ -85,6 +95,20 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				CreatedByUserId = source.CreatedByUserId,
 				Created = DateTime.Now
 			};
+		}
+
+		public string Convert(Database.Entities.Forum.UrlTip source, string destination, ResolutionContext context)
+		{
+			if (string.IsNullOrEmpty(source?.Href))
+			{
+				return null;
+			}
+			if (!NoClicksForTheseSites.Any(source.Href.Contains))
+			{
+				return source.Href;
+			}
+			var urlStart = source.Href.StartsWith("http:") ? "http:" : "https:";
+			return source.Href.Replace($"{urlStart}//www.", "https://unv.is/");
 		}
 	}
 }

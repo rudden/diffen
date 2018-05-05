@@ -44,6 +44,9 @@ export default class Url extends Vue {
 		else if (this.href.startsWith('https://')) { 
 			url = this.href.replace('https://', '')
 		}
+		if (this.href.includes('unv.is')) {
+			url = this.href.replace('https://unv.is/', '')
+		}
 		return url
 	}
 

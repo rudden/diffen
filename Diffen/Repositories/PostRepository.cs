@@ -131,7 +131,7 @@ namespace Diffen.Repositories
 			var topList = urlTips.Where(x => x.Post.Created > DateTime.Now.AddMonths(-1))
 				.Select(x => new UrlTip
 				{
-					Href = x.Href,
+					Href = _mapper.Map<string>(x),
 					Clicks = x.Clicks,
 					PostId = x.PostId
 				}).OrderByDescending(x => x.Clicks).Take(10).ToList();
@@ -166,6 +166,10 @@ namespace Diffen.Repositories
 				if (!(post.UrlTipHref.StartsWith("http://") || post.UrlTipHref.StartsWith("https://")))
 				{
 					post.UrlTipHref = post.UrlTipHref.Insert(0, "http://");
+				}
+				if (await _dbClient.PostHasAnUrlTipConnectedToItAsync(postId))
+				{
+					await _dbClient.DeleteUrlTipAsync(postId);
 				}
 				var urlTip = new Database.Entities.Forum.UrlTip
 				{

@@ -9,6 +9,7 @@
 			CreateMap<Database.Entities.Forum.Post, Models.Forum.Post>().ConvertUsing<PostResolver>();
 			CreateMap<Database.Entities.Forum.Vote, Models.Forum.Vote>().ConvertUsing<PostResolver>();
 			CreateMap<Database.Entities.Forum.Post, Models.Forum.ParentPost>().ConvertUsing<PostResolver>();
+			CreateMap<Database.Entities.Forum.UrlTip, string>().ConvertUsing<PostResolver>();
 			CreateMap<Database.Entities.User.AppUser, Models.User.User>().ConvertUsing<UserResolver>();
 			CreateMap<Database.Entities.User.AppUser, Models.Forum.User>().ConvertUsing<UserResolver>();
 			CreateMap<Database.Entities.User.PersonalMessage, Models.User.PersonalMessage>().ConvertUsing<UserResolver>();
