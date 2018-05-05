@@ -70,8 +70,12 @@ namespace Diffen.Database
 				var uri = "http://www.filltext.com/?rows=&nickName={username}&pretty=true".Replace("rows=", $"rows={NumberOfUsers}");
 				var response = await client.GetAsync(uri);
 
-				var nickNames = JsonConvert.DeserializeObject<IEnumerable<FillTextNickName>>(await response.Content.ReadAsStringAsync());
-				return nickNames.Select(x => x.NickName).ToArray();
+				if (response.IsSuccessStatusCode)
+				{
+					var nickNames = JsonConvert.DeserializeObject<IEnumerable<FillTextNickName>>(await response.Content.ReadAsStringAsync());
+					return nickNames.Select(x => x.NickName).ToArray();
+				}
+				return new string[0];
 			}
 		}
 
@@ -106,7 +110,7 @@ namespace Diffen.Database
 				var nickName = new NickName
 				{
 					UserId = user.Id,
-					Nick = nickNames[i],
+					Nick = nickNames.Any() ? nickNames[i] : user.UserName.Replace("@diffen.se", ""),
 					Created = user.Joined
 				};
 				dbContext.NickNames.Add(nickName);
@@ -734,7 +738,7 @@ namespace Diffen.Database
 					{
 						Message = postMessages[i],
 						CreatedByUserId = randomUser.Id,
-						Created = RandomDateTime.Get(randomUser.Joined, DateTime.Now)
+						Created = RandomDateTime.Get(randomUser.Joined, DateTime.Now.AddHours(-5))
 					};
 					dbContext.Posts.Add(post);
 				}
