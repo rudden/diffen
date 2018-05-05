@@ -14,7 +14,7 @@ namespace Diffen.Helpers.Business
 			new RegionItem("Hässelby", 59.382339, 17.798077),
 			new RegionItem("Sundbyberg", 59.367520, 17.966124),
 			new RegionItem("Nacka", 59.307813, 18.155037),
-			new RegionItem("Stockholm", 59.334879, 18.067882),
+			new RegionItem("Stockholm", 59.329276, 18.064449),
 			new RegionItem("Vasastan", 59.344083, 18.045148),
 			new RegionItem("Lidingö", 59.363581, 18.147128),
 			new RegionItem("Salem", 59.207541, 17.774415),
