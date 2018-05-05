@@ -673,17 +673,13 @@ namespace Diffen.Database.Clients
 			return currentRegionSelection != null;
 		}
 
-		private bool RegionWithSameNameAlreadyExistsAsync(string newRegionName)
+		public bool RegionWithSameNameAlreadyExists(string newRegionName)
 		{
 			return _dbContext.Regions.Any(r => string.Equals(r.Name, newRegionName, StringComparison.OrdinalIgnoreCase));
 		}
 
 		public Task<bool> CreateRegionAsync(Region region)
 		{
-			if (RegionWithSameNameAlreadyExistsAsync(region.Name))
-			{
-				return Task.FromResult(false);
-			}
 			_dbContext.Regions.Add(region);
 			return CommitedResultIsSuccessfulAsync();
 		}

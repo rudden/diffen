@@ -108,6 +108,7 @@ namespace Diffen.Database.Clients.Contracts
 		// Region Related Requests
 		Task<List<Region>> GetRegionsAsync();
 		Task<bool> UserHasRegionSelectedAsync(string userId);
+		bool RegionWithSameNameAlreadyExists(string newRegionName);
 		Task<bool> CreateRegionAsync(Region region);
 		Task<bool> CreateRegionToUserAsync(string userId, int regionId);
 		Task<bool> UpdateRegionForUserAsync(string userId, string newRegion);
