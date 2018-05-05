@@ -64,10 +64,10 @@ namespace Diffen.Database.Clients
 			switch (filter.StartingEleven)
 			{
 				case Models.Forum.StartingEleven.With:
-					posts = posts.Where(x => x.Lineups != null);
+					posts = posts.Where(x => x.Lineups.Any());
 					break;
 				case Models.Forum.StartingEleven.Without:
-					posts = posts.Where(x => x.Lineups == null);
+					posts = posts.Where(x => !x.Lineups.Any());
 					break;
 				case Models.Forum.StartingEleven.All:
 					break;
