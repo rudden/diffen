@@ -5,7 +5,7 @@
 		<chronicles-component :is-small="true" :amount-of-chronicles="5" class="mb-4" />
 		<div class="card card-link-list">
 			<div class="card-body">
-				© {{ currentYear }} Diffen
+				© {{ currentYear }} Blåränderna
 			</div>
 		</div>
 	</div>
