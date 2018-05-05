@@ -54,7 +54,7 @@ namespace Diffen
 				});
 				options.AddPolicy("IsAuthor", policy =>
 				{
-					policy.RequireAssertion(ctx => ctx.User.IsInRole("Author"));
+					policy.RequireAssertion(ctx => ctx.User.IsInRole("Author") || ctx.User.IsInRole("Admin"));
 				});
 				options.AddPolicy("IsManager", policy =>
 				{
@@ -124,7 +124,10 @@ namespace Diffen
 
 			app.UseMvc(r =>
 			{
-				r.MapRoute(name: "default", template: "{controller=home}/{action=index}/{id?}");
+				r.MapRoute(
+					name: "default", 
+					template: "{controller=home}/{action=index}/{id?}"
+				);
 			});
 		}
 	}
