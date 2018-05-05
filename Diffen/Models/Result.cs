@@ -191,8 +191,8 @@ namespace Diffen.Models
 
 		public static Message CreateRegion { get; } = new Message
 		{
-			Success = "Skapade en ny region/område",
-			Failure = "Kunde inte skapa regionen/området"
+			Success = "Skapade ett nytt område",
+			Failure = "Kunde inte skapa området"
 		};
 	}
 
