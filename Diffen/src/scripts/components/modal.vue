@@ -14,6 +14,9 @@
         <v-modal v-bind="attributes" @before-open="open" @before-close="close">
             <div class="modal-header" v-if="header">
                 <h4 class="modal-title">{{ header }}</h4>
+                <button type="button" class="close" v-on:click="closeOnIconClick">
+                    <span>&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <slot name="body"></slot>
@@ -67,6 +70,12 @@ export default class Modal extends Vue {
         if (this.onClose) {
             this.onClose()
         }
+    }
+    closeOnIconClick() {
+        if (this.onClose) {
+            this.onClose()
+        }
+        this.$modal.hide(this.attributes.name)
     }
 
     open() {
