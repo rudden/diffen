@@ -10,7 +10,9 @@
                     {{ child.post.since }}
                 </small>
                 <div class="wrapper">
-                    <strong>{{ child.post.user.nickName }}: </strong>
+                    <a :href="'/profil/' + child.post.user.id">
+                        <strong>{{ child.post.user.nickName }}: </strong>
+                    </a>
                     <span style="white-space: pre-wrap">{{ child.post.message }}</span>
                     <embeds :href="child.post.urlTipHref" />
                 </div>

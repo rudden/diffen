@@ -18,7 +18,9 @@
                             <span class="icon icon-check ml-2 mr-2" v-if="conversation.post.id == selectedPostId"></span>
                             {{ conversation.post.since }}
                         </small>
-                        <h6>{{ conversation.post.user.nickName }}</h6>
+                        <a :href="'/profil/' + conversation.post.user.id">
+                            <h6>{{ conversation.post.user.nickName }}</h6>
+                        </a>
                     </div>
                     <p style="white-space: pre-wrap">{{ conversation.post.message }}</p>
                     <embeds :href="conversation.post.urlTipHref" />
