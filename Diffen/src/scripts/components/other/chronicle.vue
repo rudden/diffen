@@ -18,7 +18,7 @@
                         <hr class="divider" />
                         <div class="pt-2 pb-2" style="display: flow-root">
                             <small class="text-muted float-right">{{ chronicle.created }}</small>
-                            <span class="float-left">Av: {{ chronicle.writtenByUser.nickName }}</span>
+                            <span class="float-left">Av: <a :href="`/profil/${chronicle.writtenByUser.id}`">{{ chronicle.writtenByUser.nickName }}</a></span>
                         </div>
                     </div>
                 </li>

@@ -55,7 +55,7 @@
                         </div>
                         <div>
                             <small class="text-muted float-right">{{ chronicle.published }}</small>
-                            <small class="text-muted">av: {{ chronicle.writtenByUser.nickName }}</small>
+                            <small class="text-muted">Av: </small><small><a :href="`/profil/${chronicle.writtenByUser.id}`">{{ chronicle.writtenByUser.nickName }}</a></small>
                         </div>
                     </div>
                 </li>
