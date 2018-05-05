@@ -17,8 +17,8 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.User).ThenInclude(x => x.SavedPosts)
 				.Include(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
-				.Include(x => x.Lineup)
-				.Include(x => x.UrlTip)
+				.Include(x => x.Lineups)
+				.Include(x => x.UrlTips)
 				.Include(x => x.ParentPost).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.AsNoTracking();
 		}
@@ -29,8 +29,8 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.User).ThenInclude(x => x.SavedPosts)
 				.Include(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
-				.Include(x => x.Lineup)
-				.Include(x => x.UrlTip)
+				.Include(x => x.Lineups)
+				.Include(x => x.UrlTips)
 				.AsNoTracking();
 		}
 
@@ -39,8 +39,8 @@ namespace Diffen.Helpers.Extensions
 			return source
 				.Include(x => x.Post).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.Post).ThenInclude(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
-				.Include(x => x.Post).ThenInclude(x => x.Lineup)
-				.Include(x => x.Post).ThenInclude(x => x.UrlTip)
+				.Include(x => x.Post).ThenInclude(x => x.Lineups)
+				.Include(x => x.Post).ThenInclude(x => x.UrlTips)
 				.Include(x => x.Post).ThenInclude(x => x.ParentPost).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.AsNoTracking();
 		}
@@ -72,8 +72,8 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.FavoritePlayer).ThenInclude(x => x.Player)
 				.Include(x => x.Filter)
 				.Include(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
-				.Include(x => x.Posts).ThenInclude(x => x.UrlTip)
-				.Include(x => x.Posts).ThenInclude(x => x.Lineup)
+				.Include(x => x.Posts).ThenInclude(x => x.UrlTips)
+				.Include(x => x.Posts).ThenInclude(x => x.Lineups)
 				.Include(x => x.Posts).ThenInclude(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.Lineups)
 				.Include(x => x.Region).ThenInclude(x => x.Region)

@@ -47,7 +47,7 @@
                     <li v-for="tip in urlTips" v-bind:key="tip.href">
                         <span class="text-muted icon" :class="icon(tip.href)"></span>
                         <small class="ml-1"><span class="badge badge-secondary">{{ tip.clicks }}</span></small>
-                        <url :href="tip.href" :post-id="tip.postId" class="ml-1" />
+                        <url :tip="tip" class="ml-1" />
                     </li>
                 </ul>
             </div>

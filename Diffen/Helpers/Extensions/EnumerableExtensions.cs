@@ -30,5 +30,15 @@ namespace Diffen.Helpers.Extensions
 		{
 			return nickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick;
 		}
+
+		public static Database.Entities.Forum.UrlTip Current(this IEnumerable<Database.Entities.Forum.UrlTip> urlTips)
+		{
+			return urlTips.OrderByDescending(x => x.Created).FirstOrDefault();
+		}
+
+		public static Database.Entities.Forum.PostToLineup Current(this IEnumerable<Database.Entities.Forum.PostToLineup> lineups)
+		{
+			return lineups.OrderByDescending(x => x.Created).FirstOrDefault();
+		}
 	}
 }

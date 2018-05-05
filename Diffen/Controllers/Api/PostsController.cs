@@ -84,11 +84,11 @@ namespace Diffen.Controllers.Api
 			return _postRepository.CreateVoteAsync(vote);
 		}
 
-		[HttpPost("{postId}/url/click")]
-		public Task<bool> UrlTipClickCount(int postId)
+		[HttpPost("url/{subject}/{id}/click")]
+		public Task<bool> UrlTipClickCount(string subject, int id)
 		{
-			_logger.Debug("Requesting to increment click count for urltip connected to post with id {postId}", postId);
-			return _postRepository.UpdateUrlTipClickCountAsync(postId);
+			_logger.Debug("Requesting to increment click count for urltip");
+			return _postRepository.UpdateUrlTipClickCountAsync(subject, id);
 		}
 
 		[HttpGet("url/toplist")]

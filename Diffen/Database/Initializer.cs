@@ -892,7 +892,8 @@ namespace Diffen.Database
 					{
 						Href = href,
 						Clicks = new Random().Next(0, 100),
-						PostId = post.Id
+						PostId = post.Id,
+						Created = post.Created
 					};
 					dbContext.UrlTips.Add(urlTip);
 				}
@@ -928,7 +929,8 @@ namespace Diffen.Database
 				var postToLineups = postsCreatedByUsersWhoHasCreatedALineup.Select(post => new PostToLineup
 				{
 					PostId = post.Id,
-					LineupId = dbContext.Lineups.FirstOrDefault(l => l.CreatedByUserId == post.CreatedByUserId).Id
+					LineupId = dbContext.Lineups.FirstOrDefault(l => l.CreatedByUserId == post.CreatedByUserId).Id,
+					Created = post.Created
 				});
 				dbContext.LineupsOnPosts.AddRange(postToLineups);
 				await dbContext.SaveChangesAsync();

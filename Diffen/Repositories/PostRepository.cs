@@ -128,9 +128,10 @@ namespace Diffen.Repositories
 		public async Task<List<UrlTip>> GetLastMonthsMostClickedUrlTipsAsync()
 		{
 			var urlTips = await _dbClient.GetUrlTipsAsync();
-			var topList = urlTips.Where(x => x.Post.Created > DateTime.Now.AddMonths(-1))
+			var topList = urlTips.Where(x => x.Created > DateTime.Now.AddMonths(-1))
 				.Select(x => new UrlTip
 				{
+					Id = x.Id,
 					Href = _mapper.Map<string>(x),
 					Clicks = x.Clicks,
 					PostId = x.PostId
@@ -138,9 +139,9 @@ namespace Diffen.Repositories
 			return topList;
 		}
 
-		public Task<bool> UpdateUrlTipClickCountAsync(int postId)
+		public Task<bool> UpdateUrlTipClickCountAsync(string subject, int id)
 		{
-			return _dbClient.IncrementUrlTipClickCounterAsync(postId);
+			return _dbClient.IncrementUrlTipClickCounterAsync(subject, id);
 		}
 
 		public async Task<List<Vote>> GetVotesOnPostIdAsync(int postId)
@@ -167,15 +168,12 @@ namespace Diffen.Repositories
 				{
 					post.UrlTipHref = post.UrlTipHref.Insert(0, "http://");
 				}
-				if (await _dbClient.PostHasAnUrlTipConnectedToItAsync(postId))
-				{
-					await _dbClient.DeleteUrlTipAsync(postId);
-				}
 				var urlTip = new Database.Entities.Forum.UrlTip
 				{
 					PostId = postId,
 					Clicks = 0,
-					Href = post.UrlTipHref
+					Href = post.UrlTipHref,
+					Created = DateTime.Now
 				};
 				results.Update(await _dbClient.CreateUrlTipAsync(urlTip), ResultMessages.CreateUrlTip);
 			}
@@ -189,14 +187,11 @@ namespace Diffen.Repositories
 
 			if (post.LineupId > 0)
 			{
-				if (await _dbClient.PostHasALineupConnectedToItAsync(postId))
-				{
-					await _dbClient.DeleteLineupConnectionToPostAsync(postId);
-				}
 				var postToLineup = new Database.Entities.Forum.PostToLineup
 				{
 					PostId = postId,
-					LineupId = post.LineupId
+					LineupId = post.LineupId,
+					Created = DateTime.Now
 				};
 				results.Update(await _dbClient.ConnectLineupToPostAsync(postToLineup), ResultMessages.CreateLineupToPost);
 			}

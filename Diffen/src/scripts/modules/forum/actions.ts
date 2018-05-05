@@ -87,9 +87,9 @@ export const Actions: ActionTree<State, any> = {
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},
-	[UPDATE_URLTIP_CLICKS]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<boolean> => {
+	[UPDATE_URLTIP_CLICKS]: (store: ActionContext<State, any>, payload: { subject: string, id: number }): Promise<boolean> => {
 		return new Promise<boolean>((resolve, reject) => {
-			return axios.post(`${store.rootState.vm.api}/posts/${payload.postId}/url/click`)
+			return axios.post(`${store.rootState.vm.api}/posts/url/${payload.subject}/${payload.id}/click`)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},

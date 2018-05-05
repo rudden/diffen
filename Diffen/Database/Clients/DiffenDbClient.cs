@@ -64,10 +64,10 @@ namespace Diffen.Database.Clients
 			switch (filter.StartingEleven)
 			{
 				case Models.Forum.StartingEleven.With:
-					posts = posts.Where(x => x.Lineup != null);
+					posts = posts.Where(x => x.Lineups != null);
 					break;
 				case Models.Forum.StartingEleven.Without:
-					posts = posts.Where(x => x.Lineup == null);
+					posts = posts.Where(x => x.Lineups == null);
 					break;
 				case Models.Forum.StartingEleven.All:
 					break;
@@ -261,19 +261,32 @@ namespace Diffen.Database.Clients
 
 		public Task<bool> DeleteUrlTipAsync(int postId)
 		{
-			var entity = _dbContext.UrlTips.FirstOrDefault(e => e.PostId == postId);
+			var entities = _dbContext.UrlTips.Where(e => e.PostId == postId);
 
-			if (entity == null)
+			if (!entities.Any())
 				return Task.FromResult(false);
 
-			_dbContext.UrlTips.Remove(entity);
+			foreach (var entity in entities)
+			{
+				entity.PostId = null;
+				_dbContext.UrlTips.Update(entity);
+			}
+
 			return CommitedResultIsSuccessfulAsync();
 		}
 
-		public Task<bool> IncrementUrlTipClickCounterAsync(int postId)
+		public Task<bool> IncrementUrlTipClickCounterAsync(string subject, int id)
 		{
-			var tip = _dbContext.UrlTips.FirstOrDefault(t => t.PostId == postId);
-
+			UrlTip tip = null;
+			switch (subject.ToLower())
+			{
+				case "post":
+					tip = _dbContext.UrlTips.Where(t => t.PostId == id).Current();
+					break;
+				case "tip":
+					tip = _dbContext.UrlTips.Where(t => t.Id == id).Current();
+					break;
+			}
 			if (tip == null)
 				return Task.FromResult(false);
 

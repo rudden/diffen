@@ -60,9 +60,10 @@ export class Filter {
 }
 
 export class UrlTip {
+    id: number
     href: string
     clicks: number
-    postId: number
+    postId?: number
 }
 
 export interface Conversation {
