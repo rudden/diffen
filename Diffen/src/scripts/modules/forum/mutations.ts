@@ -1,7 +1,7 @@
 import State from './state'
 import { MutationTree } from 'vuex'
 
-import { Post, VoteType, Filter, UrlTip } from '../../model/forum'
+import { Post, VoteType, Filter, UrlTip, Conversation } from '../../model/forum'
 import { Vote as CrudVote } from '../../model/forum/crud'
 import { Paging, KeyValuePair } from '../../model/common'
 
@@ -14,7 +14,8 @@ import {
     SET_URLTIP_TOPLIST,
     SET_SHOW_LEFT_SIDEBAR,
     SET_SHOW_RIGHT_SIDEBAR,
-    SET_SHOULD_RELOAD_POST_STREAM
+    SET_SHOULD_RELOAD_POST_STREAM,
+    SET_SELECTED_CONVERSATION
 } from './types'
 
 export const Mutations: MutationTree<State> = {
@@ -44,7 +45,55 @@ export const Mutations: MutationTree<State> = {
     [SET_URLTIP_TOPLIST]: (state: State, urlTips: UrlTip[]) => { state.urlTipTopList = urlTips },
     [SET_SHOW_LEFT_SIDEBAR]: (state: State, payload: { value: boolean }) => { state.showLeftSideBar = payload.value },
     [SET_SHOW_RIGHT_SIDEBAR]: (state: State, payload: { value: boolean }) => { state.showRightSideBar = payload.value },
-    [SET_SHOULD_RELOAD_POST_STREAM]: (state: State, payload: { value: boolean }) => { state.shouldReloadPostStream = payload.value }
+    [SET_SHOULD_RELOAD_POST_STREAM]: (state: State, payload: { value: boolean }) => { state.shouldReloadPostStream = payload.value },
+    [SET_SELECTED_CONVERSATION]: (state: State, posts: Post[]) => {
+        state.selectedConversation = fullConversation(posts)
+
+        function fullConversation(posts: Post[]): Conversation {
+            let basePost = posts[0]
+            let children = getChildren(posts, basePost.id)
+            if (children) {
+                let conversation: Conversation = {
+                    post: basePost,
+                    children: children,
+                    all: posts
+                }
+                filterConversations(conversation)
+                return conversation
+            } else {
+                return new Conversation()
+            }
+        }
+        
+        function getChildren(posts: Post[], postId: number) {
+            let children = posts.filter((post: Post) => post.parentPost ? post.parentPost.id == postId : false)
+            return children.length > 0 ? getConversations(posts, children) : []
+        }
+        
+        function getConversations(posts: Post[], children: Post[]) {
+            let arrayOfChildren: Conversation[] = []
+            children.forEach((post: Post) => {
+                arrayOfChildren.push({
+                    post: post,
+                    children: getChildren(posts, post.id)
+                })
+            })
+            return arrayOfChildren.length > 0 ? arrayOfChildren : []
+        }
+        
+        function filterConversations(conversation: Conversation) {
+            if (conversation.children.length == 0) {
+                delete conversation.children
+                if (!conversation.all) {
+                    delete conversation.all
+                }
+                return
+            }
+            conversation.children.forEach((childConversation: Conversation) => {
+                filterConversations(childConversation)
+            })
+        }
+    }
 }
 
 export default Mutations
