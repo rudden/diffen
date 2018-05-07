@@ -14,6 +14,11 @@
                         <strong>{{ child.post.user.nickName }}: </strong>
                     </a>
                     <span style="white-space: pre-wrap">{{ child.post.message }}</span>
+                    <p class="mb-0 mt-2">
+                        <a :href="`/forum/inlagg/${child.post.id}`">
+                            <span class="icon icon-link"></span>
+                        </a>
+                    </p>
                     <embeds :href="child.post.urlTipHref" />
                 </div>
                 <template v-if="child.children">
@@ -28,7 +33,7 @@
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 
-import { Conversation } from '../../model/forum'
+import { Post, Conversation } from '../../model/forum'
 import { PageViewModel } from '../../model/common'
 
 import Embeds from './embeds.vue'
