@@ -66,7 +66,8 @@ export class UrlTip {
     postId?: number
 }
 
-export interface Conversation {
+export class Conversation {
     post: Post
     children: Conversation[]
+    all?: Post[]
 }
