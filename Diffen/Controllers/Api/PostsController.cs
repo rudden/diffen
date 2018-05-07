@@ -36,7 +36,14 @@ namespace Diffen.Controllers.Api
 		}
 
 		[HttpGet("{postId}")]
-		public Task<List<Post>> Get(int postId)
+		public Task<Post> Get(int postId)
+		{
+			_logger.Debug("Requesting post with id {postId}", postId);
+			return _postRepository.GetPostOnIdAsync(postId);
+		}
+
+		[HttpGet("{postId}/conversation")]
+		public Task<List<Post>> GetConversation(int postId)
 		{
 			_logger.Debug("Requesting full conversation for post with id {postId}", postId);
 			return _postRepository.GetConversationOnPostIdAsync(postId);

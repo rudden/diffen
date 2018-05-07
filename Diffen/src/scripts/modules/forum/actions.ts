@@ -22,16 +22,22 @@ import {
 	SET_REMOVE_POST_FROM_LIST,
     SET_URLTIP_TOPLIST,
 	FETCH_URLTIP_TOPLIST,
-	FETCH_CONVERSATION_ON_POST
+	FETCH_CONVERSATION_ON_POST,
+    FETCH_POST,
+	SET_SELECTED_CONVERSATION
 } from './types'
 
 // export everything compliant to the vuex specification for actions
 export const Actions: ActionTree<State, any> = {
-	[FETCH_CONVERSATION_ON_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<Post[]> => {
-		return new Promise<Post[]>((resolve, reject) => {
+	[FETCH_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<Post> => {
+		return new Promise<Post>((resolve, reject) => {
 			return axios.get(`${store.rootState.vm.api}/posts/${payload.postId}`)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
+	},
+	[FETCH_CONVERSATION_ON_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/posts/${payload.postId}/conversation`)
+			.then((res) => store.commit(SET_SELECTED_CONVERSATION, res.data)).catch((error) => console.warn(error))
 	},
 	[FETCH_PAGED_POSTS]: (store: ActionContext<State, any>, payload: { pageNumber: number, pageSize: number, filter: Filter }): Promise<void> => {
 		return axios.get(`${store.rootState.vm.api}/posts/page/${payload.pageNumber}/${payload.pageSize}?filter=${JSON.stringify(payload.filter)}`)
