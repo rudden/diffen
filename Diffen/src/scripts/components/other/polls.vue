@@ -66,6 +66,10 @@
                         <label class="form-check-label" for="closed">Stängda</label>
                     </div>
                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" v-model="pollsFilter" id="my" value="My">
+                        <label class="form-check-label" for="my">Mina</label>
+                    </div>
+                    <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" v-model="pollsFilter" id="all" value="All">
                         <label class="form-check-label" for="all">Alla</label>
                     </div>
@@ -108,7 +112,7 @@
             <template v-else>
                 <li class="list-group-item media p-4">
                     <div class="col pl-0 pr-0">
-                        <div class="alert alert-warning mb-0">Hittade inga polls</div>
+                        <div class="alert alert-warning mb-0">Hittade inga omröstningar</div>
                     </div>
                 </li>
             </template>
@@ -135,7 +139,7 @@ import Results from '../results.vue'
 import Modal from '../modal.vue'
 
 enum PollFilter {
-    Open, Closed, All
+    Open, Closed, My, All
 }
 
 @Component({
@@ -225,6 +229,9 @@ export default class Polls extends Vue {
                     break
                 case PollFilter.Closed:
                     this.filteredPolls = this.polls.filter((p: Poll) => !p.isOpen)
+                    break
+                case PollFilter.My:
+                    this.filteredPolls = this.polls.filter((p: Poll) => p.byUser.id == this.vm.loggedInUser.id)
                     break
                 case PollFilter.All:
                     this.filteredPolls = this.polls
