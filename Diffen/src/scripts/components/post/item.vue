@@ -22,38 +22,41 @@
                                     </template>
                                 </template>
                             </modal>
-                            <span v-if="(post.lineupId || post.urlTipHref) && createdByLoggedInUser"> · </span>
-                            <modal v-bind="modalAttributes.editPost" v-if="createdByLoggedInUser">
-                               <template slot="body">
-                                    <new-post :post="post" v-bind="{ parentId: post.parentPost ? post.parentPost.id : null }" />
-                                </template>
-                            </modal>
-                            <span v-if="post.lineupId || post.urlTipHref || createdByLoggedInUser"> · </span>
-                            <modal v-bind="modalAttributes.replyPost">
+                            <template v-if="showActions">
+                                <span v-if="(post.lineupId || post.urlTipHref) && createdByLoggedInUser"> · </span>
+                                <modal v-bind="modalAttributes.editPost" v-if="createdByLoggedInUser">
                                 <template slot="body">
-                                    <div class="media-body">
-                                        <div class="media-body-text">
-                                            <post-main-content :post="post" />
+                                        <new-post :post="post" v-bind="{ parentId: post.parentPost ? post.parentPost.id : null }" />
+                                    </template>
+                                </modal>
+                                <span v-if="post.lineupId || post.urlTipHref || createdByLoggedInUser"> · </span>
+                                <modal v-bind="modalAttributes.replyPost">
+                                    <template slot="body">
+                                        <div class="media-body">
+                                            <div class="media-body-text">
+                                                <post-main-content :post="post" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <hr />
-                                    <new-post :parent-id="post.id" />
-                                </template>
-                            </modal>
-                            <a v-on:click="bookmarkPost" v-if="canBookmark">
-                                · <span class="icon icon-bookmark"></span>
-                            </a>
-                            <a v-on:click="scissorPost" v-if="loggeInUserIsAdmin">
-                                · <span class="icon icon-scissors"></span>
-                            </a>
-                            <a :href="`/forum/post/${post.id}`" class="no-hover">
-                                · <span class="icon icon-eye"></span>
-                            </a>
-                            <voting :post="post" />
+                                        <hr />
+                                        <new-post :parent-id="post.id" />
+                                    </template>
+                                </modal>
+                                <a v-on:click="bookmarkPost" v-if="canBookmark">
+                                    <span v-if="showActions">· </span>
+                                    <span class="icon icon-bookmark"></span>
+                                </a>
+                                <a v-on:click="scissorPost" v-if="loggeInUserIsAdmin">
+                                    · <span class="icon icon-scissors"></span>
+                                </a>
+                                <a :href="`/forum/inlagg/${post.id}`" class="no-hover">
+                                    · <span class="icon icon-eye"></span>
+                                </a>
+                                <voting :post="post" />
+                            </template>
                         </div>
                     </template>
 
-                    <template v-if="post.parentPost">
+                    <template v-if="post.parentPost && showParent">
                         <hr />
                         <ul class="media-list mt-3">
                             <li class="media">
@@ -77,7 +80,7 @@
                 </template>
                 <template v-else>
                     <div class="message-footer">
-                        <a :href="`/forum/post/${post.id}`" class="no-hover">
+                        <a :href="`/forum/inlagg/${post.id}`" class="no-hover">
                             <span class="icon icon-eye"></span>
                         </a>
                     </div>
@@ -129,6 +132,14 @@ import FormationComponent from '../lineups/formation.vue'
         fullSize: {
             type: Boolean,
             default: true
+        },
+        showActions: {
+            type: Boolean,
+            default: true
+        },
+        showParent: {
+            type: Boolean,
+            default: true
         }
     },
     components: {
@@ -150,7 +161,9 @@ export default class PostComponent extends Vue {
 
     post: Post
     fullSize: boolean
-    
+    showActions: boolean
+    showParent: boolean
+
     lineup: Lineup = new Lineup()
     loadingLineup: boolean = false
 
