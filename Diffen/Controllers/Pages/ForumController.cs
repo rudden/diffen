@@ -24,10 +24,19 @@ namespace Diffen.Controllers.Pages
 		}
 
 		[Authorize]
-		[Route("post/{id}")]
-		public IActionResult Index(int id)
+		[Route("inlagg/{id}")]
+		public IActionResult SelectedPost(int id)
 		{
 			Model.SelectedPostId = id;
+			return View("_Page", Model);
+		}
+
+		[Authorize]
+		[Route("inlagg/{id}/konversation")]
+		public IActionResult ConversationForPost(int id)
+		{
+			Model.SelectedPostId = id;
+			Model.FullConversationMode = true;
 			return View("_Page", Model);
 		}
 	}
