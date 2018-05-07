@@ -13,14 +13,14 @@ import { Component } from 'vue-property-decorator'
 import { State, namespace } from 'vuex-class'
 
 import MainComponent from './main.vue'
-import FullConversation from '../../../components/post/full-conversation.vue'
+import StandalonePost from '../../../components/post/standalone-post.vue'
 
 import { ForumViewModel, NavItem } from '../../../model/common/'
 
 @Component({
 	components: {
 		MainComponent,
-		FullConversation
+		StandalonePost
 	}
 })
 export default class Wrapper extends Vue {
@@ -43,9 +43,9 @@ export default class Wrapper extends Vue {
 			},
 			{
 				id: 2,
-				component: FullConversation,
+				component: StandalonePost,
 				attributes: {
-					selectedPostId: this.vm.selectedPostId
+					selectedPostId: this.vm.selectedPostId,
 				},
 				active: this.vm.selectedPostId > 0 ? true : false
 			}
