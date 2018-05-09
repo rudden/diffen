@@ -5,7 +5,7 @@
         </a>
         <div class="media-body">
             <div class="media-body-text">
-                <post-main-content :post="post" />
+                <post-main-content :post="post" :show-parent="showParent && fullSize" />
                 <!-- show actions and conversation on condition -->
                 <template v-if="fullSize">
                     <template v-if="showFooter">
@@ -42,40 +42,22 @@
                                     </template>
                                 </modal>
                                 <a v-on:click="bookmarkPost" v-if="canBookmark">
-                                    <span v-if="showActions">· </span>
-                                    <span class="icon icon-bookmark"></span>
+                                    · <span class="icon icon-bookmark"></span>
                                 </a>
-                                <a v-on:click="scissorPost" v-if="loggeInUserIsAdmin">
-                                    · <span class="icon icon-scissors"></span>
-                                </a>
+                                <span v-if="(post.lineupId || post.urlTipHref || createdByLoggedInUser || canBookmark) && loggedInUserIsAdmin"> · </span>
+                                <modal v-bind="modalAttributes.scissorPost" v-if="loggedInUserIsAdmin">
+                                    <template slot="body">
+                                        <div class="col pr-1 pl-1">
+                                            <button class="btn btn-success btn-sm btn-block" v-on:click="scissorPost">Saxa!</button>
+                                        </div>
+                                    </template>
+                                </modal>
                                 <a :href="`/forum/inlagg/${post.id}`" class="no-hover">
                                     · <span class="icon icon-eye"></span>
                                 </a>
                                 <voting :post="post" />
                             </template>
                         </div>
-                    </template>
-
-                    <template v-if="post.parentPost && showParent">
-                        <hr />
-                        <ul class="media-list mt-3">
-                            <li class="media">
-                                <a :href="'/profil/' + post.parentPost.user.id">
-                                    <img class="media-object d-flex align-self-start mr-3" :src="post.parentPost.user.avatar">
-                                </a>
-                                <div class="media-body">
-                                    <div class="media-body-text">
-                                        <div class="media-heading">
-                                            <small class="float-right text-muted">{{ post.parentPost.since }}</small>
-                                            <a :href="`/profil/${post.user.id}`">
-                                                <h6>{{ post.parentPost.user.nickName }}</h6>
-                                            </a>
-                                        </div>
-                                        <p>{{ post.parentPost.message }}</p>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
                     </template>
                 </template>
                 <template v-else>
@@ -191,6 +173,15 @@ export default class PostComponent extends Vue {
             onOpen: () => this.post.inEdit = true,
             onClose: this.closePostActionModal
         },
+        scissorPost: {
+            attributes: {
+                name: `scissor-${this.post.id}`
+            },
+            header: 'Saxa inlägg',
+            button: {
+                icon: 'icon icon-scissors'
+            }
+        },
         replyPost: {
             attributes: {
                 name: `reply-${this.post.id}`,
@@ -206,7 +197,7 @@ export default class PostComponent extends Vue {
         }
     }
 
-    get loggeInUserIsAdmin(): boolean {
+    get loggedInUserIsAdmin(): boolean {
         return this.vm.loggedInUser.inRoles.some(role => role == 'Scissor' || role == 'Admin')
     }
     get createdByLoggedInUser(): boolean {
@@ -218,7 +209,7 @@ export default class PostComponent extends Vue {
             || this.createdByLoggedInUser 
             || this.post.loggedInUserCanVote 
             || this.canBookmark 
-            || this.loggeInUserIsAdmin 
+            || this.loggedInUserIsAdmin 
             ? true : false
     }
     get canBookmark(): boolean {
