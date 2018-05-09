@@ -61,6 +61,10 @@ namespace Diffen.Database.Clients
 			{
 				posts = posts.Where(p => p.Created.Date <= Convert.ToDateTime(filter.ToDate).Date);
 			}
+			if (!string.IsNullOrEmpty(filter.MessageWildCard))
+			{
+				posts = posts.Where(p => p.Message.ToLower().Contains(filter.MessageWildCard.ToLower()));
+			}
 			switch (filter.StartingEleven)
 			{
 				case Models.Forum.StartingEleven.With:

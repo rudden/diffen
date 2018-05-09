@@ -46,6 +46,11 @@
                     </div>
                 </div>
                 <div class="list-group-item flex-column align-items-start">
+                    <div class="form-group mb-0">
+                        <input type="text" class="form-control form-control-sm" v-model="filter.messageWildCard" placeholder="sök på inläggsinnehåll" />
+                    </div>
+                </div>
+                <div class="list-group-item flex-column align-items-start">
 					<div class="row">
 						<div class="col pr-1">
 							<date-picker v-model="filter.fromDate" :config="fromDPConfig" placeholder="från" :class="{ 'form-control-sm': true }" />
@@ -166,6 +171,7 @@ export default class FilterComponent extends Vue {
 		return {
             toDate: this.filter.toDate,
             fromDate: this.filter.fromDate,
+            messageWildCard: this.filter.messageWildCard,
 			startingEleven: StartingEleven[this.startingEleven as keyof typeof StartingEleven],
 			includedUsers: this.includedUsers,
 			excludedUsers: this.excludedUsers
