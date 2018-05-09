@@ -1,12 +1,9 @@
 ﻿using System;
-using System.IO;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.DependencyInjection;
 
 using Serilog;
@@ -111,16 +108,8 @@ namespace Diffen
 				app.UseExceptionHandler("/Shared/_ErrorPage");
 			}
 
-			app.UseStaticFiles();
-
 			app.UseAuthentication();
-
-			app.UseFileServer(new FileServerOptions
-			{
-				FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"dist")),
-				RequestPath = new PathString("/dist"),
-				EnableDirectoryBrowsing = true
-			});
+			app.UseStaticFiles();
 
 			app.UseMvc(r =>
 			{

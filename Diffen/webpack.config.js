@@ -22,12 +22,12 @@ module.exports = {
 		'style': './src/styles/app.scss'
 	},
 	output: {
-		path: path.join(__dirname, './dist'),
-		publicPath: '/dist/',
+		path: path.join(__dirname, './wwwroot/dist'),
+		publicPath: '../',
 		filename: 'js/[name].js'
 	},
 	resolve: {
-		extensions: ['.ts', '.js', '.json', 'scss'],
+		extensions: ['.ts', '.js', '.json', 'css'],
 		modules: ['node_modules'],
 	},
 	module: {
@@ -78,7 +78,7 @@ module.exports = {
 		]
 	},
 	plugins: [
-		new CleanWebpackPlugin(path.join(__dirname, 'dist'), { root: __dirname }),
+		new CleanWebpackPlugin(path.join(__dirname, 'wwwroot/dist'), { root: __dirname }),
 		new webpack.ProvidePlugin({
 			$: 'jquery',
 			jquery: 'jquery',
