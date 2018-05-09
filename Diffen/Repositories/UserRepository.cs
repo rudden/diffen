@@ -8,6 +8,7 @@ using AutoMapper;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Diffen.Repositories
 {
@@ -26,21 +27,31 @@ namespace Diffen.Repositories
 		private readonly IDiffenDbClient _dbClient;
 		private readonly UserManager<AppUser> _userManager;
 		private readonly IUploadRepository _uploadRepository;
+		private readonly IMemoryCache _cache;
 
-		public UserRepository(IMapper mapper, IDiffenDbClient dbClient, UserManager<AppUser> userManager, IUploadRepository uploadRepository)
+		public UserRepository(IMapper mapper, IDiffenDbClient dbClient, UserManager<AppUser> userManager, IUploadRepository uploadRepository, IMemoryCache cache)
 		{
 			_mapper = mapper;
 			_dbClient = dbClient;
 			_userManager = userManager;
 			_uploadRepository = uploadRepository;
+			_cache = cache;
 		}
 
 		public async Task<List<KeyValuePair<string, string>>> GetUsersAsKeyValuePairAsync()
 		{
+			if (_cache.TryGetValue("kvpUsers", out List<KeyValuePair<string, string>> kvpUsers))
+			{
+				return kvpUsers;
+			}
 			var users = await _dbClient.GetUsersAsync();
-			return users.Select(user =>
+			var keyValuePaired = users.Select(user =>
 					new KeyValuePair<string, string>(user.Id,
 						user.NickNames.Current())).ToList();
+
+			// keep users in cache for 30 minutes
+			_cache.Set("kvpUsers", keyValuePaired, new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1)));
+			return keyValuePaired;
 		}
 
 		public async Task<User> GetUserOnIdAsync(string userId)
