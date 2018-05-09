@@ -24,4 +24,9 @@
     <PackageReference Include="Slugify" Version="0.1.0.20570" />
   </ItemGroup>
 
+	<Target Name="BuildAssets" BeforeTargets="Publish">
+		<Exec Command="npm install"></Exec>
+		<Exec Command="npm run build:prod"></Exec>
+	</Target>
+
 </Project>
