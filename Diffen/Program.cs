@@ -36,6 +36,7 @@ namespace Diffen
 			WebHost.CreateDefaultBuilder(args)
 				.UseKestrel()
 				.UseContentRoot(Directory.GetCurrentDirectory())
+				.UseSetting("detailedErrors", "true")
 				.UseIISIntegration()
 				.UseStartup<Startup>()
 				.UseSerilog()
