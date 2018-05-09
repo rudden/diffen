@@ -44,7 +44,7 @@
                 </template>
                 <template v-else>
                     <post-component :post="selectedPost" :show-parent="false" :show-actions="false" />
-                    <li class="media list-group-item p-4">
+                    <li class="media list-group-item p-4" v-if="selectedConversation.all.length > 1">
                         <div class="btn-group">
                             <a :href="`/forum/inlagg/${selectedPostId}/konversation`" class="btn btn-sm btn-primary">Visa hela konversationen</a>
                         </div>
@@ -92,9 +92,6 @@ export default class StandalonePost extends Vue {
 
     selectedPost: Post = new Post()
 
-    // isCopied: boolean = false
-    // private singlePostUrl: string = ''
-
     mounted() {
         this.loadConversation({ postId: this.selectedPostId })
             .then(() => {
@@ -112,8 +109,6 @@ export default class StandalonePost extends Vue {
     setAsActive(postId: number) {
         if (this.selectedConversation.all) {
             this.selectedPost = this.selectedConversation.all.filter((post: Post) => post.id == postId)[0]
-            // var getUrl = window.location
-            // this.singlePostUrl = getUrl .protocol + '//' + getUrl.host + getUrl.pathname + '?s=' + postId
         }
     }
 }
