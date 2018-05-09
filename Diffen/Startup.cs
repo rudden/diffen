@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Serilog;
+using Serilog.Events;
 using AutoMapper;
 
 namespace Diffen
@@ -33,6 +34,7 @@ namespace Diffen
 
 			Log.Logger = new LoggerConfiguration()
 				.ReadFrom.Configuration(Configuration)
+				.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
 				.Enrich.FromLogContext()
 				.CreateLogger();
 		}
