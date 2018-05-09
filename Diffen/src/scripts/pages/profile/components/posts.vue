@@ -1,7 +1,7 @@
 <template>
 	<div class="container container__profile mt-3 mb-5">
 		<div class="row">
-			<div class="col-sm-12 col-md-6 col-lg-6">
+			<div class="col-sm-12 col-md col-lg">
 				<post-stream :full-size-post="false" :paging="pageCreatedPosts" :state-stored-items="createdPosts" :loader-predicate="isLoadingCreatedPosts">
 					<template slot="top">
 						<li class="media list-group-item p-4">
@@ -10,7 +10,7 @@
 					</template>
 				</post-stream>
 			</div>
-			<div class="col-sm-12 col-md-6 col-lg-6">
+			<div class="col-sm-12 col-md col-lg" v-if="vm.loggedInUser.id == userId">
 				<post-stream :full-size-post="false" :paging="pageSavedPosts" :state-stored-items="savedPosts" :loader-predicate="isLoadingSavedPosts">
 					<template slot="top">
 						<li class="media list-group-item p-4">
