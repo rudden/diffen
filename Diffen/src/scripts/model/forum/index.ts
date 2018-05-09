@@ -54,6 +54,7 @@ export enum StartingEleven {
 export class Filter {
     fromDate?: Date
     toDate?: Date
+    messageWildCard?: string
     startingEleven?: StartingEleven = StartingEleven.All
 	includedUsers?: KeyValuePair[]
 	excludedUsers?: KeyValuePair[]
