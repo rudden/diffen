@@ -199,7 +199,7 @@ export default class UserComponent extends Vue {
 
         this.setCrudUser()
 
-        this.avatarFileName = !this.user.avatar.includes('generic/logo') ? this.user.avatar.split('_____')[1] : ''
+        this.avatarFileName = !this.user.avatar.includes('generic/logo') ? this.user.avatar.split('_____')[1] : this.genericAvatarSrc
     }
     
     get isLoggedIn(): boolean {
@@ -242,12 +242,15 @@ export default class UserComponent extends Vue {
                 this.results = results
                 new Promise<void>((resolve, reject) => {
                     if (!this.avatarFileName) {
-                        axios.delete(`${this.vm.api}/users/${this.vm.loggedInUser.id}/avatar`)
-                            .then((res) => {
-                                this.results.push(res.data)
-                                this.user.avatar = this.genericAvatarSrc
-                                resolve()
-                            })
+                        if (!this.user.avatar.includes('generic/logo')) {
+                            axios.delete(`${this.vm.api}/users/${this.vm.loggedInUser.id}/avatar`)
+                                .then((res) => {
+                                    this.results.push(res.data)
+                                    this.user.avatar = this.genericAvatarSrc
+                                    resolve()
+                                })
+                        }
+                        resolve()
                     }
                     else if (this.user.avatar.split('_____')[1] !== this.avatarFileName)
                         this.uploadFile().then(() => resolve())
