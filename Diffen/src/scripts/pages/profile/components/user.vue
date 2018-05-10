@@ -215,10 +215,7 @@ export default class UserComponent extends Vue {
 		return this.crudUser.nickName && this.crudUser.nickName.length > 1 && this.crudUser.bio.length <= 100
     }
     get hasSelectedAvatar(): boolean {
-        if (this.user.avatar != this.genericAvatarSrc) {
-            return this.avatarFileName ? true : false
-        }
-        return this.avatarFileName ? true : false
+        return this.avatarFileName && this.avatarFileName !== this.genericAvatarSrc ? true : false
     }
     
     setCrudUser() {
@@ -242,17 +239,15 @@ export default class UserComponent extends Vue {
                 this.results = results
                 new Promise<void>((resolve, reject) => {
                     if (!this.avatarFileName) {
-                        if (!this.user.avatar.includes('generic/logo')) {
-                            axios.delete(`${this.vm.api}/users/${this.vm.loggedInUser.id}/avatar`)
-                                .then((res) => {
-                                    this.results.push(res.data)
-                                    this.user.avatar = this.genericAvatarSrc
-                                    resolve()
-                                })
-                        }
+                        axios.delete(`${this.vm.api}/users/${this.vm.loggedInUser.id}/avatar`)
+                            .then((res) => {
+                                this.results.push(res.data)
+                                this.user.avatar = this.genericAvatarSrc
+                                resolve()
+                            })
                         resolve()
                     }
-                    else if (this.user.avatar.split('_____')[1] !== this.avatarFileName)
+                    else if (this.user.avatar.split('_____')[1] !== this.avatarFileName && this.avatarFileName !== this.genericAvatarSrc)
                         this.uploadFile().then(() => resolve())
                     else resolve()
                 }).then(() => {
