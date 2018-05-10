@@ -49,7 +49,6 @@ namespace Diffen.Repositories
 					new KeyValuePair<string, string>(user.Id,
 						user.NickNames.Current())).ToList();
 
-			// keep users in cache for 30 minutes
 			_cache.Set("kvpUsers", keyValuePaired, new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1)));
 			return keyValuePaired;
 		}
