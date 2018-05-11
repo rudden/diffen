@@ -37,6 +37,28 @@
             </ul>
         </div>
         <div class="col-md-3">
+            <div class="card card-profile mb-4" v-if="!loading">
+                <div class="card-header" style="background-image: url(/bg.jpg);"></div>
+                <div class="card-body text-center">
+                    <a href="/profil">
+                        <img class="card-profile-img" :src="chronicle.writtenByUser.avatar">
+                    </a>
+                    <h6 class="card-title">
+                        <a class="text-inherit" href="/profile">{{ chronicle.writtenByUser.nickName }}</a>
+                    </h6>
+                    <p class="mb-4" v-if="chronicle.writtenByUser.bio">{{ chronicle.writtenByUser.bio }}</p>
+                    <ul class="card-menu">
+                        <li class="card-menu-item">
+                            Medlem sedan
+                            <h6 class="my-0">{{ chronicle.writtenByUser.joined }}</h6>
+                        </li>
+                        <li class="card-menu-item">
+                            Antal krönikor
+                            <h6 class="my-0">{{ createdByUsersAmountOfChronicles }}</h6>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <div class="card mb-4">
                 <div class="card-body">
                     <h6>Senaste</h6>
@@ -77,7 +99,13 @@ import { Chronicle, ChronicleCategory } from '../../model/other'
 
 import { GET_CHRONICLE, GET_CHRONICLES, FETCH_CHRONICLE, FETCH_CHRONICLES } from '../../modules/other/types'
 
-@Component({})
+import SmallUser from '../small-user.vue'
+
+@Component({
+    components: {
+        SmallUser
+    }
+})
 export default class ChronicleComponent extends Vue {
     @State(state => state.vm) vm: ChronicleViewModel
     @ModuleGetter(GET_CHRONICLE) chronicle: Chronicle
@@ -107,6 +135,10 @@ export default class ChronicleComponent extends Vue {
             c.categories.map((c: ChronicleCategory) => c.id).some(id => 
                 this.chronicle.categories.map((c: ChronicleCategory) => 
                     c.id).includes(id))).slice(0, 10)
+    }
+
+    get createdByUsersAmountOfChronicles() {
+        return this.chronicles.filter((c: Chronicle) => c.writtenByUser.id == this.chronicle.writtenByUser.id).length
     }
 }
 </script>

@@ -1,4 +1,5 @@
 import { IdAndNickNameUser } from '../common'
+import { User } from '../profile'
 
 export class Poll {
     id: number
@@ -23,7 +24,7 @@ export class Chronicle {
     text: string
     headerFileName: string
     slug: string
-    writtenByUser: IdAndNickNameUser
+    writtenByUser: User
     categories: ChronicleCategory[] = []
     created: string
     updated: string

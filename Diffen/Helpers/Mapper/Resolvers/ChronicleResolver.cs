@@ -6,9 +6,6 @@ using AutoMapper;
 
 namespace Diffen.Helpers.Mapper.Resolvers
 {
-	using Models;
-	using Extensions;
-
 	public class ChronicleResolver : 
 		ITypeConverter<Database.Entities.Other.Chronicle, Models.Other.Chronicle>,
 		ITypeConverter<Database.Entities.Other.ChronicleCategory, Models.Other.ChronicleCategory>,
@@ -23,11 +20,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Text = source.Text,
 				HeaderFileName = source.HeaderFileName ?? "banner.jpg",
 				Slug = source.Slug,
-				WrittenByUser = new IdAndNickNameUser
-				{
-					Id = source.WrittenByUserId,
-					NickName = source.WrittenByUser.NickNames.Current()
-				},
+				WrittenByUser = context.Mapper.Map<Models.User.User>(source.WrittenByUser),
 				Categories = source.Categories.Select(x => x.Category).Select(context.Mapper.Map<Models.Other.ChronicleCategory>),
 				Created = source.Created.ToString("yyyy-MM-dd"),
 				Updated = source.Updated.ToString("yyyy-MM-dd"),
