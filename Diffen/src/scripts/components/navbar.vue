@@ -28,7 +28,7 @@
 					<a class="nav-link" href="/profil">Profil</a>
 				</li>
 			</ul>
-			<div class="form-inline">
+			<div class="form-inline mt-0">
 				<input id="search_users" class="form-control" type="text" placeholder="Sök efter en användare" data-action="grow" :disabled="loading" autocomplete="off">
 				<typeahead v-model="selectedUser" target="#search_users" :data="users" item-key="value" force-select />
 				<a href="/auth/logout" class="btn btn-outline-primary my-2 my-sm-0 ml-3">Logga ut</a>
