@@ -29,9 +29,9 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					NickName = source.WrittenByUser.NickNames.Current()
 				},
 				Categories = source.Categories.Select(x => x.Category).Select(context.Mapper.Map<Models.Other.ChronicleCategory>),
-				Created = source.Created.ToShortDateString(),
-				Updated = source.Updated.ToShortDateString(),
-				Published = source.Published.ToShortDateString()
+				Created = source.Created.ToString("yyyy-MM-dd"),
+				Updated = source.Updated.ToString("yyyy-MM-dd"),
+				Published = source.Published.ToString("yyyy-MM-dd")
 			};
 		}
 
