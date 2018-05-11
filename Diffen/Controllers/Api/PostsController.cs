@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
@@ -63,8 +64,16 @@ namespace Diffen.Controllers.Api
 		[HttpPost("create")]
 		public Task<List<Result>> CreatePost([FromBody] Models.Forum.CRUD.Post post)
 		{
-			_logger.Debug("Requesting to create a new post");
-			return _postRepository.CreatePostAsync(post);
+			try
+			{
+				_logger.Debug("Requesting to create a new post {@post}", post);
+				return _postRepository.CreatePostAsync(post);
+			}
+			catch (Exception ex)
+			{
+				_logger.Warning(ex, "An unexpected error occured when trying to create a post");
+				throw;
+			}
 		}
 
 		[VerifyInputToLoggedInUserId("post", "CreatedByUserId")]

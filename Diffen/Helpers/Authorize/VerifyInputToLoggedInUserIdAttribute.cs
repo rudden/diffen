@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
+using Serilog;
+
 namespace Diffen.Helpers.Authorize
 {
 	using Extensions;
@@ -9,6 +11,7 @@ namespace Diffen.Helpers.Authorize
 	{
 		private readonly string _key;
 		private readonly string _value;
+		private readonly ILogger _logger = Log.ForContext<VerifyInputToLoggedInUserIdAttribute>();
 
 		public VerifyInputToLoggedInUserIdAttribute(string key, string value = null)
 		{
@@ -39,6 +42,7 @@ namespace Diffen.Helpers.Authorize
 					return;
 				}
 			}
+			_logger.Information("LoggedInUserId {@loggedInUserId} does not match RequestUserId {@requestUserId}", loggedInUserId, requestUserId);
 			context.Result = new BadRequestResult();
 		}
 	}
