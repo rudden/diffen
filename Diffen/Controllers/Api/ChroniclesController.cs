@@ -79,12 +79,12 @@ namespace Diffen.Controllers.Api
 
 		[Authorize(Policy = "IsAuthor")]
 		[HttpPost("image/header/update/{fileName}")]
-		public async Task<bool> UpdateHeaderFileName(string fileName)
+		public async Task<bool> UpdateHeaderFileName(string fileName, int chronicleId)
 		{
 			_logger.Debug("Requesting to update an existing chronicles header filename");
 			try
 			{
-				var isUpdated = await _chronicleRepository.UpdateHeaderFileNameForLastAddedChronicleAsync($"{DirectoryForChronicleHeaderUploads}/{fileName}");
+				var isUpdated = await _chronicleRepository.UpdateHeaderFileNameForLastAddedChronicleAsync($"{DirectoryForChronicleHeaderUploads}/{fileName}", chronicleId);
 				return isUpdated.Any(x => x.Type == ResultType.Success);
 			}
 			catch (Exception)

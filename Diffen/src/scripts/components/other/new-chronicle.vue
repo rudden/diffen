@@ -272,12 +272,12 @@ export default class NewChronicle extends Vue {
         }
     }
 
-    uploadFile(): Promise<void> {
+    uploadFile(chronicleId?: number): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             axios.post(`${this.vm.api}/uploads/${this.directoryName}`, this.headerFile, { headers: { 'Content-Type': 'application/json' } })
                 .then((result) => {
                     let fileName: string = result.data
-                    axios.post(`${this.vm.api}/chronicles/image/header/update/${fileName}`)
+                    axios.post(`${this.vm.api}/chronicles/image/header/update/${fileName}?chronicleId=${chronicleId}`)
                         .then((res) => {
                             if (res) {
                                 this.headerFileName = this.friendlyFileName(fileName)

@@ -103,9 +103,11 @@ namespace Diffen.Repositories
 			return results;
 		}
 
-		public async Task<List<Result>> UpdateHeaderFileNameForLastAddedChronicleAsync(string fileName)
+		public async Task<List<Result>> UpdateHeaderFileNameForLastAddedChronicleAsync(string fileName, int chronicleId = 0)
 		{
-			var chronicle = await _dbClient.GetLastAddedChronicleAsync();
+			var chronicle = chronicleId == 0
+				? await _dbClient.GetLastAddedChronicleAsync()
+				: await _dbClient.GetChronicleOnIdAsync(chronicleId);
 			chronicle.HeaderFileName = fileName;
 			return await new List<Result>().Get(_dbClient.SetHeaderFileNameOnChronicleAsync(chronicle), ResultMessages.UpdateChronicleHeaderFile);
 		}
