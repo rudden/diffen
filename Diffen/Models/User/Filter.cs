@@ -11,7 +11,7 @@ namespace Diffen.Models.User
 		public Filter(AppUser user)
 		{
 			UserId = user.Id;
-			PostsPerPage = 5;
+			PostsPerPage = 20;
 			ExcludedUsers = new List<KeyValuePair<string, string>>();
 		}
 
