@@ -156,16 +156,16 @@ namespace Diffen.Controllers.Pages
 					switch (error.Code)
 					{
 						case "DuplicateUserName":
-							ModelState.AddModelError("", "användarnamnet (email) finns redan registrerad");
+							ModelState.AddModelError("", "- användarnamnet (email) finns redan registrerad");
 							break;
 						case "PasswordRequiresUpper":
-							ModelState.AddModelError("", "lösenordet måste innehålla minst en stor bokstav");
+							ModelState.AddModelError("", "- lösenordet måste innehålla minst en stor bokstav");
 							break;
 						case "PasswordRequiresNonAlphanumeric":
-							ModelState.AddModelError("", "lösenordet måste innehålla minst ett icke alfanumeriskt tecken, t.ex ett utropstecken eller punkt");
+							ModelState.AddModelError("", "- lösenordet måste innehålla minst ett icke alfanumeriskt tecken, t.ex ett utropstecken eller punkt");
 							break;
 						case "PasswordRequiresDigit":
-							ModelState.AddModelError("", "lösenordet måste innehålla minst en siffra");
+							ModelState.AddModelError("", "- lösenordet måste innehålla minst en siffra");
 							break;
 					}
 				}
