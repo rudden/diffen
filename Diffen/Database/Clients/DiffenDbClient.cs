@@ -462,6 +462,7 @@ namespace Diffen.Database.Clients
 
 		public Task<bool> CreateInviteAsync(Invite invite)
 		{
+			invite.InviteSent = DateTime.Now;
 			_dbContext.Invites.Add(invite);
 			return CommitedResultIsSuccessfulAsync();
 		}
