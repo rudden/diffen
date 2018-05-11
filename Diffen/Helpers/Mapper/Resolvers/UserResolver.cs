@@ -44,17 +44,18 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				NickName = source.NickNames.Current() ?? "anonymous",
 				Avatar = GetAvatar(source),
 				Region = source.Region?.Region?.Name,
-				Karma = GetKarma(source.Posts),
-				NumberOfPosts = source.Posts.Count,
+				Karma = source.Posts != null ? GetKarma(source.Posts) : 0,
+				NumberOfPosts = source.Posts?.Count ?? 0,
 				Filter = context.Mapper.Map<Filter>(source.Filter) ?? new Filter(source),
-				FavoritePlayer = context.Mapper.Map<Models.Squad.Player>(source.FavoritePlayer),
+				FavoritePlayer = source.FavoritePlayer != null ? context.Mapper.Map<Models.Squad.Player>(source.FavoritePlayer) : null,
 				SavedPostsIds = source.SavedPosts?.Select(p => p.PostId),
 				InRoles = _userManager.GetRolesAsync(source).Result,
-				VoteStatistics = new VoteStatistics
+				VoteStatistics = source.Votes != null ? new VoteStatistics
 				{
 					UpVotes = source.Votes.Count(x => x.Type == VoteType.Up),
 					DownVotes = source.Votes.Count(x => x.Type == VoteType.Down)
-				},
+				} : null,
+				Joined = source.Joined.ToString("yyyy-MM-dd"),
 				SecludedUntil = source.SecludedUntil.GetSecluded(),
 			};
 		}

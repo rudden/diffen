@@ -18,6 +18,7 @@ export class User {
     savedPostsIds: number[]
     inRoles: string[]
 
+    joined: string
     secludedUntil: string
 }
 
