@@ -7,7 +7,7 @@
                     <img class="card-profile-img" :src="user.avatar">
                 </a>
                 <h6 class="card-title">
-                    <a class="text-inherit" href="/profile">{{ user.nickName }}</a>
+                    <a class="text-inherit" href="/profil">{{ user.nickName }}</a>
                 </h6>
                 <p class="mb-4">{{ user.bio }}</p>
                 <ul class="card-menu">
