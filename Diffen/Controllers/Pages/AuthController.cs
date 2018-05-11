@@ -131,7 +131,7 @@ namespace Diffen.Controllers.Pages
 					await _userRepository.CreateNewNickNameAsync(user.Id, vm.NickName);
 					await _userRepository.SetInviteAsAccountCreatedAsync(user.Id, vm.UniqueCode);
 
-					if (vm.Avatar != null)
+					if (vm.Avatar?.Length <= 700000)
 					{
 						var fileName = await _uploadRepository.UploadFileAsync("avatars", vm.Avatar, user.Id);
 						await _userRepository.UpdateAvatarFileNameForUserWithIdAsync(user.Id, fileName);
