@@ -99,13 +99,7 @@ import { Chronicle, ChronicleCategory } from '../../model/other'
 
 import { GET_CHRONICLE, GET_CHRONICLES, FETCH_CHRONICLE, FETCH_CHRONICLES } from '../../modules/other/types'
 
-import SmallUser from '../small-user.vue'
-
-@Component({
-    components: {
-        SmallUser
-    }
-})
+@Component({})
 export default class ChronicleComponent extends Vue {
     @State(state => state.vm) vm: ChronicleViewModel
     @ModuleGetter(GET_CHRONICLE) chronicle: Chronicle
