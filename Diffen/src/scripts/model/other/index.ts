@@ -24,9 +24,15 @@ export class Chronicle {
     headerFileName: string
     slug: string
     writtenByUser: IdAndNickNameUser
+    categories: ChronicleCategory[] = []
     created: string
     updated: string
     published: string
+}
+
+export class ChronicleCategory {
+    id: number
+    name: string
 }
 
 export class Region {

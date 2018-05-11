@@ -30,6 +30,7 @@
 			CreateMap<Models.Other.CRUD.Poll, Database.Entities.Other.Poll>().ConvertUsing<PollResolver>();
 			CreateMap<string, Database.Entities.Other.PollSelection>().ConvertUsing<PollResolver>();
 			CreateMap<Database.Entities.Other.Chronicle, Models.Other.Chronicle>().ConvertUsing<ChronicleResolver>();
+			CreateMap<Database.Entities.Other.ChronicleCategory, Models.Other.ChronicleCategory>().ConvertUsing<ChronicleResolver>();
 			CreateMap<Models.Other.CRUD.Chronicle, Database.Entities.Other.Chronicle>().ConvertUsing<ChronicleResolver>();
 			CreateMap<Database.Entities.Other.Region, Models.Other.Region>().ConvertUsing<RegionResolver>();
 			CreateMap<Models.Other.CRUD.Region, Database.Entities.Other.Region>().ConvertUsing<RegionResolver>();

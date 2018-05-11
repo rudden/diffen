@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using Slugify;
 using AutoMapper;
@@ -10,6 +11,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 
 	public class ChronicleResolver : 
 		ITypeConverter<Database.Entities.Other.Chronicle, Models.Other.Chronicle>,
+		ITypeConverter<Database.Entities.Other.ChronicleCategory, Models.Other.ChronicleCategory>,
 		ITypeConverter<Models.Other.CRUD.Chronicle, Database.Entities.Other.Chronicle>
 	{
 		public Models.Other.Chronicle Convert(Database.Entities.Other.Chronicle source, Models.Other.Chronicle destination, ResolutionContext context)
@@ -26,6 +28,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					Id = source.WrittenByUserId,
 					NickName = source.WrittenByUser.NickNames.Current()
 				},
+				Categories = source.Categories.Select(x => x.Category).Select(context.Mapper.Map<Models.Other.ChronicleCategory>),
 				Created = source.Created.ToShortDateString(),
 				Updated = source.Updated.ToShortDateString(),
 				Published = source.Published.ToShortDateString()
@@ -42,6 +45,15 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Slug = new SlugHelper().GenerateSlug(source.Title),
 				WrittenByUserId = source.WrittenByUserId,
 				Published = !string.IsNullOrEmpty(source.Published) ? System.Convert.ToDateTime(source.Published) : DateTime.Now
+			};
+		}
+
+		public Models.Other.ChronicleCategory Convert(Database.Entities.Other.ChronicleCategory source, Models.Other.ChronicleCategory destination, ResolutionContext context)
+		{
+			return new Models.Other.ChronicleCategory
+			{
+				Id = source.Id,
+				Name = source.Name
 			};
 		}
 	}

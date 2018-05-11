@@ -11,3 +11,6 @@
 @import "features/_pagination";
 @import "features/_chronicle";
 @import "features/_lineup";
+@import "features/_multiselect";
+
+@import '../../node_modules/vue-multiselect/dist/vue-multiselect.min';

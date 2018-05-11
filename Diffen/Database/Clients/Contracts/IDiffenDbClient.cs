@@ -98,9 +98,13 @@ namespace Diffen.Database.Clients.Contracts
 		Task<List<Chronicle>> GetChroniclesAsync(int amount = 0);
 		Task<List<Chronicle>> GetChroniclesOnUserIdAsync(string userId);
 		Task<Chronicle> GetLastAddedChronicleAsync();
+		Task<List<ChronicleCategory>> GetChronicleCategoriesAsync();
 		Task<Chronicle> GetChronicleOnIdAsync(int chronicleId);
 		Task<Chronicle> GetChronicleOnSlugAsync(string slug);
 		Task<bool> CreateChronicleAsync(Chronicle chronicle);
+		Task<bool> AddCategoriesToChronicleAsync(int chronicleId, IEnumerable<int> categoryIds);
+		Task<bool> CreateNewChronicleCategoriesAndConnectToNewChronicleWithIdAsync(int chronicleId, List<string> categoryNames);
+		Task<bool> AddOrRemoveCategoriesToExistingChronicleAsync(int chronicleId, IEnumerable<int> categoryIds);
 		Task<bool> UpdateChronicleAsync(Chronicle chronicle);
 		Task<bool> SetHeaderFileNameOnChronicleAsync(Chronicle chronicle);
 		Task<bool> ChronicleIsCreatedBySelectedUserAsync(string slug, string userId);

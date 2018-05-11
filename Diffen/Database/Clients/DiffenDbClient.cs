@@ -644,11 +644,54 @@ namespace Diffen.Database.Clients
 			return _dbContext.Chronicles.IncludeAll().OrderByDescending(x => x.Created).FirstOrDefaultAsync();
 		}
 
+		public Task<List<ChronicleCategory>> GetChronicleCategoriesAsync()
+		{
+			return _dbContext.ChronicleCategories.ToListAsync();
+		}
+
 		public Task<bool> CreateChronicleAsync(Chronicle chronicle)
 		{
 			chronicle.Created = DateTime.Now;
+			if (_dbContext.Chronicles.Count(c=> c.Slug == chronicle.Slug) > 0)
+			{
+				chronicle.Slug = $"{chronicle.Slug}-{Guid.NewGuid().ToString().Substring(0, 8)}";
+			}
 			_dbContext.Chronicles.Add(chronicle);
 			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<bool> AddCategoriesToChronicleAsync(int chronicleId, IEnumerable<int> categoryIds)
+		{
+			_dbContext.ChroniclesToCategories.AddRange(categoryIds.Select(id => new ChronicleToCategory
+			{
+				CategoryId = id,
+				ChronicleId = chronicleId
+			}));
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public async Task<bool> CreateNewChronicleCategoriesAndConnectToNewChronicleWithIdAsync(int chronicleId, List<string> categoryNames)
+		{
+			_dbContext.ChronicleCategories.AddRange(categoryNames.Select(name => new ChronicleCategory
+			{
+				Name = name
+				}));
+			await CommitedResultIsSuccessfulAsync();
+			var newCategories = _dbContext.ChronicleCategories.Where(category => categoryNames.Contains(category.Name));
+			_dbContext.ChroniclesToCategories.AddRange(newCategories.Select(category => new ChronicleToCategory
+			{
+				CategoryId = category.Id,
+				ChronicleId = chronicleId
+			}));
+			return await CommitedResultIsSuccessfulAsync();
+		}
+
+		public async Task<bool> AddOrRemoveCategoriesToExistingChronicleAsync(int chronicleId, IEnumerable<int> categoryIds)
+		{
+			_dbContext.ChroniclesToCategories.RemoveRange(
+				_dbContext.ChroniclesToCategories.Where(c => c.ChronicleId == chronicleId));
+			await CommitedResultIsSuccessfulAsync();
+			return await AddCategoriesToChronicleAsync(chronicleId, categoryIds);
 		}
 
 		public async Task<bool> UpdateChronicleAsync(Chronicle chronicle)

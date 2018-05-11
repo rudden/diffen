@@ -83,6 +83,12 @@ div.flow-root {
 	}
 }
 
+li.ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 /* navbar */
 .navbar-divider {
 	border-left: 1px solid white;

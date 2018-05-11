@@ -23,7 +23,9 @@ import {
 	SET_VOTES_ON_POLL,
     FETCH_REGIONS,
 	SET_REGIONS,
-    CREATE_REGION
+    CREATE_REGION,
+	FETCH_CHRONICLE_CATEGORIES,
+	SET_CHRONICLE_CATEGORIES
 } from './types'
 
 // export everything compliant to the vuex specification for actions
@@ -62,6 +64,10 @@ export const Actions: ActionTree<State, any> = {
 	[FETCH_CHRONICLES]: (store: ActionContext<State, any>, payload: { amount: number }): Promise<void> => {
 		return axios.get(`${store.rootState.vm.api}/chronicles?amount=${payload.amount}`)
 			.then((res) => store.commit(SET_CHRONICLES, res.data)).catch((error) => console.warn(error))
+	},
+	[FETCH_CHRONICLE_CATEGORIES]: (store: ActionContext<State, any>): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/chronicles/categories`)
+			.then((res) => store.commit(SET_CHRONICLE_CATEGORIES, res.data)).catch((error) => console.warn(error))
 	},
 	[FETCH_REGIONS]: (store: ActionContext<State, any>): Promise<void> => {
 		return axios.get(`${store.rootState.vm.api}/regions`)

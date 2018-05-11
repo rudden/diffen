@@ -40,7 +40,7 @@
             </li>
             <template v-if="filtered.length > 0">
                 <li class="list-group-item media"  :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="chronicle in filtered" :key="chronicle.id">
-                    <span class="icon icon-pencil text-muted mr-2" v-if="!isSmall"></span>
+                    <span class="icon icon-text-document text-muted mr-2" v-if="!isSmall"></span>
                     <div class="media-body">
                         <div class="media-heading">
                             <a :href="`/kronika/${chronicle.slug}`">

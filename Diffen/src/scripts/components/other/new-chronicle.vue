@@ -28,6 +28,32 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <v-multiselect v-model="selectedCategories"
+                                :options="allCategories"
+                                :multiple="true"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                                :hide-selected="true"
+                                :preserve-search="true"
+                                placeholder="Välj minst en kategori"
+                                label="name"
+                                track-by="id"
+                                :taggable="true"
+                                @tag="addCategory">
+                                <template slot="tag" slot-scope="props">
+                                    <span class="custom__tag">
+                                        <span class="badge badge-primary mr-2 p-1">
+                                            <span>
+                                                <span class="icon icon-tag mr-1"></span>
+                                                {{ props.option.name }}
+                                            </span>
+                                            <span class="custom__remove" @click="props.remove(props.option)">&times;</span>
+                                        </span>
+                                    </span>
+                                </template>
+                            </v-multiselect>
+                        </div>
+                        <div class="form-group">
                             <date-picker v-model="publishDate" :config="dpConfig" :placeholder="'Publiceringsdatum (direkt om inget väljs)'" />
                         </div>
                         <div class="form-group">
@@ -73,10 +99,10 @@ const ModuleAction = namespace('other', Action)
 const ModuleMutation = namespace('other', Mutation)
 
 import { PageViewModel, Result, ResultType } from '../../model/common'
-import { Chronicle } from '../../model/other'
+import { Chronicle, ChronicleCategory } from '../../model/other'
 import { Chronicle as CrudChronicle } from '../../model/other/crud'
 
-import { GET_CHRONICLE, FETCH_CHRONICLE, CREATE_CHRONICLE, UPDATE_CHRONICLE } from '../../modules/other/types'
+import { GET_CHRONICLE, GET_CHRONICLE_CATEGORIES, FETCH_CHRONICLE_CATEGORIES, FETCH_CHRONICLE, CREATE_CHRONICLE, UPDATE_CHRONICLE } from '../../modules/other/types'
 
 import Results from '../results.vue'
 
@@ -94,7 +120,9 @@ import DatePicker from 'vue-bootstrap-datetimepicker'
 export default class NewChronicle extends Vue {
     @State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_CHRONICLE) chronicle: Chronicle
+    @ModuleGetter(GET_CHRONICLE_CATEGORIES) categories: ChronicleCategory[]
     @ModuleAction(FETCH_CHRONICLE) loadChronicle: (payload: { slug: string }) => Promise<void>
+    @ModuleAction(FETCH_CHRONICLE_CATEGORIES) loadCategories: () => Promise<void>
     @ModuleAction(CREATE_CHRONICLE) createChronicle: (payload: { chronicle: CrudChronicle }) => Promise<Result[]>
     @ModuleAction(UPDATE_CHRONICLE) updateChronicle: (payload: { chronicle: CrudChronicle }) => Promise<Result[]>
 
@@ -111,6 +139,9 @@ export default class NewChronicle extends Vue {
     headerFile: FormData
     headerFileName: string = ''
     headerFileSrcPreview: string = ''
+
+    newCategories: ChronicleCategory[] = []
+    selectedCategories: ChronicleCategory[] = []
 
     publishDate: Date = new Date('')
 
@@ -141,6 +172,7 @@ export default class NewChronicle extends Vue {
     private directoryName: string = 'chronicles'
 
 	mounted() {
+        this.loadCategories()
         if (this.selectedChronicleSlug) {
             this.loading = true
             this.loadChronicle({ slug: this.selectedChronicleSlug })
@@ -150,8 +182,10 @@ export default class NewChronicle extends Vue {
                         title: this.chronicle.title,
                         text: this.chronicle.text,
                         writtenByUserId: this.chronicle.writtenByUser.id,
+                        categoryIds: this.chronicle.categories.map((c: ChronicleCategory) => c.id),
                         published: this.chronicle.published
                     }
+                    this.selectedCategories = this.chronicle.categories
                     this.publishDate = new Date(this.chronicle.published)
                     this.content = this.chronicle.text
                     this.headerFileName = this.friendlyFileName(this.chronicle.headerFileName)
@@ -163,7 +197,7 @@ export default class NewChronicle extends Vue {
     }
 
     get canCreate() {
-        return this.newChronicle.title && this.newChronicle.text ? true : false
+        return this.newChronicle.title && this.newChronicle.text && this.selectedCategories.length > 0 ? true : false
     }
 
     get hasSelectedHeaderFile(): boolean {
@@ -181,11 +215,15 @@ export default class NewChronicle extends Vue {
         return this.headerFileName ? `/${this.headerFileName}` : '/banner.jpg'
     }
 
+    get allCategories() {
+        return this.categories.concat(this.newCategories)
+    }
+
     @Watch('content')
         onChange() {
             // modify markup generated by plugin
             this.newChronicle.text = this.content
-                .replace('img', 'img class="img-fluid" ')
+                .replace('img', 'img class="img-fluid" data-action="zoom" ')
                 .replace('ql-align-left', 'text-left')
                 .replace('ql-align-right', 'text-right')
                 .replace('ql-align-center', 'text-center')
@@ -196,6 +234,8 @@ export default class NewChronicle extends Vue {
     save() {
         this.loading = true
         this.newChronicle.published = (this as any).$helpers.getDateAsString(this.publishDate)
+        this.newChronicle.newCategoryNames = this.newCategories.length > 0 ? this.newCategories.map((c: ChronicleCategory) => c.name) : undefined
+        this.newChronicle.categoryIds = this.selectedCategories.filter((c: ChronicleCategory) => c.id > 0).map((c: ChronicleCategory) => c.id)
         if (this.newChronicle.id) {
             this.updateChronicle({ chronicle: this.newChronicle })
                 .then((results: Result[]) => {
@@ -223,6 +263,8 @@ export default class NewChronicle extends Vue {
                         }
                     }).then(() => {
                         this.content = ''
+                        this.newCategories = []
+                        this.selectedCategories = []
                         this.newChronicle = new CrudChronicle()
                         this.loading = false
                     })
@@ -277,11 +319,27 @@ export default class NewChronicle extends Vue {
             reader.readAsDataURL(files)
         })
     }
+
+    addCategory(newCategory: string) {
+        const category = {
+            id: 0,
+            name: newCategory
+        }
+        this.newCategories.push(category)
+        this.selectedCategories.push(category)
+    }
 }
 </script>
 
 <style lang="scss" scoped>
-a {
+a, .custom__remove {
     cursor: pointer;
+}
+.custom__tag {
+    font-size: large;
+    display: contents;
+    span.custom__remove {
+        margin-left: 5px;
+    }
 }
 </style>

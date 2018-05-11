@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Http;
@@ -47,14 +48,59 @@ namespace Diffen.Repositories
 			return _mapper.Map<Chronicle>(await _dbClient.GetChronicleOnSlugAsync(slug));
 		}
 
-		public Task<List<Result>> CreateChronicleAsync(Models.Other.CRUD.Chronicle chronicle)
+		public async Task<List<ChronicleCategory>> GetChronicleCategoriesAsync()
 		{
-			return new List<Result>().Get(_dbClient.CreateChronicleAsync(_mapper.Map<Database.Entities.Other.Chronicle>(chronicle)), ResultMessages.CreateChronicle);
+			return _mapper.Map<List<ChronicleCategory>>(await _dbClient.GetChronicleCategoriesAsync());
 		}
 
-		public Task<List<Result>> UpdateChronicleAsync(Models.Other.CRUD.Chronicle chronicle)
+		public async Task<List<Result>> CreateChronicleAsync(Models.Other.CRUD.Chronicle chronicle)
 		{
-			return new List<Result>().Get(_dbClient.UpdateChronicleAsync(_mapper.Map<Database.Entities.Other.Chronicle>(chronicle)), ResultMessages.UpdateChronicle);
+			var newChronicle = _mapper.Map<Database.Entities.Other.Chronicle>(chronicle);
+			var results = new List<Result>();
+			results.Update(await _dbClient.CreateChronicleAsync(newChronicle), ResultMessages.CreateChronicle);
+			if (results.Any(r => r.Type == ResultType.Failure))
+			{
+				return results;
+			}
+
+			var nullableNewChronicleId = (await _dbClient.GetChronicleOnSlugAsync(newChronicle.Slug))?.Id;
+			if (nullableNewChronicleId == null)
+			{
+				return results;
+			}
+
+			var newChronicleId = (int)nullableNewChronicleId;
+			if (chronicle.CategoryIds.Any())
+			{
+				await _dbClient.AddCategoriesToChronicleAsync(newChronicleId, chronicle.CategoryIds);
+			}
+
+			if (chronicle.NewCategoryNames != null && chronicle.NewCategoryNames.Any())
+			{
+				await _dbClient.CreateNewChronicleCategoriesAndConnectToNewChronicleWithIdAsync(newChronicleId, chronicle.NewCategoryNames.ToList());
+			}
+
+			return results;
+		}
+
+		public async Task<List<Result>> UpdateChronicleAsync(Models.Other.CRUD.Chronicle chronicle)
+		{
+			var existingChronicle = _mapper.Map<Database.Entities.Other.Chronicle>(chronicle);
+			var results = new List<Result>();
+			results.Update(await _dbClient.UpdateChronicleAsync(existingChronicle), ResultMessages.UpdateChronicle);
+			if (results.Any(r => r.Type == ResultType.Failure))
+			{
+				return results;
+			}
+
+			await _dbClient.AddOrRemoveCategoriesToExistingChronicleAsync(existingChronicle.Id, chronicle.CategoryIds);
+
+			if (chronicle.NewCategoryNames != null && chronicle.NewCategoryNames.Any())
+			{
+				await _dbClient.CreateNewChronicleCategoriesAndConnectToNewChronicleWithIdAsync(existingChronicle.Id, chronicle.NewCategoryNames.ToList());
+			}
+
+			return results;
 		}
 
 		public async Task<List<Result>> UpdateHeaderFileNameForLastAddedChronicleAsync(string fileName)

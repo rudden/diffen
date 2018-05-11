@@ -1111,6 +1111,36 @@ namespace Diffen.Database
 				}
 				await dbContext.SaveChangesAsync();
 			}
+			if (!dbContext.ChronicleCategories.Any())
+			{
+				var categories = new[]
+				{
+					"spelarbetyg",
+					"inför match",
+					"matchanalys",
+					"uppmaning",
+					"nyhet",
+					"truppanalys"
+				};
+				await dbContext.ChronicleCategories.AddRangeAsync(categories.Select(category => new ChronicleCategory
+				{
+					Name = category
+				}));
+				await dbContext.SaveChangesAsync();
+			}
+			if (!dbContext.ChroniclesToCategories.Any())
+			{
+				foreach (var chronicle in dbContext.Chronicles)
+				{
+					var categoryId = dbContext.ChronicleCategories.PickRandom().Id;
+					dbContext.ChroniclesToCategories.Add(new ChronicleToCategory
+					{
+						ChronicleId = chronicle.Id,
+						CategoryId = categoryId
+					});
+				}
+				await dbContext.SaveChangesAsync();
+			}
 		}
 	}
 }

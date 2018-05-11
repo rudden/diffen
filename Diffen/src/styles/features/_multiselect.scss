@@ -1,0 +1,17 @@
+.multiselect, .multiselect__tags, .multiselect__select {
+    height: 35px !important;
+    min-height: 35px !important;
+}
+
+.multiselect, .multiselect__input, .multiselect__single {
+    font-size: 14px !important;
+    margin-bottom: 0 !important;
+}
+
+.multiselect__tags {
+    padding-top: 5px !important;
+}
+
+.multiselect__single, .multiselect__input {
+    padding-top: 2px !important;
+}

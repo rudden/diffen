@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,5 +25,8 @@ namespace Diffen.Database.Entities.Other
 		public DateTime Created { get; set; }
 		public DateTime Updated { get; set; }
 		public DateTime Published { get; set; }
+
+		// Linked Tables
+		public ICollection<ChronicleToCategory> Categories { get; set; }
 	}
 }

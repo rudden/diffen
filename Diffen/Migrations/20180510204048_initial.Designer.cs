@@ -12,7 +12,7 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    [Migration("20180505110511_initial")]
+    [Migration("20180510204048_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,6 +151,36 @@ namespace Diffen.Migrations
                     b.HasIndex("WrittenByUserId");
 
                     b.ToTable("Chronicles");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.ChronicleCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ChronicleCategories");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.ChronicleToCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("CategoryId");
+
+                    b.Property<int>("ChronicleId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ChronicleId");
+
+                    b.ToTable("ChroniclesToCategories");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Other.Poll", b =>
@@ -702,6 +732,19 @@ namespace Diffen.Migrations
                     b.HasOne("Diffen.Database.Entities.User.AppUser", "WrittenByUser")
                         .WithMany()
                         .HasForeignKey("WrittenByUserId");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Other.ChronicleToCategory", b =>
+                {
+                    b.HasOne("Diffen.Database.Entities.Other.ChronicleCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Diffen.Database.Entities.Other.Chronicle", "Chronicle")
+                        .WithMany("Categories")
+                        .HasForeignKey("ChronicleId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Other.Poll", b =>

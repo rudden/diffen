@@ -5,7 +5,7 @@
             <hr />
             <template v-if="!loading">
                 <ul class="list-unstyled list-spaced mb-0" v-if="items.length > 0">
-                    <li v-for="item in items" :key="item.id">
+                    <li class="ellipsis" v-for="item in items" :key="item.id">
                         <strong>
                             <small>
                                 <a target="_blank" :href="item.link">{{ item.title }}</a>
@@ -75,11 +75,3 @@ export default class RssParser extends Vue {
     }
 }
 </script>
-
-<style lang="scss" scoped>
-li {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-</style>

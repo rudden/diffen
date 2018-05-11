@@ -53,6 +53,19 @@ namespace Diffen.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChronicleCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChronicleCategories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Formations",
                 columns: table => new
                 {
@@ -496,6 +509,32 @@ namespace Diffen.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChroniclesToCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CategoryId = table.Column<int>(nullable: false),
+                    ChronicleId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChroniclesToCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChroniclesToCategories_ChronicleCategories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "ChronicleCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChroniclesToCategories_Chronicles_ChronicleId",
+                        column: x => x.ChronicleId,
+                        principalTable: "Chronicles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PollSelections",
                 columns: table => new
                 {
@@ -744,6 +783,16 @@ namespace Diffen.Migrations
                 column: "WrittenByUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChroniclesToCategories_CategoryId",
+                table: "ChroniclesToCategories",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChroniclesToCategories_ChronicleId",
+                table: "ChroniclesToCategories",
+                column: "ChronicleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FavoritePlayers_PlayerId",
                 table: "FavoritePlayers",
                 column: "PlayerId");
@@ -919,7 +968,7 @@ namespace Diffen.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Chronicles");
+                name: "ChroniclesToCategories");
 
             migrationBuilder.DropTable(
                 name: "FavoritePlayers");
@@ -965,6 +1014,12 @@ namespace Diffen.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "ChronicleCategories");
+
+            migrationBuilder.DropTable(
+                name: "Chronicles");
 
             migrationBuilder.DropTable(
                 name: "Lineups");

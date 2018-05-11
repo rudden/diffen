@@ -98,7 +98,9 @@ namespace Diffen.Helpers.Extensions
 
 		public static IQueryable<Chronicle> IncludeAll(this DbSet<Chronicle> source)
 		{
-			return source.Include(x => x.WrittenByUser).ThenInclude(x => x.NickNames);
+			return source
+				.Include(x => x.WrittenByUser).ThenInclude(x => x.NickNames)
+				.Include(x => x.Categories).ThenInclude(x => x.Category);
 		}
 
 		public static IQueryable<Region> IncludeAll(this DbSet<Region> source)

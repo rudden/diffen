@@ -47,4 +47,7 @@ Vue.component('navbar', Navbar)
 import { Stretch } from 'vue-loading-spinner'
 Vue.component('loader', Stretch)
 
+import Multiselect from 'vue-multiselect'
+Vue.component('v-multiselect', Multiselect)
+
 export default store

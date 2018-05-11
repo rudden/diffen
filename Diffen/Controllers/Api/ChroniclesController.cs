@@ -52,6 +52,13 @@ namespace Diffen.Controllers.Api
 			return _chronicleRepository.GetChronicleOnSlugAsync(slug);
 		}
 
+		[HttpGet("categories")]
+		public Task<List<ChronicleCategory>> GetAllCategories()
+		{
+			_logger.Debug("Requesting all chronicle categories");
+			return _chronicleRepository.GetChronicleCategoriesAsync();
+		}
+
 		[Authorize(Policy = "IsAuthor")]
 		[VerifyInputToLoggedInUserId("chronicle", "WrittenByUserId")]
 		[HttpPost("create")]
