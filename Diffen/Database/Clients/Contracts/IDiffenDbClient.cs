@@ -33,6 +33,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> DeleteLineupConnectionToPostAsync(int postId);
 		Task<bool> PostHasALineupConnectedToItAsync(int postId);
 		Task<bool> PostHasAnUrlTipConnectedToItAsync(int postId);
+		bool UrlTipEqualsCurrentUrlTipOnPostId(int postId, string urlTipHref);
 		Task<bool> CreateUrlTipAsync(UrlTip urlTip);
 		Task<bool> UpdateUrlTipAsync(UrlTip urlTip);
 		Task<bool> DeleteUrlTipAsync(int postId);

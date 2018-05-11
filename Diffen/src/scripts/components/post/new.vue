@@ -142,9 +142,6 @@ export default class NewPost extends Vue {
         }
         new Promise<Result[]>((resolve, reject) => {
             if (this.inEditMode) {
-                if (this.post.urlTipHref == this.newPost.urlTipHref) {
-                    this.newPost.urlTipHref = undefined
-                }
                 this.update({ post: this.newPost }).then((res) => resolve(res))
             }
             else {

@@ -251,6 +251,12 @@ namespace Diffen.Database.Clients
 			return await _dbContext.UrlTips.CountAsync(x => x.PostId == postId) > 0;
 		}
 
+		public bool UrlTipEqualsCurrentUrlTipOnPostId(int postId, string urlTipHref)
+		{
+			var urlTips = _dbContext.UrlTips.Where(x => x.PostId == postId).OrderByDescending(x => x.Created);
+			return urlTips.FirstOrDefault()?.Href == urlTipHref;
+		}
+
 		public Task<bool> CreateUrlTipAsync(UrlTip urlTip)
 		{
 			_dbContext.UrlTips.Add(urlTip);

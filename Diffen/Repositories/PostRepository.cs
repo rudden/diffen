@@ -164,18 +164,21 @@ namespace Diffen.Repositories
 		{
 			if (!string.IsNullOrEmpty(post.UrlTipHref))
 			{
-				if (!(post.UrlTipHref.StartsWith("http://") || post.UrlTipHref.StartsWith("https://")))
+				if (!_dbClient.UrlTipEqualsCurrentUrlTipOnPostId(postId, post.UrlTipHref))
 				{
-					post.UrlTipHref = post.UrlTipHref.Insert(0, "http://");
+					if (!(post.UrlTipHref.StartsWith("http://") || post.UrlTipHref.StartsWith("https://")))
+					{
+						post.UrlTipHref = post.UrlTipHref.Insert(0, "http://");
+					}
+					var urlTip = new Database.Entities.Forum.UrlTip
+					{
+						PostId = postId,
+						Clicks = 0,
+						Href = post.UrlTipHref,
+						Created = DateTime.Now
+					};
+					results.Update(await _dbClient.CreateUrlTipAsync(urlTip), ResultMessages.CreateUrlTip);
 				}
-				var urlTip = new Database.Entities.Forum.UrlTip
-				{
-					PostId = postId,
-					Clicks = 0,
-					Href = post.UrlTipHref,
-					Created = DateTime.Now
-				};
-				results.Update(await _dbClient.CreateUrlTipAsync(urlTip), ResultMessages.CreateUrlTip);
 			}
 			else
 			{
