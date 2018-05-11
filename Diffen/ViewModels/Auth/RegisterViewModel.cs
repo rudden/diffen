@@ -11,6 +11,9 @@ namespace Diffen.ViewModels.Auth
 		public string Email { get; set; }
 
 		[Required]
+		public string UniqueCode { get; set; }
+
+		[Required]
 		public string NickName { get; set; }
 
 		[Required]

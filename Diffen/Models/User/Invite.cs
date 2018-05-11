@@ -2,8 +2,9 @@
 {
 	public class Invite
 	{
-		public string Email { get; set; }
+		public string UniqueCode { get; set; }
 		public InvitedBy InvitedBy { get; set; }
+		public InvitedBy InviteUsedBy { get; set; }
 
 		public bool AccountIsCreated { get; set; }
 

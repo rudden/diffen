@@ -2,7 +2,7 @@
 {
 	public class Invite
 	{
-		public string Email { get; set; }
+		public int Amount { get; set; }
 		public string InvitedByUserId { get; set; }
 	}
 }

@@ -12,9 +12,10 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    partial class DiffenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180511152241_ChangeOnInvite")]
+    partial class ChangeOnInvite
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

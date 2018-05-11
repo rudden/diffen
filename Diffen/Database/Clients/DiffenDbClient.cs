@@ -354,12 +354,15 @@ namespace Diffen.Database.Clients
 
 		public Task<List<Invite>> GetInvitesAsync()
 		{
-			return _dbContext.Invites.Include(x => x.InvitedByUser).ThenInclude(x => x.NickNames).OrderByDescending(x => x.InviteSent).ToListAsync();
+			return _dbContext.Invites
+				.Include(x => x.InvitedByUser).ThenInclude(x => x.NickNames)
+				.Include(x => x.InviteUsedByUser).ThenInclude(x => x.NickNames)
+				.OrderByDescending(x => x.InviteSent).ToListAsync();
 		}
 
-		public Task<Invite> GetInviteOnUserEmailAsync(string userEmail)
+		public Task<Invite> GetInviteOnUniqueCodeAsync(string code)
 		{
-			return _dbContext.Invites.FirstOrDefaultAsync(x => x.Email.Equals(userEmail));
+			return _dbContext.Invites.FirstOrDefaultAsync(x => x.UniqueCode.Equals(code));
 		}
 
 		public Task<List<PersonalMessage>> GetPmsSentFromUserToUserAsync(string fromUserId, string toUserId)
@@ -455,16 +458,16 @@ namespace Diffen.Database.Clients
 			return CommitedResultIsSuccessfulAsync();
 		}
 
-		public async Task<bool> AnActiveInviteExistsOnSelectedEmailAsync(string userEmail)
+		public async Task<bool> AnActiveInviteExistsOnCodeAsync(string code)
 		{
-			return await _dbContext.Invites.CountAsync(x => x.Email.Equals(userEmail)) > 0;
+			return await _dbContext.Invites.CountAsync(x => x.UniqueCode.Equals(code)) > 0;
 		}
 
-		public Task<bool> CreateInviteAsync(Invite invite)
+		public async Task<bool> CreateInviteAsync(Invite invite)
 		{
 			invite.InviteSent = DateTime.Now;
 			_dbContext.Invites.Add(invite);
-			return CommitedResultIsSuccessfulAsync();
+			return await CommitedResultIsSuccessfulAsync();
 		}
 
 		public Task<bool> UpdateInviteAsync(Invite invite)

@@ -686,24 +686,26 @@ namespace Diffen.Database
 		{
 			if (!dbContext.Invites.Any())
 			{
-				for (var i = 1; i <= 20; i++)
+				for (var i = 0; i < 10; i++)
 				{
 					var invite = new Invite
 					{
-						Email = $"seeded_invite_user_{i}@diffen.se",
+						UniqueCode = Guid.NewGuid().ToString(),
 						InvitedByUserId = dbContext.Users.PickRandom().Id,
 						InviteSent = DateTime.Now
 					};
 					dbContext.Invites.Add(invite);
 				}
-				foreach (var user in dbContext.Users)
+				await dbContext.SaveChangesAsync();
+				foreach (var user in dbContext.Users.ToList())
 				{
 					var invite = new Invite
 					{
-						Email = user.Email,
+						UniqueCode = Guid.NewGuid().ToString(),
 						InviteSent = user.Joined.AddDays(-new Random().Next(1, 10)),
 						AccountCreated = user.Joined,
 						AccountIsCreated = true,
+						InviteUsedByUserId = user.Id,
 						InvitedByUserId = dbContext.Users.Where(x => x.Id != user.Id).PickRandom().Id
 					};
 					dbContext.Invites.Add(invite);

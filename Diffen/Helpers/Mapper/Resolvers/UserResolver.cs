@@ -121,11 +121,16 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		{
 			return new Invite
 			{
-				Email = source.Email,
+				UniqueCode = source.UniqueCode,
 				InvitedBy = new InvitedBy
 				{
 					Id = source.InvitedByUser.Id,
 					NickName = source.InvitedByUser.NickNames.Current() ?? "anonymous"
+				},
+				InviteUsedBy = new InvitedBy
+				{
+					Id = source.InviteUsedByUser?.Id,
+					NickName = source.InviteUsedByUser?.NickNames.Current() ?? "anonymous"
 				},
 				AccountIsCreated = source.AccountIsCreated,
 				InviteSent = source.InviteSent.ToString("yyyy-MM-dd"),
@@ -139,7 +144,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		{
 			return new Database.Entities.User.Invite
 			{
-				Email = source.Email,
+				UniqueCode = Guid.NewGuid().ToString(),
 				InvitedByUserId = source.InvitedByUserId
 			};
 		}

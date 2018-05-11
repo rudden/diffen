@@ -96,7 +96,6 @@ namespace Diffen.Controllers.Api
 			return _userRepository.GetUsersInRoleAsKeyValuePairAsync(roleName);
 		}
 
-		[Authorize(Policy = "IsManager")]
 		[HttpGet("invites")]
 		public Task<List<Invite>> GetInvites()
 		{
@@ -106,10 +105,10 @@ namespace Diffen.Controllers.Api
 
 		[VerifyInputToLoggedInUserId("invite", "InvitedByUserId")]
 		[HttpPost("invites/create")]
-		public Task<List<Result>> AddInvite([FromBody] Models.User.CRUD.Invite invite)
+		public Task<List<string>> AddInvites([FromBody] Models.User.CRUD.Invite invite)
 		{
 			_logger.Debug("Requesting to create an invite");
-			return _userRepository.CreateInviteAsync(invite);
+			return _userRepository.CreateInvitesAsync(invite);
 		}
 
 		[VerifyInputToLoggedInUserId("filter", "UserId")]

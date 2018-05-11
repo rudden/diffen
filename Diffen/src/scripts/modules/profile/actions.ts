@@ -89,8 +89,8 @@ export const Actions: ActionTree<State, any> = {
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},
-	[CREATE_INVITE]: (store: ActionContext<State, any>, payload: { invite: CrudInvite }): Promise<Result[]> => {
-		return new Promise<Result[]>((resolve, reject) => {
+	[CREATE_INVITE]: (store: ActionContext<State, any>, payload: { invite: CrudInvite }): Promise<string[]> => {
+		return new Promise<string[]>((resolve, reject) => {
 			return axios.post(`${store.rootState.vm.api}/users/invites/create`, payload.invite)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})

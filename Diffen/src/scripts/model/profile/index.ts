@@ -48,8 +48,9 @@ export class PmUser {
 }
 
 export class Invite {
-    email: string
+    uniqueCode: string
     invitedBy: InvitedBy
+    inviteUsedBy?: InvitedBy
     accountIsCreated: boolean
     inviteSent: string
     accountCreated: string

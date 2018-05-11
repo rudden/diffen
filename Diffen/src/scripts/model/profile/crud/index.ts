@@ -14,6 +14,6 @@ export class User {
 }
 
 export class Invite {
-    email: string = ''
+    amount: number = 1
     invitedByUserId: string = ''
 }

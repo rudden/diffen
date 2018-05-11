@@ -105,9 +105,9 @@ namespace Diffen.Controllers.Pages
 			{
 				return View(vm);
 			}
-			if (!await _userRepository.EmailHasInvite(vm.Email))
+			if (!await _userRepository.InviteExistsAsync(vm.UniqueCode))
 			{
-				ModelState.AddModelError("", "hittade ingen inbjudan på den valda emailen");
+				ModelState.AddModelError("", "hittade ingen inbjudan på denna kod");
 				return View(vm);
 			}
 			if (await _userRepository.NickExistsAsync(vm.NickName))
@@ -129,7 +129,7 @@ namespace Diffen.Controllers.Pages
 				if (result.Succeeded)
 				{
 					await _userRepository.CreateNewNickNameAsync(user.Id, vm.NickName);
-					await _userRepository.SetInviteAsAccountCreatedAsync(vm.Email);
+					await _userRepository.SetInviteAsAccountCreatedAsync(user.Id, vm.UniqueCode);
 
 					if (vm.Avatar != null)
 					{

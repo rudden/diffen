@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 using AutoMapper;
 
@@ -222,15 +221,9 @@ namespace Diffen.Repositories
 				ResultMessages.ChangeFilter);
 		}
 
-		public Task<bool> EmailHasInvite(string email)
+		public Task<bool> InviteExistsAsync(string code)
 		{
-			return _dbClient.AnActiveInviteExistsOnSelectedEmailAsync(email);
-		}
-
-		public async Task<Invite> GetInviteOnEmailAsync(string email)
-		{
-			var invite = await _dbClient.GetInviteOnUserEmailAsync(email);
-			return _mapper.Map<Invite>(invite);
+			return _dbClient.AnActiveInviteExistsOnCodeAsync(code);
 		}
 
 		public async Task<List<Invite>> GetInvitesAsync()
@@ -239,31 +232,27 @@ namespace Diffen.Repositories
 			return _mapper.Map<List<Invite>>(invites);
 		}
 
-		public async Task<List<Result>> CreateInviteAsync(Models.User.CRUD.Invite invite)
+		public async Task<List<string>> CreateInvitesAsync(Models.User.CRUD.Invite invite)
 		{
-			if (!new EmailAddressAttribute().IsValid(invite.Email))
+			var codes = new List<string>();
+			for (var i = 0; i < invite.Amount; i++)
 			{
-				return new List<Result>
+				var newInvite = _mapper.Map<Database.Entities.User.Invite>(invite);
+				var result = await _dbClient.CreateInviteAsync(newInvite);
+				if (result)
 				{
-					new Result(false, "Emailen är inte giltig")
-				};
+					codes.Add(newInvite.UniqueCode);
+				}
 			}
-			if (await EmailHasInvite(invite.Email))
-			{
-				return new List<Result>
-				{
-					new Result(false, "Det finns redan en inbjudan på denna email")
-				};
-			}
-			return await new List<Result>().Get(_dbClient.CreateInviteAsync(_mapper.Map<Database.Entities.User.Invite>(invite)),
-				ResultMessages.CreateInvite);
+			return codes;
 		}
 
-		public async Task<bool> SetInviteAsAccountCreatedAsync(string userEmail)
+		public async Task<bool> SetInviteAsAccountCreatedAsync(string userId, string code)
 		{
-			var invite = await _dbClient.GetInviteOnUserEmailAsync(userEmail);
+			var invite = await _dbClient.GetInviteOnUniqueCodeAsync(code);
 			invite.AccountCreated = DateTime.Now;
 			invite.AccountIsCreated = true;
+			invite.InviteUsedByUserId = userId;
 			return await _dbClient.UpdateInviteAsync(invite);
 		}
 

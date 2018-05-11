@@ -49,7 +49,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<string> GetCurrentNickNameOnUserIdAsync(string userId);
 		Task<Filter> GetBaseFilterForForumOnUserIdAsync(string userId);
 		Task<List<Invite>> GetInvitesAsync();
-		Task<Invite> GetInviteOnUserEmailAsync(string userEmail);
+		Task<Invite> GetInviteOnUniqueCodeAsync(string code);
 		Task<List<PersonalMessage>> GetPmsSentFromUserToUserAsync(string fromUserId, string toUserId);
 		Task<List<AppUser>> GetUsersThatUserHasOngoingConversationWithAsync(string userId);
 		Task<bool> CreatePersonalMessageAsync(PersonalMessage personalMessage);
@@ -63,7 +63,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> SetSelectedAvatarFileNameForUserAsync(string userId, string fileName);
 		Task<bool> CreateBaseFilterForForumOnUserAsync(Filter filter);
 		Task<bool> UpdateBaseFilterForForumOnUserAsync(Filter filter);
-		Task<bool> AnActiveInviteExistsOnSelectedEmailAsync(string userEmail);
+		Task<bool> AnActiveInviteExistsOnCodeAsync(string code);
 		Task<bool> CreateInviteAsync(Invite invite);
 		Task<bool> UpdateInviteAsync(Invite invite);
 		Task<bool> DeleteInviteAsync(int inviteId);

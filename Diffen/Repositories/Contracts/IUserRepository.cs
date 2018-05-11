@@ -20,11 +20,10 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> CreateNewNickNameAsync(string userId, string nickName);
 		Task<bool> SetSelectedAvatarForUserAsync(string userId, string fileName);
 		Task<List<Result>> UpdateUserFilterAsync(Filter filter);
-		Task<bool> EmailHasInvite(string email);
-		Task<Invite> GetInviteOnEmailAsync(string email);
+		Task<bool> InviteExistsAsync(string code);
 		Task<List<Invite>> GetInvitesAsync();
-		Task<List<Result>> CreateInviteAsync(Models.User.CRUD.Invite invite);
-		Task<bool> SetInviteAsAccountCreatedAsync(string userEmail);
+		Task<List<string>> CreateInvitesAsync(Models.User.CRUD.Invite invite);
+		Task<bool> SetInviteAsAccountCreatedAsync(string userId, string code);
 		Task<List<Result>> SecludeUserAsync(string userId, string toDate);
 		Task<List<KeyValuePair<string, string>>> GetUsersInRoleAsKeyValuePairAsync(string roleName);
 		Task<List<Result>> UpdateAvatarFileNameForUserWithIdAsync(string userId, string fileName);
