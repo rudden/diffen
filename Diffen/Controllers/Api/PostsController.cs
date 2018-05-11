@@ -66,7 +66,7 @@ namespace Diffen.Controllers.Api
 		{
 			try
 			{
-				_logger.Debug("Requesting to create a new post {@post}", post);
+				_logger.Information("Requesting to create a new post {@post}", post);
 				return _postRepository.CreatePostAsync(post);
 			}
 			catch (Exception ex)
