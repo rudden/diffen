@@ -151,9 +151,23 @@ namespace Diffen.Controllers.Pages
 
 					return Redirect(returnUrl);
 				}
-				if (result.Errors.Any(x => x.Code == "DuplicateUserName"))
+				foreach (var error in result.Errors)
 				{
-					ModelState.AddModelError("", "användarnamnet (email) finns redan registrerad");
+					switch (error.Code)
+					{
+						case "DuplicateUserName":
+							ModelState.AddModelError("", "användarnamnet (email) finns redan registrerad");
+							break;
+						case "PasswordRequiresUpper":
+							ModelState.AddModelError("", "lösenordet måste innehålla minst en stor bokstav");
+							break;
+						case "PasswordRequiresNonAlphanumeric":
+							ModelState.AddModelError("", "lösenordet måste innehålla minst ett icke alfanumeriskt tecken, t.ex ett utropstecken eller punkt");
+							break;
+						case "PasswordRequiresDigit":
+							ModelState.AddModelError("", "lösenordet måste innehålla minst en siffra");
+							break;
+					}
 				}
 			}
 			else
