@@ -19,7 +19,8 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Models.User.CRUD.PersonalMessage, Database.Entities.User.PersonalMessage>,
 		ITypeConverter<Database.Entities.User.AppUser, Models.Forum.User>,
 		ITypeConverter<Database.Entities.User.Filter, Filter>,
-		ITypeConverter<Database.Entities.User.Invite, Invite>
+		ITypeConverter<Database.Entities.User.Invite, Invite>,
+		ITypeConverter<Models.User.CRUD.Invite, Database.Entities.User.Invite>
 	{
 		private readonly UserManager<Database.Entities.User.AppUser> _userManager;
 		private readonly IUserRepository _userRepository;
@@ -131,6 +132,15 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				AccountCreated = source.AccountCreated != null
 					? System.Convert.ToDateTime(source.AccountCreated).ToString("yyyy-MM-dd")
 					: string.Empty
+			};
+		}
+
+		public Database.Entities.User.Invite Convert(Models.User.CRUD.Invite source, Database.Entities.User.Invite destination, ResolutionContext context)
+		{
+			return new Database.Entities.User.Invite
+			{
+				Email = source.Email,
+				InvitedByUserId = source.InvitedByUserId
 			};
 		}
 
