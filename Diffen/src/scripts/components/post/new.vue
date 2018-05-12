@@ -58,6 +58,10 @@ import FormationComponent from '../lineups/formation.vue'
         parentId: {
             type: Number,
             default: 0
+        },
+        modalName: {
+            type: String,
+            default: undefined
         }
     },
     components: {
@@ -80,11 +84,14 @@ export default class NewPost extends Vue {
     
     post: Post
     parentId: number
+    modalName: string
 
     loading: boolean = true
     noLineupsFound: boolean = false
     newPost: CrudPost = new CrudPost()
     results: Result[] = []
+
+    $modal = (this as any).VModal
 
     created() {
         if (this.post) {
@@ -137,23 +144,22 @@ export default class NewPost extends Vue {
 	}
 
     submit() {
-        if (!this.inEditMode && !this.inReplyMode) {
-            this.setIsLoadingPosts({ value: true })
+        if (this.inEditMode || this.inReplyMode && this.modalName) {
+            this.$modal.hide(this.modalName)
         }
+        this.setIsLoadingPosts({ value: true })
         new Promise<Result[]>((resolve, reject) => {
             if (this.inEditMode) {
-                this.update({ post: this.newPost }).then((res) => resolve(res))
+                this.update({ post: this.newPost }).then((res) => resolve(res)).catch(() => resolve([{ type: ResultType.Failure, message: 'Kunde inte uppdatera inlägget' }]))
             }
             else {
-                this.create({ post: this.newPost }).then((res) => resolve(res))
+                this.create({ post: this.newPost }).then((res) => resolve(res)).catch(() => resolve([{ type: ResultType.Failure, message: 'Kunde inte svara på inlägget' }]))
             }
         }).then((res) => {
             this.results = res
-            if (!this.inEditMode && !this.inReplyMode) {
-                this.newPost = new CrudPost()
-                this.loadPaged({ pageNumber: 1, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
-                    .then(() => this.setIsLoadingPosts({ value: false }))
-            }
+            this.newPost = new CrudPost()
+            this.loadPaged({ pageNumber: 1, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
+                .then(() => this.setIsLoadingPosts({ value: false }))
         })
     }
 }

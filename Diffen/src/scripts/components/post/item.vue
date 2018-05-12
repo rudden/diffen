@@ -25,8 +25,8 @@
                             <template v-if="showActions">
                                 <span v-if="(post.lineupId || post.urlTipHref) && createdByLoggedInUser"> · </span>
                                 <modal v-bind="modalAttributes.editPost" v-if="createdByLoggedInUser">
-                                <template slot="body">
-                                        <new-post :post="post" v-bind="{ parentId: post.parentPost ? post.parentPost.id : null }" />
+                                    <template slot="body">
+                                        <new-post :post="post" :modal-name="modalAttributes.editPost.attributes.name" v-bind="{ parentId: post.parentPost ? post.parentPost.id : null }" />
                                     </template>
                                 </modal>
                                 <span v-if="post.lineupId || post.urlTipHref || createdByLoggedInUser"> · </span>
@@ -38,7 +38,7 @@
                                             </div>
                                         </div>
                                         <hr />
-                                        <new-post :parent-id="post.id" />
+                                        <new-post :parent-id="post.id" :modal-name="modalAttributes.replyPost.attributes.name" />
                                     </template>
                                 </modal>
                                 <a v-on:click="bookmarkPost" v-if="canBookmark">
@@ -171,7 +171,7 @@ export default class PostComponent extends Vue {
                 icon: 'icon icon-edit'
             },
             onOpen: () => this.post.inEdit = true,
-            onClose: this.closePostActionModal
+            // onClose: this.closePostActionModal
         },
         scissorPost: {
             attributes: {
@@ -193,7 +193,7 @@ export default class PostComponent extends Vue {
                 icon: 'icon icon-quote'
             },
             onOpen: () => this.post.inReply = true,
-            onClose: this.closePostActionModal
+            // onClose: this.closePostActionModal
         }
     }
 
