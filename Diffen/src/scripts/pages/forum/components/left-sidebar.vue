@@ -44,7 +44,7 @@
             <div class="card-body">
                 <h6 class="mb-3">Länktipstoppen</h6>
                 <ul class="list-unstyled list-spaced mb-0" v-if="urlTips.length > 0">
-                    <li class="ellipsis" v-for="tip in urlTips" v-bind:key="tip.href">
+                    <li class="ellipsis" v-for="tip in urlTips" :key="tip.href + tip.clicks">
                         <span class="text-muted icon" :class="icon(tip.href)"></span>
                         <small class="ml-1"><span class="badge badge-secondary">{{ tip.clicks }}</span></small>
                         <url :tip="tip" class="ml-1" />
