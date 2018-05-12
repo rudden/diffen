@@ -85,6 +85,17 @@ namespace Diffen
 
 			services.AddAutoMapper();
 
+			services.AddCors(options =>
+			{
+				options.AddPolicy("CorsPolicy", policy =>
+				{
+					policy.AllowAnyHeader();
+					policy.AllowAnyMethod();
+					policy.AllowAnyOrigin();
+					policy.AllowCredentials();
+				});
+			});
+
 			services.AddMvc();
 
 			services.AddScoped<IDiffenDbClient, DiffenDbClient>();
@@ -112,6 +123,7 @@ namespace Diffen
 
 			app.UseAuthentication();
 			app.UseStaticFiles();
+			app.UseCors("CorsPolicy");
 
 			app.UseMvc(r =>
 			{
