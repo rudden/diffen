@@ -466,7 +466,7 @@ namespace Diffen.Database.Clients
 
 		public async Task<bool> AnActiveInviteExistsOnCodeAsync(string code)
 		{
-			return await _dbContext.Invites.CountAsync(x => x.UniqueCode.Equals(code)) > 0;
+			return await _dbContext.Invites.CountAsync(x => x.UniqueCode.Equals(code) && !x.AccountIsCreated) > 0;
 		}
 
 		public async Task<bool> CreateInviteAsync(Invite invite)
