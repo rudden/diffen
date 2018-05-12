@@ -73,7 +73,6 @@ export default class Middle extends Vue {
 
     created() {
         this.pageSize = this.vm.loggedInUser.filter ? this.vm.loggedInUser.filter.postsPerPage : 20
-        console.log(this.pageSize)
         this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers }})
     }
 
