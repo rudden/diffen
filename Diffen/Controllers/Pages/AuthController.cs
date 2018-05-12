@@ -54,6 +54,7 @@ namespace Diffen.Controllers.Pages
 			var attempt = await _userRepository.GetUserOnEmailAsync(vm.Email);
 			if (attempt == null)
 			{
+				_logger.Warning("Could not find a user with email {userEmail} in the user repository", vm.Email);
 				ModelState.AddModelError("All", "kontot existerar inte. var god skapa ett nytt!");
 				return View();
 			}
@@ -73,6 +74,7 @@ namespace Diffen.Controllers.Pages
 
 			if (result.Succeeded)
 			{
+				_logger.Information("Successfully logged in user with email {userEmail}", vm.Email);
 				if (string.IsNullOrWhiteSpace(returnUrl))
 				{
 					return RedirectToAction("index", "forum");
@@ -107,11 +109,13 @@ namespace Diffen.Controllers.Pages
 			}
 			if (!await _userRepository.InviteExistsAsync(vm.UniqueCode))
 			{
+				_logger.Information("A user with email {userEmail} tried to register a new account using invite code {inviteCode}, but that code does not have an active invite", vm.Email, vm.UniqueCode);
 				ModelState.AddModelError("", "hittade ingen inbjudan på denna kod");
 				return View(vm);
 			}
 			if (await _userRepository.NickExistsAsync(vm.NickName))
 			{
+				_logger.Information("A user with email {userEmail} tried to register a new account using nickname {nickName}, but that nickname already exist", vm.Email, vm.NickName);
 				ModelState.AddModelError("", "nicket finns redan registrerat");
 				return View(vm);
 			}
@@ -169,6 +173,7 @@ namespace Diffen.Controllers.Pages
 							break;
 					}
 				}
+				_logger.Information("Could not register account due to the following errors {@registerModelErrors}", result.Errors.Select(x => x.Code));
 			}
 			else
 			{
