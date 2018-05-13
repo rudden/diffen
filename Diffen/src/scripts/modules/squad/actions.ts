@@ -24,6 +24,8 @@ import {
 	CREATE_PLAYER
 } from './types'
 
+axios.defaults.withCredentials = true
+
 // export everything compliant to the vuex specification for actions
 export const Actions: ActionTree<State, any> = {
 	[FETCH_KVP_USERS]: (store: ActionContext<State, any>): Promise<KeyValuePair[]> => {

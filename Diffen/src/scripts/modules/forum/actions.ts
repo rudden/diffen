@@ -27,6 +27,8 @@ import {
 	SET_SELECTED_CONVERSATION
 } from './types'
 
+axios.defaults.withCredentials = true
+
 // export everything compliant to the vuex specification for actions
 export const Actions: ActionTree<State, any> = {
 	[FETCH_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<Post> => {

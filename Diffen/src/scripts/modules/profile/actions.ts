@@ -27,6 +27,8 @@ import {
     FETCH_CONVERSATION_KVP_USERS,
 } from './types'
 
+axios.defaults.withCredentials = true
+
 // export everything compliant to the vuex specification for actions
 export const Actions: ActionTree<State, any> = {
 	[FETCH_USER]: (store: ActionContext<State, any>, payload: { id: string }): Promise<void> => {
