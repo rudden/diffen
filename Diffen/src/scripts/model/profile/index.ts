@@ -24,7 +24,9 @@ export class User {
 
 export class Filter {
 	userId: string
-	postsPerPage: number
+    postsPerPage: number
+    hideLeftMenu: boolean
+    hideRightMenu: boolean
 	excludedUsers: KeyValuePair[] = []
 }
 

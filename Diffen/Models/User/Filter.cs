@@ -12,6 +12,8 @@ namespace Diffen.Models.User
 		{
 			UserId = user.Id;
 			PostsPerPage = 20;
+			//HideLeftMenu = false;
+			//HideRightMenu = false;
 			ExcludedUsers = new List<KeyValuePair<string, string>>();
 		}
 
@@ -22,6 +24,8 @@ namespace Diffen.Models.User
 
 		public string UserId { get; set; }
 		public int PostsPerPage { get; set; }
+		public bool HideLeftMenu { get; set; }
+		public bool HideRightMenu { get; set; }
 		public IEnumerable<KeyValuePair<string, string>> ExcludedUsers { get; set; }
 	}
 }

@@ -112,6 +112,8 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				UserId = source.UserId,
 				PostsPerPage = source.PostsPerPage,
+				HideLeftMenu = source.HideLeftMenu,
+				HideRightMenu = source.HideRightMenu,
 				ExcludedUsers = !string.IsNullOrEmpty(source.ExcludedUserIds) ? source.ExcludedUserIds?.Split(",")
 					.Select(userId => new KeyValuePair<string, string>(userId, _userRepository.GetCurrentNickOnUserIdAsync(userId).Result)) : new List<KeyValuePair<string, string>>()
 			};

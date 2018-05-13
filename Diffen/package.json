@@ -53,6 +53,7 @@
 		"vue2-editor": "^2.4.3",
 		"vue2-google-maps": "^0.9.6",
 		"vue-multiselect": "^2.1.0",
+		"vue-js-toggle-button": "^1.2.3",
 		"vuex": "^3.0.1",
 		"vuex-class": "^0.3.0",
 		"uiv": "^0.21.3",

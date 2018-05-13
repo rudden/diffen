@@ -1,7 +1,7 @@
 <template>
 	<div class="container container__profile mt-3 mb-5">
 		<div class="card">
-			<div class="card-header">Filter</div>
+			<div class="card-header">Forumfilter</div>
 			<div class="card-body">
 				<div class="row" v-if="!loading">
 					<div class="col">
@@ -34,6 +34,26 @@
 								</div>
 							</div>
 						</div>
+						<div class="form-group">
+							<div class="row">
+								<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 pr-0">
+									<p class="mb-0">Dölj högermenyn</p>
+								</div>
+								<div class="col">
+									<toggle-button v-model="hideRightMenuByDefault" :labels="{ checked: 'Ja', unchecked: 'Nej' }"/>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="row">
+								<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 pr-0">
+									<p class="mb-0">Dölj vänstermenyn</p>
+								</div>
+								<div class="col">
+									<toggle-button v-model="hideLeftMenuByDefault" :labels="{ checked: 'Ja', unchecked: 'Nej' }"/>
+								</div>
+							</div>
+						</div>
 						<results :items="results" class="mb-3" />
 						<div class="form-group mb-0">
 							<div class="row">
@@ -62,7 +82,7 @@ const ModuleAction = namespace('profile', Action)
 const ModuleMutation = namespace('profile', Mutation)
 
 import { PageViewModel, KeyValuePair, Result, ResultType } from '../../../model/common'
-import { Filter } from '../../../model/profile';
+import { Filter } from '../../../model/profile'
 
 import { GET_USER, FETCH_USER, FETCH_KVP_USERS, CHANGE_FILTER } from '../../../modules/profile/types'
 
@@ -84,13 +104,18 @@ export default class FilterComponent extends Vue {
 	excludedUsers: KeyValuePair[] = []
 	selectedUser: any = ''
 	pageSize: number = 0
+	hideLeftMenuByDefault: boolean = false
+	hideRightMenuByDefault: boolean = false
 	loading: boolean = true
 
 	results: Result[] = []
 
 	mounted() {
-		this.pageSize = this.vm.loggedInUser.filter.postsPerPage
-		this.excludedUsers = this.vm.loggedInUser.filter.excludedUsers
+		let filter: Filter = this.vm.loggedInUser.filter
+		this.pageSize = filter.postsPerPage
+		this.excludedUsers = filter.excludedUsers
+		this.hideLeftMenuByDefault = filter.hideLeftMenu
+		this.hideRightMenuByDefault = filter.hideRightMenu
 		
 		this.loadUsers()
 			.then((users: KeyValuePair[]) => {
@@ -122,6 +147,8 @@ export default class FilterComponent extends Vue {
 		this.changeFilter({ filter: {
 			userId: this.vm.loggedInUser.id,
 			postsPerPage: this.pageSize,
+			hideLeftMenu: this.hideLeftMenuByDefault,
+			hideRightMenu: this.hideRightMenuByDefault,
 			excludedUsers: this.excludedUsers
 		}}).then((results: Result[]) => {
 			this.results = results

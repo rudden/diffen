@@ -50,4 +50,7 @@ Vue.component('loader', Stretch)
 import Multiselect from 'vue-multiselect'
 Vue.component('v-multiselect', Multiselect)
 
+import ToggleButton from 'vue-js-toggle-button'
+Vue.use(ToggleButton)
+
 export default store

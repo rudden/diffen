@@ -208,6 +208,8 @@ namespace Diffen.Repositories
 				{
 					UserId = filter.UserId,
 					PostsPerPage = filter.PostsPerPage,
+					HideLeftMenu = filter.HideLeftMenu,
+					HideRightMenu = filter.HideRightMenu,
 					ExcludedUserIds = string.Join(",", filter.ExcludedUsers.Select(x => x.Key))
 				};
 				return await new List<Result>().Get(_dbClient.CreateBaseFilterForForumOnUserAsync(newFilter),
@@ -216,6 +218,8 @@ namespace Diffen.Repositories
 
 			currentFilter.PostsPerPage = filter.PostsPerPage;
 			currentFilter.ExcludedUserIds = string.Join(",", filter.ExcludedUsers.Select(x => x.Key));
+			currentFilter.HideLeftMenu = filter.HideLeftMenu;
+			currentFilter.HideRightMenu = filter.HideRightMenu;
 
 			return await new List<Result>().Get(_dbClient.UpdateBaseFilterForForumOnUserAsync(currentFilter),
 				ResultMessages.ChangeFilter);
