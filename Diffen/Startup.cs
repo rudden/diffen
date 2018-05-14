@@ -89,30 +89,17 @@ namespace Diffen
 
 			services.AddAutoMapper();
 
-			//services.AddCors(options =>
-			//{
-			//	options.AddPolicy("CorsPolicy", policy =>
-			//	{
-			//		policy.AllowAnyHeader();
-			//		policy.AllowAnyMethod();
-			//		policy.AllowAnyOrigin();
-			//		policy.AllowCredentials();
-			//	});
-			//});
-
-			services.AddCors();
-
-			services.AddAntiforgery(
-				options =>
+			services.AddCors(options =>
+			{
+				options.AddPolicy("CorsPolicy", policy =>
 				{
-					// Rename the form input name from "__RequestVerificationToken" to "f" for the same reason above
-					// e.g. <input name="__RequestVerificationToken" type="hidden" value="..." />
-					options.FormFieldName = "f";
-
-					// Rename the Anti-Forgery HTTP header from RequestVerificationToken to X-XSRF-TOKEN. X-XSRF-TOKEN
-					// is not a standard but a common name given to this HTTP header popularized by Angular.
-					options.HeaderName = "X-XSRF-TOKEN";
+					policy.WithOrigins("https://blaranderna.se");
+					policy.AllowAnyHeader();
+					policy.AllowAnyMethod();
+					policy.AllowAnyOrigin();
+					policy.AllowCredentials();
 				});
+			});
 
 			services.AddDataProtection()
 				.SetApplicationName("app-blaranderna")
@@ -145,27 +132,7 @@ namespace Diffen
 
 			app.UseAuthentication();
 			app.UseStaticFiles();
-			//app.UseCors("CorsPolicy");
-			app.UseCors(builder => builder.WithOrigins("https://blaranderna.se"));
-
-			app.Use(next => context =>
-			{
-				var path = context.Request.Path.Value;
-				if (
-					string.Equals(path, "/", StringComparison.OrdinalIgnoreCase) ||
-					string.Equals(path, "/auth/login", StringComparison.OrdinalIgnoreCase))
-				{
-					// The request token can be sent as a JavaScript-readable cookie, 
-					// and Angular uses it by default.
-					var tokens = antiforgery.GetAndStoreTokens(context);
-					context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken,
-						new CookieOptions
-						{
-							HttpOnly = false
-						});
-				}
-				return next(context);
-			});
+			app.UseCors("CorsPolicy");
 
 			app.UseMvc(r =>
 			{
