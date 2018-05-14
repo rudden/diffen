@@ -9,5 +9,7 @@ namespace Diffen.ViewModels.Auth
 
 		[Required]
 		public string Password { get; set; }
+
+		public bool RememberMe { get; set; }
 	}
 }

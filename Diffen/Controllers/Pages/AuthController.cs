@@ -71,7 +71,7 @@ namespace Diffen.Controllers.Pages
 			var result = await _signInManager.PasswordSignInAsync(
 				vm.Email,
 				vm.Password,
-				true, false);
+				isPersistent: vm.RememberMe, lockoutOnFailure: false);
 
 			if (result.Succeeded)
 			{
@@ -147,7 +147,7 @@ namespace Diffen.Controllers.Pages
 						await _userRepository.CreateRegionToUserAsync(user.Id, vm.RegionId);
 					}
 
-					await _signInManager.SignInAsync(user, isPersistent: false);
+					await _signInManager.SignInAsync(user, isPersistent: true);
 
 					if (string.IsNullOrWhiteSpace(returnUrl))
 					{
@@ -220,7 +220,7 @@ namespace Diffen.Controllers.Pages
 			var result = await GenerateNewPasswordAsync(user, vm.NewPassword);
 			if (result.Succeeded)
 			{
-				await _signInManager.SignInAsync(user, isPersistent: false);
+				await _signInManager.SignInAsync(user, isPersistent: true);
 				return RedirectToAction("index", "forum");
 			}
 			_logger.Debug("Result errors {errors}", result.Errors);

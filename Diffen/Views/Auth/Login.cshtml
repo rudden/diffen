@@ -14,8 +14,8 @@
 	<div class="container-content-middle">
 		<form role="form" method="post" class="mx-auto text-center app-login-form">
 			@*<a href="../index.html" class="app-brand mb-5">
-			<img src="../assets/img/brand.png" alt="brand">
-		</a>*@
+					<img src="../assets/img/brand.png" alt="brand">
+				</a>*@
 			<h4>Välkommen!</h4>
 			<hr />
 			<div class="form-group">
@@ -24,18 +24,23 @@
 			<div class="form-group mb-3">
 				<input type="password" class="form-control" asp-for="Password" placeholder="Lösenord" required>
 			</div>
+			<div class="checkbox mb-3">
+				<label class="mb-0">
+					<input type="checkbox" asp-for="RememberMe"> Håll mig inloggad
+				</label>
+			</div>
 			@if (!ViewData.ModelState.IsValid)
-	{
-		<div class="alert alert-danger">
-			@Html.ValidationSummary(false, "", new { @class = "auth-validation" })
-		</div>
-}
+			{
+				<div class="alert alert-danger">
+					@Html.ValidationSummary(false, "", new { @class = "auth-validation" })
+				</div>
+			}
 			<div class="mb-3">
 				<button type="submit" class="btn btn-success"><span class="oi oi-account-login"></span> Logga in</button>
-				<a href="/auth/register" class="btn btn-primary"> Skapa konto</a>
+				<a href="/auth/resetpassword" class="btn btn-danger"> Glömt lösenord</a>
 			</div>
 			<div class="mb-5">
-				<a href="/auth/resetpassword" class="btn btn-danger"> Glömt lösenord</a>
+				<a href="/auth/register" class="btn btn-primary"> Skapa konto</a>
 			</div>
 		</form>
 	</div>
