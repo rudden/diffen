@@ -91,15 +91,26 @@ namespace Diffen
 
 			services.AddCors(options =>
 			{
-				options.AddPolicy("CorsPolicy", policy =>
-				{
-					policy.WithOrigins("https://blaranderna.se");
-					policy.AllowAnyHeader();
-					policy.AllowAnyMethod();
-					policy.AllowAnyOrigin();
-					policy.AllowCredentials();
-				});
+				options.AddPolicy("CorsPolicy", builder => builder
+					//.WithOrigins("https://www.blaranderna.se")
+					.AllowAnyHeader()
+					.AllowAnyMethod()
+					.AllowAnyOrigin()
+					.AllowCredentials());
 			});
+
+			services.AddAntiforgery(
+				options =>
+				{
+					// Rename the form input name from "__RequestVerificationToken" to "f" for the same reason above
+					// e.g. <input name="__RequestVerificationToken" type="hidden" value="..." />
+					options.FormFieldName = "f";
+
+					// Rename the Anti-Forgery HTTP header from RequestVerificationToken to X-XSRF-TOKEN. X-XSRF-TOKEN
+					// is not a standard but a common name given to this HTTP header popularized by Angular.
+					options.HeaderName = "X-XSRF-TOKEN";
+				}
+			);
 
 			services.AddDataProtection()
 				.SetApplicationName("app-blaranderna")
@@ -133,6 +144,25 @@ namespace Diffen
 			app.UseAuthentication();
 			app.UseStaticFiles();
 			app.UseCors("CorsPolicy");
+
+			app.Use(next => context =>
+			{
+				var path = context.Request.Path.Value;
+				if (
+					string.Equals(path, "/", StringComparison.OrdinalIgnoreCase) ||
+					string.Equals(path, "/auth/login", StringComparison.OrdinalIgnoreCase))
+				{
+					// The request token can be sent as a JavaScript-readable cookie, 
+					// and Angular uses it by default.
+					var tokens = antiforgery.GetAndStoreTokens(context);
+					context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken,
+						new CookieOptions
+						{
+							HttpOnly = false
+						});
+				}
+				return next(context);
+			});
 
 			app.UseMvc(r =>
 			{
