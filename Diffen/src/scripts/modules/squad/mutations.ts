@@ -4,7 +4,7 @@ import { MutationTree } from 'vuex'
 import { User, PersonalMessage } from '../../model/profile'
 import { KeyValuePair } from '../../model/common'
 import { Formation, Lineup, Player, Position, Game } from '../../model/squad'
-import { PlayerToLineup, Lineup as CrudLineup } from '../../model/squad/crud'
+import { PlayerToLineup, Lineup as CrudLineup, PlayerEvent, Game as CrudGame } from '../../model/squad/crud'
 
 import { 
     SET_FORMATIONS,
@@ -14,7 +14,11 @@ import {
     SET_SELECTED_LINEUP,
     SET_NEW_LINEUP,
     SET_PLAYER_TO_LINEUP,
-    SET_GAMES
+    SET_GAMES,
+    SET_GAME_EVENT,
+    CHANGE_GAME_EVENT,
+    DELETE_GAME_EVENT,
+    SET_CRUD_GAME
 } from './types'
 
 export const Mutations: MutationTree<State> = {
@@ -46,7 +50,21 @@ export const Mutations: MutationTree<State> = {
             })
 		}
     },
-    [SET_GAMES]: (state: State, games: Game[]) => { state.games = games }
+    [SET_GAMES]: (state: State, games: Game[]) => { state.games = games },
+    [SET_CRUD_GAME]: (state: State, game: CrudGame) => { state.crudGame = game },
+    [SET_GAME_EVENT]: (state: State, event: PlayerEvent) => { state.crudGame.events.push(event) },
+    [CHANGE_GAME_EVENT]: (state: State, event: PlayerEvent) => {
+        let index = state.crudGame.events.indexOf(event)
+        if (index !== -1) {
+            state.crudGame.events[index] = event
+        }
+    },
+    [DELETE_GAME_EVENT]: (state: State, event: PlayerEvent) => {
+        let index = state.crudGame.events.indexOf(event)
+        if (index !== -1) {
+            state.crudGame.events.splice(index, 1)
+        }
+    },
 }
 
 export default Mutations

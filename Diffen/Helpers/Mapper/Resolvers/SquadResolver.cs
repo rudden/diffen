@@ -16,7 +16,9 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Database.Entities.User.FavoritePlayer, Models.Squad.Player>, 
 		ITypeConverter<Models.Squad.CRUD.Player, Database.Entities.Squad.Player>,
 		ITypeConverter<Database.Entities.Squad.Game, Models.Squad.Game>,
-		ITypeConverter<Database.Entities.Squad.PlayerEvent, Models.Squad.PlayerEvent>
+		ITypeConverter<Database.Entities.Squad.PlayerEvent, Models.Squad.PlayerEvent>,
+		ITypeConverter<Models.Squad.CRUD.Game, Database.Entities.Squad.Game>
+
 	{
 		public Models.Squad.Player Convert(Database.Entities.Squad.Player source, Models.Squad.Player destination, ResolutionContext context)
 		{
@@ -133,6 +135,16 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Id = source.Id,
 				Player = context.Mapper.Map<Models.Squad.Player>(source.Player),
 				EventType = source.Type
+			};
+		}
+
+		public Database.Entities.Squad.Game Convert(Models.Squad.CRUD.Game source, Database.Entities.Squad.Game destination, ResolutionContext context)
+		{
+			return new Database.Entities.Squad.Game
+			{
+				Id = source.Id,
+				Type = source.Type,
+				OnDate = source.PlayedDate
 			};
 		}
 	}

@@ -110,5 +110,21 @@ namespace Diffen.Repositories
 			var games = await _dbClient.GetGamesAsync();
 			return _mapper.Map<List<Game>>(games);
 		}
+
+		public async Task<bool> CreateGameAsync(Models.Squad.CRUD.Game game)
+		{
+			var newGame = _mapper.Map<Database.Entities.Squad.Game>(game);
+			var result = await _dbClient.CreateGameAsync(newGame);
+			if (!result)
+			{
+				return false;
+			}
+			return await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
+			{
+				PlayerId = x.PlayerId,
+				Type = x.Type,
+				GameId = newGame.Id
+			}).ToList());
+		}
 	}
 }

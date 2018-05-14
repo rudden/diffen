@@ -27,11 +27,11 @@ export class Player {
 
 export class Game {
     type: GameType
-    playedDate: string = ''
-    playerEvents: PlayerEvent[] = []
+    playedDate?: Date
+    events: PlayerEvent[] = []
 }
 
 export class PlayerEvent {
-    playerId: number
-    type: GameEventType
+    playerId: number = 0
+    type: GameEventType = GameEventType.Goal
 }
