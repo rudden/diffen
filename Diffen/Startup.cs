@@ -89,16 +89,18 @@ namespace Diffen
 
 			services.AddAutoMapper();
 
-			services.AddCors(options =>
-			{
-				options.AddPolicy("CorsPolicy", policy =>
-				{
-					policy.AllowAnyHeader();
-					policy.AllowAnyMethod();
-					policy.AllowAnyOrigin();
-					policy.AllowCredentials();
-				});
-			});
+			//services.AddCors(options =>
+			//{
+			//	options.AddPolicy("CorsPolicy", policy =>
+			//	{
+			//		policy.AllowAnyHeader();
+			//		policy.AllowAnyMethod();
+			//		policy.AllowAnyOrigin();
+			//		policy.AllowCredentials();
+			//	});
+			//});
+
+			services.AddCors();
 
 			services.AddAntiforgery(
 				options =>
@@ -115,7 +117,6 @@ namespace Diffen
 			services.AddDataProtection()
 				.SetApplicationName("app-blaranderna")
 				.PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "key-ring\\keys")));
-
 
 			services.AddMvc();
 
@@ -144,7 +145,8 @@ namespace Diffen
 
 			app.UseAuthentication();
 			app.UseStaticFiles();
-			app.UseCors("CorsPolicy");
+			//app.UseCors("CorsPolicy");
+			app.UseCors(builder => builder.WithOrigins("https://blaranderna.se"));
 
 			app.Use(next => context =>
 			{
