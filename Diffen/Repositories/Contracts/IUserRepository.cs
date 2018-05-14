@@ -21,6 +21,7 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> SetSelectedAvatarForUserAsync(string userId, string fileName);
 		Task<List<Result>> UpdateUserFilterAsync(Filter filter);
 		Task<bool> InviteExistsAsync(string code);
+		Task<bool> EmailAndInviteCodeIsAMatchAsync(string code, string email);
 		Task<List<Invite>> GetInvitesAsync();
 		Task<List<string>> CreateInvitesAsync(Models.User.CRUD.Invite invite);
 		Task<bool> SetInviteAsAccountCreatedAsync(string userId, string code);

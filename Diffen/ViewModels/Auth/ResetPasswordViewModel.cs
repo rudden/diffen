@@ -5,7 +5,10 @@ namespace Diffen.ViewModels.Auth
 	public class ResetPasswordViewModel
 	{
 		[Required]
-		public string UserId { get; set; }
+		public string Email { get; set; }
+
+		[Required]
+		public string InviteCode { get; set; }
 
 		[Required]
 		public string NewPassword { get; set; }

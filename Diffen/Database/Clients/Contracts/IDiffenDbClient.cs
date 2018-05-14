@@ -65,6 +65,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> CreateBaseFilterForForumOnUserAsync(Filter filter);
 		Task<bool> UpdateBaseFilterForForumOnUserAsync(Filter filter);
 		Task<bool> AnActiveInviteExistsOnCodeAsync(string code);
+		Task<bool> AnActiveAccountIsCreatedOnEmailUsingCodeAsync(string code, string email);
 		Task<bool> CreateInviteAsync(Invite invite);
 		Task<bool> UpdateInviteAsync(Invite invite);
 		Task<bool> DeleteInviteAsync(int inviteId);

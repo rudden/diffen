@@ -230,6 +230,11 @@ namespace Diffen.Repositories
 			return _dbClient.AnActiveInviteExistsOnCodeAsync(code);
 		}
 
+		public Task<bool> EmailAndInviteCodeIsAMatchAsync(string code, string email)
+		{
+			return _dbClient.AnActiveAccountIsCreatedOnEmailUsingCodeAsync(code, email);
+		}
+
 		public async Task<List<Invite>> GetInvitesAsync()
 		{
 			var invites = await _dbClient.GetInvitesAsync();

@@ -469,6 +469,20 @@ namespace Diffen.Database.Clients
 			return await _dbContext.Invites.CountAsync(x => x.UniqueCode.Equals(code) && !x.AccountIsCreated) > 0;
 		}
 
+		public async Task<bool> AnActiveAccountIsCreatedOnEmailUsingCodeAsync(string code, string email)
+		{
+			var invite = await _dbContext.Invites.FirstOrDefaultAsync(x => x.UniqueCode.Equals(code) && x.AccountIsCreated);
+			if (invite == null)
+				return false;
+
+			var user = await _dbContext.Users.FirstOrDefaultAsync(
+				x => x.Email.Equals(email) && invite.InviteUsedByUserId == x.Id);
+			if (user == null)
+				return false;
+
+			return true;
+		}
+
 		public async Task<bool> CreateInviteAsync(Invite invite)
 		{
 			invite.InviteSent = DateTime.Now;

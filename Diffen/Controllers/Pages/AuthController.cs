@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Diffen.Helpers.Authorize;
 using Diffen.Helpers.Extensions;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace Diffen.Controllers.Pages
@@ -191,17 +192,9 @@ namespace Diffen.Controllers.Pages
 			return RedirectToAction("index", "forum");
 		}
 
-		public IActionResult ResetPassword(string userId)
+		public IActionResult ResetPassword()
 		{
-			if (User.GetUserId() != userId)
-			{
-				return RedirectToAction("index", "profile");
-			}
-			var vm = new ResetPasswordViewModel
-			{
-				UserId = userId
-			};
-			return View(vm);
+			return View();
 		}
 
 		[HttpPost]
@@ -217,20 +210,70 @@ namespace Diffen.Controllers.Pages
 				ModelState.AddModelError("", "Lösenorden matchar inte");
 				return View();
 			}
+			if (!await _userRepository.EmailAndInviteCodeIsAMatchAsync(vm.InviteCode, vm.Email))
+			{
+				_logger.Information($"A user tried to reset password. But there is no account created using code {vm.InviteCode} and email {vm.Email}.");
+				ModelState.AddModelError("", $"Hittade inget skapat konto för kod {vm.InviteCode} och email {vm.Email}");
+				return View();
+			}
+			var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == vm.Email);
+			var result = await GenerateNewPasswordAsync(user, vm.NewPassword);
+			if (result.Succeeded)
+			{
+				await _signInManager.SignInAsync(user, isPersistent: false);
+				return RedirectToAction("index", "forum");
+			}
+			_logger.Debug("Result errors {errors}", result.Errors);
+			return View(vm);
+		}
+
+		[Authorize]
+		[VerifyInputToLoggedInUserId("userId")]
+		public IActionResult ResetPasswordForLoggedInUser(string userId)
+		{
+			if (User.GetUserId() != userId)
+			{
+				return RedirectToAction("index", "profile");
+			}
+			var vm = new ResetPasswordForLoggedInUserViewModel
+			{
+				UserId = userId
+			};
+			return View(vm);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ResetPasswordForLoggedInUser(ResetPasswordForLoggedInUserViewModel vm)
+		{
+			if (!ModelState.IsValid)
+			{
+				return View();
+			}
+			if (vm.NewPassword != vm.ConfirmNewPassword)
+			{
+				ModelState.AddModelError("", "Lösenorden matchar inte");
+				return View();
+			}
 			if (User.GetUserId() != vm.UserId)
 			{
 				ModelState.AddModelError("", "Du kan inte ändra lösenord för en annan användare");
+				return View();
 			}
 			var user = await _userManager.GetUserAsync(User);
-			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-			var result = await _userManager.ResetPasswordAsync(user, token, vm.NewPassword);
-
+			var result = await GenerateNewPasswordAsync(user, vm.NewPassword);
 			if (result.Succeeded)
 			{
 				return RedirectToAction("index", "profile");
 			}
 			_logger.Debug("Result errors {errors}", result.Errors);
 			return View(vm);
+		}
+
+		private async Task<IdentityResult> GenerateNewPasswordAsync(AppUser user, string newPassword)
+		{
+			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+			return await _userManager.ResetPasswordAsync(user, token, newPassword);
 		}
 	}
 }
