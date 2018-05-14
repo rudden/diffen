@@ -47,14 +47,14 @@ namespace Diffen.Controllers
 			string pageTitle;
 			switch (pageName)
 			{
+				case "home":
+					pageTitle = "Hem";
+					break;
 				case "forum":
 					pageTitle = "Forum";
 					break;
 				case "chronicle":
 					pageTitle = "Krönikor";
-					break;
-				case "home":
-					pageTitle = "Hem";
 					break;
 				case "poll":
 					pageTitle = "Omröstningar";
