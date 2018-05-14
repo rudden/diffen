@@ -13,7 +13,7 @@ namespace Diffen.Controllers.Api
 
 	[Authorize]
 	[Route("api/[controller]")]
-	public class UploadsController : Controller
+	public class UploadsController : ControllerBase
 	{
 		private readonly IUploadRepository _uploadRepository;
 

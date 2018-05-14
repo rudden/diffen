@@ -15,7 +15,7 @@ namespace Diffen.Controllers.Api
 
 	[Authorize]
 	[Route("api/[controller]")]
-	public class SquadsController : Controller
+	public class SquadsController : ControllerBase
 	{
 		private readonly ISquadRepository _squadRepository;
 

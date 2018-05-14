@@ -15,7 +15,7 @@ namespace Diffen.Controllers.Api
 
 	[Authorize]
 	[Route("api/[controller]")]
-	public class PollsController : Controller
+	public class PollsController : ControllerBase
 	{
 		private readonly IPollRepository _pollRepository;
 
