@@ -21,7 +21,7 @@ namespace Diffen.Controllers.Api
 
 	[Authorize]
 	[Route("api/[controller]")]
-	public class UsersController : Controller
+	public class UsersController : ControllerBase
 	{
 		private readonly IPmRepository _pmRepository;
 		private readonly IPostRepository _postRepository;
