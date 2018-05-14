@@ -92,7 +92,6 @@ namespace Diffen
 			services.AddCors(options =>
 			{
 				options.AddPolicy("CorsPolicy", builder => builder
-					//.WithOrigins("https://www.blaranderna.se")
 					.AllowAnyHeader()
 					.AllowAnyMethod()
 					.AllowAnyOrigin()
