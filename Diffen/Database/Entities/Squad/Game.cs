@@ -5,23 +5,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Diffen.Database.Entities.Squad
 {
+	using Helpers.Enum;
+
 	public class Game
 	{
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
-		[ForeignKey("HomeTeamId")]
-		public Team HomeTeam { get; set; }
-		public int HomeTeamId { get; set; }
-
-		[ForeignKey("AwayTeamId")]
-		public Team AwayTeam { get; set; }
-		public int AwayTeamId { get; set; }
-
-		public DateTime Played { get; set; }
+		public GameType Type { get; set; }
+		public DateTime OnDate { get; set; }
 
 		// Linked Tables
-		public ICollection<GameEvent> Events { get; set; }
+		public ICollection<PlayerEvent> PlayerEvents { get; set; }
 	}
 }

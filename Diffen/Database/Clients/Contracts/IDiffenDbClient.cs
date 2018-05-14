@@ -82,6 +82,11 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> UpdatePlayerAsync(Player player);
 		Task<bool> DeleteFavoritePlayerRelationToUserForPlayerAsync(int playerId);
 		Task<bool> UpdateAvailablePositionsForPlayerAsync(int playerId, IEnumerable<int> positionIds);
+		Task<List<Game>> GetGamesAsync();
+		Task<Game> GetGameOnIdAsync(int gameId);
+		Task<List<PlayerEvent>> GetPlayerEventsAsync();
+		Task<bool> CreateGameAsync(Game game);
+		Task<bool> CreatePlayerEventsAsync(List<PlayerEvent> events);
 
 		// Poll Related Requests
 		Task<List<Poll>> GetPollsAsync();

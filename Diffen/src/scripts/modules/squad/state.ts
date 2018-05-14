@@ -1,5 +1,5 @@
 import { KeyValuePair } from '../../model/common'
-import { Lineup, Formation, Player, Position } from '../../model/squad'
+import { Lineup, Formation, Player, Position, Game } from '../../model/squad'
 import { Lineup as CrudLineup } from '../../model/squad/crud'
 
 export default class State {
@@ -7,6 +7,7 @@ export default class State {
     formations: Formation[] = []
     positions: Position[] = []
     players: Player[] = []
+    games: Game[] = []
     newLineup: CrudLineup = new CrudLineup()
     selectedLineup: Lineup = new Lineup()
 }

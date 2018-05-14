@@ -36,3 +36,30 @@ export class Position {
     id: number
     name: string
 }
+
+export class Game {
+    id: number
+    type: GameType
+    playedOn: string
+    playerEvents: PlayerEvent[]
+}
+
+export class PlayerEvent {
+    id: number
+    player: Player
+    eventType: GameEventType
+}
+
+export enum GameType {
+    Cup,
+    League,
+    EuropaLeague,
+    Training
+}
+
+export enum GameEventType {
+    Goal,
+    Assist,
+    YellowCard,
+    RedCard
+}

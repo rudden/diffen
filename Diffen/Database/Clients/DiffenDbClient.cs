@@ -792,6 +792,33 @@ namespace Diffen.Database.Clients
 			return await CommitedResultIsSuccessfulAsync();
 		}
 
+		public Task<List<Game>> GetGamesAsync()
+		{
+			return _dbContext.Games.IncludeAll().ToListAsync();
+		}
+
+		public Task<Game> GetGameOnIdAsync(int gameId)
+		{
+			return _dbContext.Games.IncludeAll().FirstOrDefaultAsync(game => game.Id == gameId);
+		}
+
+		public Task<List<PlayerEvent>> GetPlayerEventsAsync()
+		{
+			return _dbContext.PlayerEvents.IncludeAll().ToListAsync();
+		}
+
+		public Task<bool> CreateGameAsync(Game game)
+		{
+			_dbContext.Games.Add(game);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<bool> CreatePlayerEventsAsync(List<PlayerEvent> events)
+		{
+			_dbContext.PlayerEvents.AddRange(events);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
 		private async Task<bool> CommitedResultIsSuccessfulAsync()
 		{
 			return await _dbContext.SaveChangesAsync() >= 0;

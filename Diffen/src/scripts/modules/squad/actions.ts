@@ -21,7 +21,9 @@ import {
 	SET_SELECTED_LINEUP,
 	SET_POSITIONS,
     UPDATE_PLAYER,
-	CREATE_PLAYER
+	CREATE_PLAYER,
+	FETCH_GAMES,
+	SET_GAMES
 } from './types'
 
 axios.defaults.withCredentials = true
@@ -79,6 +81,10 @@ export const Actions: ActionTree<State, any> = {
 			return axios.post(`${store.rootState.vm.api}/squads/players/update`, payload.player)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
+	},
+	[FETCH_GAMES]: (store: ActionContext<State, any>): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/squads/games`)
+			.then((res) => store.commit(SET_GAMES, res.data)).catch((error) => console.warn(error))
 	},
 }
 export default Actions

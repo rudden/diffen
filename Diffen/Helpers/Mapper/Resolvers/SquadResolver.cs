@@ -11,10 +11,12 @@ namespace Diffen.Helpers.Mapper.Resolvers
 	public class SquadResolver : 
 		ITypeConverter<Database.Entities.Squad.Player, Models.Squad.Player>, 
 		ITypeConverter<Database.Entities.Squad.Lineup, Models.Squad.Lineup>,
-		ITypeConverter<Database.Entities.Squad.PlayerToLineup, Models.Squad.PlayerToLineup>, 
+		ITypeConverter<Database.Entities.Squad.PlayerToLineup, Models.Squad.PlayerToLineup>,
 		ITypeConverter<Models.Squad.CRUD.Lineup, Database.Entities.Squad.Lineup>, 
 		ITypeConverter<Database.Entities.User.FavoritePlayer, Models.Squad.Player>, 
-		ITypeConverter<Models.Squad.CRUD.Player, Database.Entities.Squad.Player>
+		ITypeConverter<Models.Squad.CRUD.Player, Database.Entities.Squad.Player>,
+		ITypeConverter<Database.Entities.Squad.Game, Models.Squad.Game>,
+		ITypeConverter<Database.Entities.Squad.PlayerEvent, Models.Squad.PlayerEvent>
 	{
 		public Models.Squad.Player Convert(Database.Entities.Squad.Player source, Models.Squad.Player destination, ResolutionContext context)
 		{
@@ -110,6 +112,27 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				IsHereOnLoan = source.IsHereOnLoan,
 				KitNumber = source.KitNumber,
 				IsSold = source.IsSold
+			};
+		}
+
+		public Models.Squad.Game Convert(Database.Entities.Squad.Game source, Models.Squad.Game destination, ResolutionContext context)
+		{
+			return new Models.Squad.Game
+			{
+				Id = source.Id,
+				Type = source.Type,
+				PlayedOn = source.OnDate.ToString("yyyy-MM-dd"),
+				PlayerEvents = context.Mapper.Map<IEnumerable<Models.Squad.PlayerEvent>>(source.PlayerEvents)
+			};
+		}
+
+		public Models.Squad.PlayerEvent Convert(Database.Entities.Squad.PlayerEvent source, Models.Squad.PlayerEvent destination, ResolutionContext context)
+		{
+			return new Models.Squad.PlayerEvent
+			{
+				Id = source.Id,
+				Player = context.Mapper.Map<Models.Squad.Player>(source.Player),
+				EventType = source.Type
 			};
 		}
 	}

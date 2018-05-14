@@ -11,7 +11,6 @@ namespace Diffen.Repositories
 	using Contracts;
 	using Models;
 	using Models.Squad;
-	using Helpers.Extensions;
 	using Database.Clients.Contracts;
 
 	public class SquadRepository : ISquadRepository
@@ -104,6 +103,12 @@ namespace Diffen.Repositories
 			var allPositions = await _dbClient.GetPositionsAsync();
 			_cache.Set("positions", _mapper.Map<List<Position>>(allPositions.OrderBy(x => x.Name)));
 			return _cache.Get<List<Position>>("positions");
+		}
+
+		public async Task<List<Game>> GetGamesAsync()
+		{
+			var games = await _dbClient.GetGamesAsync();
+			return _mapper.Map<List<Game>>(games);
 		}
 	}
 }

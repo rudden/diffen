@@ -5,7 +5,7 @@ namespace Diffen.Database.Entities.Squad
 {
 	using Helpers.Enum;
 
-	public class GameEvent
+	public class PlayerEvent
 	{
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,7 +19,6 @@ namespace Diffen.Database.Entities.Squad
 		public Player Player { get; set; }
 		public int PlayerId { get; set; }
 
-		public GameEventType Event { get; set; }
-		public int HappenedInGameMinute { get; set; }
+		public GameEventType Type { get; set; }
 	}
 }

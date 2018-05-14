@@ -3,7 +3,7 @@ import { MutationTree } from 'vuex'
 
 import { User, PersonalMessage } from '../../model/profile'
 import { KeyValuePair } from '../../model/common'
-import { Formation, Lineup, Player, Position } from '../../model/squad'
+import { Formation, Lineup, Player, Position, Game } from '../../model/squad'
 import { PlayerToLineup, Lineup as CrudLineup } from '../../model/squad/crud'
 
 import { 
@@ -13,7 +13,8 @@ import {
     SET_POSITIONS,
     SET_SELECTED_LINEUP,
     SET_NEW_LINEUP,
-    SET_PLAYER_TO_LINEUP
+    SET_PLAYER_TO_LINEUP,
+    SET_GAMES
 } from './types'
 
 export const Mutations: MutationTree<State> = {
@@ -44,7 +45,8 @@ export const Mutations: MutationTree<State> = {
                 positionId: payload.positionId
             })
 		}
-	},
+    },
+    [SET_GAMES]: (state: State, games: Game[]) => { state.games = games }
 }
 
 export default Mutations
