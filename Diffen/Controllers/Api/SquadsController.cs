@@ -91,5 +91,21 @@ namespace Diffen.Controllers.Api
 			_logger.Debug("Requesting to create a new lineup");
 			return _squadRepository.CreateLineupAsync(lineup);
 		}
+
+		[HttpGet("games")]
+		public Task<List<Game>> GetGames()
+		{
+			_logger.Debug("Requesting all games");
+			return _squadRepository.GetGamesAsync();
+		}
+
+
+		[Authorize(Policy = "IsManager")]
+		[HttpPost, Route("game")]
+		public Task<bool> CreateGame([FromBody] Models.Squad.CRUD.Game game)
+		{
+			_logger.Debug("Requesting to create a new game");
+			return _squadRepository.CreateGameAsync(game);
+		}
 	}
 }

@@ -61,6 +61,7 @@ namespace Diffen.Database
 			await SeedPollsAsync(dbContext);
 			await SeedRegionsAsync(dbContext);
 			await SeedChroniclesAsync(dbContext, userManager);
+			await SeedGamesAsync(dbContext);
 		}
 
 		private static async Task<string[]> GetRandomNickNamesFromFillTextApiAsync()
@@ -1144,5 +1145,50 @@ namespace Diffen.Database
 				await dbContext.SaveChangesAsync();
 			}
 		}
+
+		private static async Task SeedGamesAsync(DiffenDbContext dbContext)
+		{
+			if (!dbContext.Games.Any())
+			{
+				foreach (var gameEventItem in PlayerEventList.All())
+				{
+					var game = new Game
+					{
+						Type = gameEventItem.Type,
+						OnDate = gameEventItem.OnDate
+					};
+					dbContext.Games.Add(game);
+				}
+				await dbContext.SaveChangesAsync();
+			}
+			if (!dbContext.PlayerEvents.Any())
+			{
+				foreach (var gameEvent in PlayerEventList.All())
+				{
+					var game = dbContext.Games.FirstOrDefault(x => x.OnDate.Equals(gameEvent.OnDate));
+					if (game == null)
+						return;
+
+					foreach (var playerEventItem in gameEvent.Events)
+					{
+						var player = !string.IsNullOrEmpty(playerEventItem.LastName) 
+							? dbContext.Players.FirstOrDefault(x => x.LastName.Equals(playerEventItem.LastName)) 
+							: dbContext.Players.FirstOrDefault(x => x.KitNumber == playerEventItem.KitNumber);
+						if (player == null)
+							return;
+						var playerEvent = new PlayerEvent
+						{
+							GameId = game.Id,
+							PlayerId = player.Id,
+							Type = playerEventItem.GameEventType
+						};
+						dbContext.PlayerEvents.Add(playerEvent);
+					}
+					await dbContext.SaveChangesAsync();
+
+				}
+			}
+		}
+
 	}
 }

@@ -107,5 +107,18 @@ namespace Diffen.Helpers.Extensions
 		{
 			return source.Include(x => x.UsersInRegion).ThenInclude(x => x.User).ThenInclude(x => x.NickNames);
 		}
+
+		public static IQueryable<Game> IncludeAll(this DbSet<Game> source)
+		{
+			return source.Include(x => x.PlayerEvents).ThenInclude(x => x.Player).ThenInclude(x => x.AvailablePositions).ThenInclude(x => x.Position)
+				.Include(x => x.PlayerEvents).ThenInclude(x => x.Player).ThenInclude(x => x.InLineups);
+		}
+
+		public static IQueryable<PlayerEvent> IncludeAll(this DbSet<PlayerEvent> source)
+		{
+			return source.Include(x => x.Player).ThenInclude(x => x.AvailablePositions).ThenInclude(x => x.Position)
+				.Include(x => x.Player).ThenInclude(x => x.InLineups);
+
+		}
 	}
 }
