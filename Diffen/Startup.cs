@@ -89,16 +89,16 @@ namespace Diffen
 
 			services.AddAutoMapper();
 
-			//services.AddCors(options =>
-			//{
-			//	options.AddPolicy("CorsPolicy", policy =>
-			//	{
-			//		policy.AllowAnyHeader();
-			//		policy.AllowAnyMethod();
-			//		policy.AllowAnyOrigin();
-			//		policy.AllowCredentials();
-			//	});
-			//});
+			services.AddCors(options =>
+			{
+				options.AddPolicy("CorsPolicy", policy =>
+				{
+					policy.AllowAnyHeader();
+					policy.AllowAnyMethod();
+					policy.AllowAnyOrigin();
+					policy.AllowCredentials();
+				});
+			});
 
 			services.AddCors();
 
@@ -145,8 +145,7 @@ namespace Diffen
 
 			app.UseAuthentication();
 			app.UseStaticFiles();
-			//app.UseCors("CorsPolicy");
-			app.UseCors(builder => builder.WithOrigins("https://blaranderna.se"));
+			app.UseCors("CorsPolicy");
 
 			app.Use(next => context =>
 			{
