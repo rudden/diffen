@@ -125,6 +125,14 @@ export default class Pm extends Vue {
 				this.loadPms({ to: this.selectedUser.key })
 					.then((pms: PersonalMessage[]) => {
 						this.pms = pms
+						let conversation = this.conversations.filter((c: Conversation) => c.user.id == this.selectedUser.id)[0]
+						if (conversation) {
+							conversation.numberOfUnReadMessages = 0
+							let index = this.conversations.indexOf(conversation)
+							if (index !== -1) {
+								this.conversations[index] = conversation
+							}
+						}
 						this.loading = false
 					}).catch(() => this.setLoadResults(this.selectedUser.value))
 			}
