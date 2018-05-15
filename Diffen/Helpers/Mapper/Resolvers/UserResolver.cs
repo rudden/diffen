@@ -24,14 +24,16 @@ namespace Diffen.Helpers.Mapper.Resolvers
 	{
 		private readonly UserManager<Database.Entities.User.AppUser> _userManager;
 		private readonly IUserRepository _userRepository;
+		private readonly IPmRepository _pmRepository;
 
 		private const string BasePathForAvatars = "/uploads/avatars/";
 		private readonly string _genericAvatarPath;
 
-		public UserResolver(UserManager<Database.Entities.User.AppUser> userManager, IUserRepository userRepository)
+		public UserResolver(UserManager<Database.Entities.User.AppUser> userManager, IUserRepository userRepository, IPmRepository pmRepository)
 		{
 			_userManager = userManager;
 			_userRepository = userRepository;
+			_pmRepository = pmRepository;
 			_genericAvatarPath = string.Concat(BasePathForAvatars, "generic/logo.png");
 		}
 
@@ -56,6 +58,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					UpVotes = source.Votes.Count(x => x.Type == VoteType.Up),
 					DownVotes = source.Votes.Count(x => x.Type == VoteType.Down)
 				} : null,
+				NumberOfUnReadPersonalMessages = _pmRepository.GetAllUnReadMessagesForUserWithIdAsync(source.Id).Result,
 				Joined = source.Joined.ToString("yyyy-MM-dd"),
 				SecludedUntil = source.SecludedUntil.GetSecluded(),
 			};
@@ -78,6 +81,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					Avatar = GetAvatar(source.ToUser),
 					NickName = source.ToUser.NickNames.Current() ?? "anonymous"
 				},
+				IsReadByToUser = source.IsReadByToUser,
 				Message = source.Message,
 				Since = source.Created.GetSinceStamp()
 			};

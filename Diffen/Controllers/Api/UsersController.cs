@@ -128,9 +128,9 @@ namespace Diffen.Controllers.Api
 		}
 
 		[HttpGet("{userId}/pm/users")]
-		public Task<List<KeyValuePair<string, string>>> GetUsersThatUserHasConversationWith(string userId)
+		public Task<List<Conversation>> GetUsersThatUserHasConversationWith(string userId)
 		{
-			_logger.Debug("Requesting to get a list of users in the form av keyvaluepair that the selected user has a conversation with (personal message)");
+			_logger.Debug("Requesting to get a list of users that the selected user has a conversation with (personal message)");
 			return _pmRepository.GetUsersWithConversationForUserAsKeyValuePairAsync(userId);
 		}
 

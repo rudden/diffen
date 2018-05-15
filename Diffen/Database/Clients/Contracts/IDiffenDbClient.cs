@@ -54,6 +54,10 @@ namespace Diffen.Database.Clients.Contracts
 		Task<List<PersonalMessage>> GetPmsSentFromUserToUserAsync(string fromUserId, string toUserId);
 		Task<List<AppUser>> GetUsersThatUserHasOngoingConversationWithAsync(string userId);
 		Task<bool> CreatePersonalMessageAsync(PersonalMessage personalMessage);
+		Task<bool> MarkPmAsReadByOnIdAsync(int personalMessageId);
+		Task<List<PersonalMessage>> GetUnReadPersonalMessagesForUserWithIdAsync(string userId);
+		Task<int> GetNumberOfUnReadPersonalMessagesForUserWithIdAsync(string userId);
+		Task<int> GetNumberOfUnReadPersonalMessagesFromUserToUserAsync(string fromUserId, string toUserId);
 		Task<bool> UpdateUserAsync(AppUser user);
 		Task<bool> UpdateUserBioAsync(string userId, string newBio);
 		Task<bool> UserHasAFavoritePlayerSelectedAsync(string userId);

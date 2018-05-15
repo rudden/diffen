@@ -6,6 +6,7 @@
 		public PmUser From { get; set; }
 		public PmUser To { get; set; }
 		public string Message { get; set; }
+		public bool IsReadByToUser { get; set; }
 		public string Since { get; set; }
 	}
 

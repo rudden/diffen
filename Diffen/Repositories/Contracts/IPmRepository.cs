@@ -9,7 +9,9 @@ namespace Diffen.Repositories.Contracts
 	public interface IPmRepository
 	{
 		Task<List<PersonalMessage>> GetPmsSentFromUserToUserAsync(string fromUserId, string toUserId);
-		Task<List<KeyValuePair<string, string>>> GetUsersWithConversationForUserAsKeyValuePairAsync(string userId);
+		Task<List<Conversation>> GetUsersWithConversationForUserAsKeyValuePairAsync(string userId);
 		Task<List<Result>> CreatePersonalMessageAsync(Models.User.CRUD.PersonalMessage pm);
+		Task<bool> MarkPersonalMessageAsReadByUserOnIdAsync(IEnumerable<int> pmIds);
+		Task<int> GetAllUnReadMessagesForUserWithIdAsync(string userId);
 	}
 }

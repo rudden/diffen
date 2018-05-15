@@ -1,6 +1,6 @@
 import { Lineup as CrudLineup } from '../squad/crud'
 import { Player } from '../squad'
-import { KeyValuePair } from '../common'
+import { KeyValuePair, IdAndNickNameUser } from '../common'
 
 export class User {
 	id: string
@@ -17,6 +17,7 @@ export class User {
     favoritePlayer: Player = new Player()
     savedPostsIds: number[]
     inRoles: string[]
+    numberOfUnReadPersonalMessages: number
 
     joined: string
     secludedUntil: string
@@ -40,7 +41,13 @@ export class PersonalMessage {
     from: PmUser
     to: PmUser
     message: string
+    isReadByToUser: boolean
     since: string
+}
+
+export class Conversation {
+    user: IdAndNickNameUser
+    numberOfUnReadMessages: number
 }
 
 export class PmUser {

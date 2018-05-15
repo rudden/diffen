@@ -396,6 +396,34 @@ namespace Diffen.Database.Clients
 			return CommitedResultIsSuccessfulAsync();
 		}
 
+		public async Task<bool> MarkPmAsReadByOnIdAsync(int personalMessageId)
+		{
+			var pm = await _dbContext.PersonalMessages.FindAsync(personalMessageId);
+			if (pm == null)
+			{
+				return false;
+			}
+			pm.IsReadByToUser = true;
+			_dbContext.PersonalMessages.Update(pm);
+			return await CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<List<PersonalMessage>> GetUnReadPersonalMessagesForUserWithIdAsync(string userId)
+		{
+			return _dbContext.PersonalMessages.Where(pm => pm.ToUserId.Equals(userId) && !pm.IsReadByToUser).ToListAsync();
+		}
+
+		public Task<int> GetNumberOfUnReadPersonalMessagesFromUserToUserAsync(string fromUserId, string toUserId)
+		{
+			return _dbContext.PersonalMessages.CountAsync(pm =>
+				pm.ToUserId.Equals(toUserId) && pm.FromUserId.Equals(fromUserId) && !pm.IsReadByToUser);
+		}
+
+		public Task<int> GetNumberOfUnReadPersonalMessagesForUserWithIdAsync(string userId)
+		{
+			return _dbContext.PersonalMessages.CountAsync(pm => pm.ToUserId.Equals(userId) && !pm.IsReadByToUser);
+		}
+
 		public Task<bool> UpdateUserAsync(AppUser user)
 		{
 			_dbContext.Users.Update(user);
