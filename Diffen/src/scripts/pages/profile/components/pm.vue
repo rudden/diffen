@@ -24,7 +24,7 @@
 					<div class="row" :class="{ 'mt-3' : userIsLoggedInUser }">
 						<div class="col">
 							<div class="form-group">
-								<textarea class="form-control" v-model="newPmMessage" rows="2" placeholder="Ditt pm"></textarea>
+								<textarea class="form-control" v-model="newPmMessage" rows="8" placeholder="Ditt pm"></textarea>
 							</div>
 							<div class="form-group mb-0">
 								<div class="row">
