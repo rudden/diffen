@@ -72,29 +72,6 @@ namespace Diffen.Helpers.Business
 			new GameEventItem
 			{
 				Type = GameType.Cup,
-				OnDate = new DateTime(2018, 02, 24),
-				Events = new List<PlayerEventItem>
-				{
-					new PlayerEventItem
-					{
-						KitNumber = 13,
-						GameEventType = GameEventType.YellowCard,
-					},
-					new PlayerEventItem
-					{
-						KitNumber = 5,
-						GameEventType = GameEventType.Goal,
-					},
-					new PlayerEventItem
-					{
-						KitNumber = 6,
-						GameEventType = GameEventType.YellowCard,
-					}
-				}
-			},
-			new GameEventItem
-			{
-				Type = GameType.Cup,
 				OnDate = new DateTime(2018, 03, 03),
 				Events = new List<PlayerEventItem>
 				{
@@ -196,24 +173,6 @@ namespace Diffen.Helpers.Business
 			new GameEventItem
 			{
 				Type = GameType.League,
-				OnDate = new DateTime(2018, 04, 08),
-				Events = new List<PlayerEventItem>
-				{
-					new PlayerEventItem
-					{
-						KitNumber = 3,
-						GameEventType = GameEventType.Goal,
-					},
-					new PlayerEventItem
-					{
-						KitNumber = 23,
-						GameEventType = GameEventType.YellowCard,
-					}
-				}
-			},
-			new GameEventItem
-			{
-				Type = GameType.League,
 				OnDate = new DateTime(2018, 04, 15),
 				Events = new List<PlayerEventItem>
 				{
@@ -277,6 +236,16 @@ namespace Diffen.Helpers.Business
 					{
 						KitNumber = 11,
 						GameEventType = GameEventType.Goal
+					},
+					new PlayerEventItem
+					{
+						KitNumber = 11,
+						GameEventType = GameEventType.Assist
+					},
+					new PlayerEventItem
+					{
+						KitNumber = 6,
+						GameEventType = GameEventType.Assist
 					},
 					new PlayerEventItem
 					{
@@ -394,6 +363,16 @@ namespace Diffen.Helpers.Business
 					{
 						KitNumber = 24,
 						GameEventType = GameEventType.YellowCard
+					},
+					new PlayerEventItem
+					{
+						KitNumber = 23,
+						GameEventType = GameEventType.Assist
+					},
+					new PlayerEventItem
+					{
+						KitNumber = 22,
+						GameEventType = GameEventType.Assist
 					}
 				}
 			},

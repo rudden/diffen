@@ -126,5 +126,24 @@ namespace Diffen.Repositories
 				GameId = newGame.Id
 			}).ToList());
 		}
+
+		public async Task<bool> UpdateGameAsync(Models.Squad.CRUD.Game game)
+		{
+			var updateGame = _mapper.Map<Database.Entities.Squad.Game>(game);
+			var existingGame = await _dbClient.GetGameOnIdAsync(game.Id);
+
+			if (!existingGame.OnDate.Equals(updateGame.OnDate) || !existingGame.Type.Equals(updateGame.Type))
+			{
+				await _dbClient.UpdateGameAsync(updateGame);
+			}
+
+			await _dbClient.DeletePlayerEventsOnGameIdAsync(updateGame.Id);
+			return await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
+			{
+				PlayerId = x.PlayerId,
+				Type = x.Type,
+				GameId = updateGame.Id
+			}).ToList());
+		}
 	}
 }

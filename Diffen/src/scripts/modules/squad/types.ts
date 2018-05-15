@@ -21,6 +21,7 @@ export const CREATE_PLAYER = 'squad/CREATE_PLAYER'
 export const UPDATE_PLAYER = 'squad/UPDATE_PLAYER'
 export const FETCH_GAMES = 'squad/FETCH_GAMES'
 export const CREATE_GAME = 'squad/CREATE_GAME'
+export const UPDATE_GAME = 'squad/UPDATE_GAME'
 
 // mutations
 export const SET_LINEUPS = 'squad/SET_LINEUPS'

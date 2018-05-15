@@ -26,6 +26,7 @@ export class Player {
 }
 
 export class Game {
+    id?: number
     type: GameType
     playedDate?: Date
     events: PlayerEvent[] = []
