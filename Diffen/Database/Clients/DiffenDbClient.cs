@@ -794,7 +794,7 @@ namespace Diffen.Database.Clients
 
 		public Task<List<Game>> GetGamesAsync()
 		{
-			return _dbContext.Games.IncludeAll().ToListAsync();
+			return _dbContext.Games.IncludeAll().OrderByDescending(x => x.OnDate).ToListAsync();
 		}
 
 		public Task<Game> GetGameOnIdAsync(int gameId)
