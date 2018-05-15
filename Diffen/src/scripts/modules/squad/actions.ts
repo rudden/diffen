@@ -24,7 +24,8 @@ import {
 	CREATE_PLAYER,
 	FETCH_GAMES,
 	SET_GAMES,
-	CREATE_GAME
+	CREATE_GAME,
+	UPDATE_GAME
 } from './types'
 
 axios.defaults.withCredentials = true
@@ -89,7 +90,13 @@ export const Actions: ActionTree<State, any> = {
 	},
 	[CREATE_GAME]: (store: ActionContext<State, any>, payload: { game: CrudGame }): Promise<boolean> => {
 		return new Promise<boolean>((resolve, reject) => {
-			return axios.post(`${store.rootState.vm.api}/squads/game`, payload.game)
+			return axios.post(`${store.rootState.vm.api}/squads/game/create`, payload.game)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[UPDATE_GAME]: (store: ActionContext<State, any>, payload: { game: CrudGame }): Promise<boolean> => {
+		return new Promise<boolean>((resolve, reject) => {
+			return axios.post(`${store.rootState.vm.api}/squads/game/update`, payload.game)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},

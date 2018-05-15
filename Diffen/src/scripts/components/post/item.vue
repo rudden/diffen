@@ -1,6 +1,6 @@
 <template>
     <li class="media list-group-item p-4">
-        <a :href="'/profil/' + post.user.id">
+        <a :href="'/profil/' + post.user.id" class="large-device">
             <img class="media-object d-flex align-self-start mr-3" :src="post.user.avatar">
         </a>
         <div class="media-body">

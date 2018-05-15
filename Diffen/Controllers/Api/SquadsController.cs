@@ -101,11 +101,19 @@ namespace Diffen.Controllers.Api
 
 
 		[Authorize(Policy = "IsManager")]
-		[HttpPost, Route("game")]
+		[HttpPost, Route("game/create")]
 		public Task<bool> CreateGame([FromBody] Models.Squad.CRUD.Game game)
 		{
 			_logger.Debug("Requesting to create a new game");
 			return _squadRepository.CreateGameAsync(game);
+		}
+
+		[Authorize(Policy = "IsManager")]
+		[HttpPost, Route("game/update")]
+		public Task<bool> UpdateGame([FromBody] Models.Squad.CRUD.Game game)
+		{
+			_logger.Debug("Requesting to update a game with id {gameId}", game.Id);
+			return _squadRepository.UpdateGameAsync(game);
 		}
 	}
 }

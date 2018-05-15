@@ -808,7 +808,7 @@ namespace Diffen.Database.Clients
 
 		public Task<List<Game>> GetGamesAsync()
 		{
-			return _dbContext.Games.IncludeAll().ToListAsync();
+			return _dbContext.Games.IncludeAll().OrderByDescending(x => x.OnDate).ToListAsync();
 		}
 
 		public Task<Game> GetGameOnIdAsync(int gameId)
@@ -827,10 +827,27 @@ namespace Diffen.Database.Clients
 			return CommitedResultIsSuccessfulAsync();
 		}
 
+		public Task<bool> UpdateGameAsync(Game game)
+		{
+			_dbContext.Games.Update(game);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
 		public Task<bool> CreatePlayerEventsAsync(List<PlayerEvent> events)
 		{
 			_dbContext.PlayerEvents.AddRange(events);
 			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public async Task<bool> DeletePlayerEventsOnGameIdAsync(int gameId)
+		{
+			var events = _dbContext.PlayerEvents.Where(x => x.GameId == gameId);
+			if (!events.Any())
+			{
+				return false;
+			}
+			_dbContext.PlayerEvents.RemoveRange(events);
+			return await CommitedResultIsSuccessfulAsync();
 		}
 
 		private async Task<bool> CommitedResultIsSuccessfulAsync()
