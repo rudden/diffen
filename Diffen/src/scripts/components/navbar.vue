@@ -5,9 +5,9 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarResponsive">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item" :class="{ 'active': this.active('home') }">
+				<!-- <li class="nav-item" :class="{ 'active': this.active('home') }">
 					<a class="nav-link" href="/">Hem <span class="sr-only">(current)</span></a>
-				</li>
+				</li> -->
 				<li class="nav-item" :class="{ 'active': this.active('forum') }">
 					<a class="nav-link" href="/forum">Forum</a>
 				</li>
