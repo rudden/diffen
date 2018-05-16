@@ -23,6 +23,9 @@
 				<li class="nav-item" :class="{ 'active': this.active('region') }">
 					<a class="nav-link" href="/omrade">Områden</a>
 				</li>
+				<li class="nav-item" :class="{ 'active': this.active('aboutdif') }">
+					<a class="nav-link" href="/om-dif">Om DIF</a>
+				</li>
 				<li class="navbar-divider small-device"></li>
 				<li class="nav-item small-device" :class="{ 'active': this.active('profile') }">
 					<a class="nav-link" href="/profil">

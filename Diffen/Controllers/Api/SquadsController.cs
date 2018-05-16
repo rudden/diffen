@@ -115,5 +115,12 @@ namespace Diffen.Controllers.Api
 			_logger.Debug("Requesting to update a game with id {gameId}", game.Id);
 			return _squadRepository.UpdateGameAsync(game);
 		}
+
+		[HttpGet("titles")]
+		public Task<List<Title>> GetTitles()
+		{
+			_logger.Debug("Requesting all titles");
+			return _squadRepository.GetTitlesAsync();
+		}
 	}
 }

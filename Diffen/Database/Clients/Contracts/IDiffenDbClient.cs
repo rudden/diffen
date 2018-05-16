@@ -94,6 +94,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> UpdateGameAsync(Game game);
 		Task<bool> CreatePlayerEventsAsync(List<PlayerEvent> events);
 		Task<bool> DeletePlayerEventsOnGameIdAsync(int gameId);
+		Task<List<Title>> GetTitlesAsync();
 
 		// Poll Related Requests
 		Task<List<Poll>> GetPollsAsync();

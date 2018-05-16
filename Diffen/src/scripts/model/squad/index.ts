@@ -63,3 +63,15 @@ export enum GameEventType {
     YellowCard,
     RedCard
 }
+
+export class Title {
+    id: number
+    type: TitleType
+    year: string
+    description: string
+}
+
+export enum TitleType {
+    Cup,
+    League
+}

@@ -38,6 +38,7 @@
 			CreateMap<Database.Entities.Squad.Game, Models.Squad.Game>().ConvertUsing<SquadResolver>();
 			CreateMap<Database.Entities.Squad.PlayerEvent, Models.Squad.PlayerEvent>().ConvertUsing<SquadResolver>();
 			CreateMap<Models.Squad.CRUD.Game, Database.Entities.Squad.Game> ().ConvertUsing<SquadResolver>();
+			CreateMap<Database.Entities.Squad.Title, Models.Squad.Title>().ConvertUsing<SquadResolver>();
 		}
 	}
 }

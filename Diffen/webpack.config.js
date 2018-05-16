@@ -20,6 +20,7 @@ module.exports = {
 		'chronicle': './src/scripts/pages/chronicle',
 		'poll': './src/scripts/pages/poll',
 		'region': './src/scripts/pages/region',
+		'aboutdif': './src/scripts/pages/dif',
 		
 		'style': './src/styles/app.scss'
 	},

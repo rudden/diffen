@@ -145,5 +145,11 @@ namespace Diffen.Repositories
 				GameId = updateGame.Id
 			}).ToList());
 		}
+
+		public async Task<List<Title>> GetTitlesAsync()
+		{
+			var titles = await _dbClient.GetTitlesAsync();
+			return _mapper.Map<List<Title>>(titles);
+		}
 	}
 }

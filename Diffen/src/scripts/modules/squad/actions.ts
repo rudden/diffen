@@ -3,7 +3,7 @@ import State from './state'
 import { Store, ActionTree, ActionContext } from 'vuex'
 
 import { Result, KeyValuePair } from '../../model/common'
-import { Lineup, Player, Formation } from '../../model/squad'
+import { Lineup, Player, Formation, Title } from '../../model/squad'
 import { Lineup as CrudLineup, Player as CrudPlayer, Game as CrudGame } from '../../model/squad/crud'
 
 import { 
@@ -25,7 +25,8 @@ import {
 	FETCH_GAMES,
 	SET_GAMES,
 	CREATE_GAME,
-	UPDATE_GAME
+	UPDATE_GAME,
+    FETCH_TITLES
 } from './types'
 
 axios.defaults.withCredentials = true
@@ -97,6 +98,12 @@ export const Actions: ActionTree<State, any> = {
 	[UPDATE_GAME]: (store: ActionContext<State, any>, payload: { game: CrudGame }): Promise<boolean> => {
 		return new Promise<boolean>((resolve, reject) => {
 			return axios.post(`${store.rootState.vm.api}/squads/game/update`, payload.game)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[FETCH_TITLES]: (store: ActionContext<State, any>): Promise<Title[]> => {
+		return new Promise<Title[]>((resolve, reject) => {
+			return axios.get(`${store.rootState.vm.api}/squads/titles`)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},

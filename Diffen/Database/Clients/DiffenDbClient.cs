@@ -878,6 +878,11 @@ namespace Diffen.Database.Clients
 			return await CommitedResultIsSuccessfulAsync();
 		}
 
+		public Task<List<Title>> GetTitlesAsync()
+		{
+			return _dbContext.Titles.OrderByDescending(x => x.Year).ToListAsync();
+		}
+
 		private async Task<bool> CommitedResultIsSuccessfulAsync()
 		{
 			return await _dbContext.SaveChangesAsync() >= 0;
