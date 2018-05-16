@@ -79,6 +79,21 @@ module.exports = {
 			}
 		]
 	},
+	optimization: {
+		splitChunks: {
+			cacheGroups: {
+				commons: {
+					name: 'common',
+					chunks: 'initial',
+					minChunks: 2,
+					reuseExistingChunk: true
+				}
+			}
+		},
+		runtimeChunk: {
+			name: 'manifest'
+		}
+	},
 	plugins: [
 		new CleanWebpackPlugin(path.join(__dirname, 'wwwroot/dist'), { root: __dirname }),
 		new webpack.ProvidePlugin({
@@ -87,6 +102,7 @@ module.exports = {
 			'window.jQuery': 'jquery',
 			jQuery: 'jquery'
 		}),
-		extractSass
+		extractSass,
+		new webpack.HashedModuleIdsPlugin()
 	]
 }
