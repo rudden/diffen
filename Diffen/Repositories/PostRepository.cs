@@ -128,7 +128,7 @@ namespace Diffen.Repositories
 		public async Task<List<UrlTip>> GetLastMonthsMostClickedUrlTipsAsync()
 		{
 			var urlTips = await _dbClient.GetUrlTipsAsync();
-			var topList = urlTips.Where(x => x.Created > DateTime.Now.AddMonths(-1))
+			var topList = urlTips.Where(x => x.Created.Date.Day == DateTime.Now.Day)
 				.Select(x => new UrlTip
 				{
 					Id = x.Id,
