@@ -126,6 +126,7 @@ export default class ChronicleComponent extends Vue {
     // based on chronicles with same category
     get relatedChronicles() {
         return this.chronicles.filter((c: Chronicle) => 
+            c.id !== this.chronicle.id &&
             c.categories.map((c: ChronicleCategory) => c.id).some(id => 
                 this.chronicle.categories.map((c: ChronicleCategory) => 
                     c.id).includes(id))).slice(0, 10)
