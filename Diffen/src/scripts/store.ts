@@ -53,4 +53,7 @@ Vue.component('v-multiselect', Multiselect)
 import ToggleButton from 'vue-js-toggle-button'
 Vue.use(ToggleButton)
 
+import VTooltip from 'v-tooltip'
+Vue.use(VTooltip)
+
 export default store
