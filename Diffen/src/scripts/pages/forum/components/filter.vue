@@ -1,86 +1,93 @@
 <template>
-    <div class="card mb-4" :class="{ 'div-disabled': isLoadingPosts }">
+    <div class="card pl-2 pr-2" :class="{ 'div-disabled': isLoadingPosts }">
         <div class="card-body">
-            <h6 class="mb-3">Filtrera</h6>
-            <hr />
-            <div class="list-group mt-3">
-                <div class="mb-3">
-                    <input id="users" class="form-control form-control-sm" type="text" placeholder="sök på ett nick.." autocomplete="off" />
-                    <typeahead v-model="selectedUser" target="#users" :data="users" item-key="value" force-select />
-                </div>
-                <template v-if="includedUsers.length > 0">
-                    <div class="list-group-item flex-column align-items-start" style="background-color: #efefef">
-                        <small>Visar inlägg av</small>
+            <h6 class="mb-0">
+                <span style="cursor: pointer" @click="show = !show" v-tooltip.right="tooltipText">
+                    Filtrera
+                    <span class="icon ml-1" :class="{ 'icon-chevron-small-down': !show, 'icon-chevron-small-up': show }"></span>
+                </span>
+            </h6>
+            <template v-if="show">
+                <hr class="mt-3" />
+                <div class="list-group mt-3">
+                    <div class="mb-3">
+                        <input id="users" class="form-control form-control-sm" type="text" placeholder="sök på ett nick.." autocomplete="off" />
+                        <typeahead v-model="selectedUser" target="#users" :data="users" item-key="value" force-select />
                     </div>
-                    <div class="list-group-item flex-column align-items-start" v-for="includedUser in includedUsers">
-                        <div class="d-flex w-100 justify-content-between">
-                            <small><strong>{{ includedUser.value }}</strong></small>
-                            <button type="button" class="close" v-on:click="removeUser(includedUser)">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                    <template v-if="includedUsers.length > 0">
+                        <div class="list-group-item flex-column align-items-start" style="background-color: #efefef">
+                            <small>Visar inlägg av</small>
+                        </div>
+                        <div class="list-group-item flex-column align-items-start" v-for="includedUser in includedUsers">
+                            <div class="d-flex w-100 justify-content-between">
+                                <small><strong>{{ includedUser.value }}</strong></small>
+                                <button type="button" class="close" v-on:click="removeUser(includedUser)">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                    <template v-if="excludedUsers && excludedUsers.length > 0">
+                        <div class="list-group-item flex-column align-items-start" style="background-color: #efefef">
+                            <small>Filtrerar bort inlägg av</small>
+                        </div>
+                        <div class="list-group-item flex-column align-items-start" v-for="excludedUser in excludedUsers">
+                            <div class="d-flex w-100 justify-content-between">
+                                <small><strong>{{ excludedUser.value }}</strong></small>
+                            </div>
+                        </div>
+                    </template>
+                    <div class="list-group-item flex-column align-items-start">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="hasStartingEleven" v-model="startingEleven" value="With">
+                            <label class="form-check-label" for="hasStartingEleven">Inlägg med startelva</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="noStartingEleven" v-model="startingEleven" value="Without">
+                            <label class="form-check-label" for="noStartingEleven">Inlägg utan startelva</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="allStartingEleven" v-model="startingEleven" value="All">
+                            <label class="form-check-label" for="allStartingEleven">Både och</label>
                         </div>
                     </div>
-                </template>
-                <template v-if="excludedUsers && excludedUsers.length > 0">
-                    <div class="list-group-item flex-column align-items-start" style="background-color: #efefef">
-                        <small>Filtrerar bort inlägg av</small>
-                    </div>
-                    <div class="list-group-item flex-column align-items-start" v-for="excludedUser in excludedUsers">
-                        <div class="d-flex w-100 justify-content-between">
-                            <small><strong>{{ excludedUser.value }}</strong></small>
+                    <div class="list-group-item flex-column align-items-start">
+                        <div class="form-group mb-0">
+                            <input type="text" class="form-control form-control-sm" v-model="filter.messageWildCard" placeholder="sök på inläggsinnehåll" />
                         </div>
                     </div>
-                </template>
-                <div class="list-group-item flex-column align-items-start">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="hasStartingEleven" v-model="startingEleven" value="With">
-                        <label class="form-check-label" for="hasStartingEleven">Inlägg med startelva</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="noStartingEleven" v-model="startingEleven" value="Without">
-                        <label class="form-check-label" for="noStartingEleven">Inlägg utan startelva</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="allStartingEleven" v-model="startingEleven" value="All">
-                        <label class="form-check-label" for="allStartingEleven">Både och</label>
-                    </div>
-                </div>
-                <div class="list-group-item flex-column align-items-start">
-                    <div class="form-group mb-0">
-                        <input type="text" class="form-control form-control-sm" v-model="filter.messageWildCard" placeholder="sök på inläggsinnehåll" />
+                    <div class="list-group-item flex-column align-items-start">
+                        <div class="row">
+                            <div class="col pr-1">
+                                <date-picker v-model="filter.fromDate" :config="fromDPConfig" placeholder="från" :class="{ 'form-control-sm': true }" />
+                            </div>
+                            <div class="col pl-1">
+                                <date-picker v-model="filter.toDate" :config="toDPConfig" placeholder="till" :class="{ 'form-control-sm': true }" />
+                            </div>
+                        </div>
+                        <div class="row" v-if="showDatePickerTip">
+                            <div class="col">
+                                <div class="alert alert-warning mt-3 mb-0">
+                                    <small class="font-weight-light font-italic">psst.. från-datumet kanske ska vara före till-datumet?</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="list-group-item flex-column align-items-start">
-					<div class="row">
-						<div class="col pr-1">
-							<date-picker v-model="filter.fromDate" :config="fromDPConfig" placeholder="från" :class="{ 'form-control-sm': true }" />
-						</div>
-						<div class="col pl-1">
-							<date-picker v-model="filter.toDate" :config="toDPConfig" placeholder="till" :class="{ 'form-control-sm': true }" />
-						</div>
-					</div>
-					<div class="row" v-if="showDatePickerTip">
-						<div class="col">
-							<div class="alert alert-warning mt-3 mb-0">
-								<small class="font-weight-light font-italic">psst.. från-datumet kanske ska vara före till-datumet?</small>
-							</div>
-						</div>
-					</div>
-				</div>
-            </div>
-            <div class="row mt-3">
-                <div class="col pr-1">
-                    <button class="btn btn-outline-success btn-sm btn-block" :disabled="showDatePickerTip" v-on:click="apply">Applicera</button>
+                <div class="row mt-3">
+                    <div class="col pr-1">
+                        <button class="btn btn-outline-success btn-sm btn-block" :disabled="showDatePickerTip" v-on:click="apply">Applicera</button>
+                    </div>
+                    <div class="col pl-1">
+                        <button class="btn btn-outline-warning btn-sm btn-block" v-on:click="reset">Återställ</button>
+                    </div>
                 </div>
-                <div class="col pl-1">
-                    <button class="btn btn-outline-warning btn-sm btn-block" v-on:click="reset">Återställ</button>
+                <div class="row mt-3">
+                    <div class="col">
+                        <button class="btn btn-outline-danger btn-sm btn-block" v-on:click="all">Visa allt</button>
+                    </div>
                 </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col">
-                    <button class="btn btn-outline-danger btn-sm btn-block" v-on:click="all">Visa allt</button>
-                </div>
-            </div>
+            </template>
         </div>
     </div>
 </template>
@@ -129,6 +136,7 @@ export default class FilterComponent extends Vue {
 
 	includedUsers: KeyValuePair[] = []
     startingEleven: string = StartingEleven[StartingEleven.All]
+    show: boolean = false
 
 	fromDPConfig: any = { 
 		format: 'YYYY-MM-DD', 
@@ -181,6 +189,10 @@ export default class FilterComponent extends Vue {
         if (this.filter.fromDate && this.filter.toDate)
             return this.filter.fromDate > this.filter.toDate ? true : false
         return false
+    }
+
+    get tooltipText() {
+        return !this.show ? 'Klicka här för att filtrera forumets innehåll' : 'Klicka här för att dölja filter-komponenten'
     }
     
     @Watch('selectedUser')
