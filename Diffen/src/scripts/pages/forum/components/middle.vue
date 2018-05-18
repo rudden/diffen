@@ -1,6 +1,6 @@
 <template>
     <div :class="{ 'col': !showRightSideBar || !showLeftSideBar, 'col-lg-6': showRightSideBar && showLeftSideBar }">
-        <post-stream :page-size="pageSize" :paging="paging" :infinite-scroll="true" :loader-predicate="isLoadingPosts">
+        <post-stream :page-size="pageSize" :paging="paging" :state-stored-items="pagedPosts" :infinite-scroll="infiniteScroll" :loader-predicate="isLoadingPosts">
             <template slot="top">
                 <li class="media list-group-item p-4" style="display: block">
                     <div class="flow-root">
@@ -12,6 +12,9 @@
                         </a>
                     </div>
                     <new-post  />
+                </li>
+                <li class="list-group-item list-group-item__no-top-radius p-0">
+                    <filter-component class="mb-0" style="border: 0" />
                 </li>
             </template>
         </post-stream>
@@ -46,12 +49,13 @@ import { ForumViewModel, Paging } from '../../../model/common'
 import NewPost from '../../../components/post/new.vue'
 
 import PostStream from '../../../components/post/stream.vue'
+import FilterComponent from './filter.vue'
 
 import { Pagination } from 'vue-pagination-2'
 
 @Component({
     components: {
-        Pagination, NewPost, PostStream
+        Pagination, NewPost, PostStream, FilterComponent
     }
 })
 export default class Middle extends Vue {
@@ -62,7 +66,7 @@ export default class Middle extends Vue {
     @ModuleGetter(GET_SHOW_LEFT_SIDEBAR) showLeftSideBar: boolean
     @ModuleGetter(GET_SHOW_RIGHT_SIDEBAR) showRightSideBar: boolean
     
-    @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<Paging<Post>>
+    @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter, concat: boolean }) => Promise<Paging<Post>>
     @ModuleMutation(SET_IS_LOADING_POSTS) setIsLoadingPosts: (payload: { value: boolean }) => void
     @ModuleMutation(SET_FILTER) setFilter: (payload: { filter: Filter }) => void
     @ModuleMutation(SET_SHOW_LEFT_SIDEBAR) setShowLeftSideBar: (payload: { value: boolean }) => void
@@ -70,6 +74,8 @@ export default class Middle extends Vue {
 
     page: number
     private pageSize: number
+
+    infiniteScroll: boolean = true
 
     created() {
         this.pageSize = this.vm.loggedInUser.filter ? this.vm.loggedInUser.filter.postsPerPage : 20
@@ -80,12 +86,12 @@ export default class Middle extends Vue {
         this.page = page
         this.setIsLoadingPosts({ value: true })
         return new Promise<Paging<Post>>((resolve, reject) => {
-            this.loadPaged({ pageNumber: this.page, pageSize: this.pageSize, filter: this.filter })
+            this.loadPaged({ pageNumber: this.page, pageSize: this.pageSize, filter: this.filter, concat: this.infiniteScroll })
                 .then((paging: Paging<Post>) => {
                     resolve(paging)
                     this.setIsLoadingPosts({ value: false })
                 })
-        }) 
+        })
     }
 
     toggleRightSideBar() {

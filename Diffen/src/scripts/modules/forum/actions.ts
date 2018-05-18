@@ -41,11 +41,11 @@ export const Actions: ActionTree<State, any> = {
 		return axios.get(`${store.rootState.vm.api}/posts/${payload.postId}/conversation`)
 			.then((res) => store.commit(SET_SELECTED_CONVERSATION, res.data)).catch((error) => console.warn(error))
 	},
-	[FETCH_PAGED_POSTS]: (store: ActionContext<State, any>, payload: { pageNumber: number, pageSize: number, filter: Filter }): Promise<Paging<Post>> => {
+	[FETCH_PAGED_POSTS]: (store: ActionContext<State, any>, payload: { pageNumber: number, pageSize: number, filter: Filter, concat: boolean }): Promise<Paging<Post>> => {
 		return new Promise<Paging<Post>>((resolve, reject) => {
 			return axios.get(`${store.rootState.vm.api}/posts/page/${payload.pageNumber}/${payload.pageSize}?filter=${JSON.stringify(payload.filter)}`)
 				.then((res) => {
-					store.commit(SET_PAGED_POSTS, res.data)
+					store.commit(SET_PAGED_POSTS, { pagedPosts: res.data, concat: payload.concat } )
 					resolve(res.data)
 				}).catch((error) => console.warn(error))
 		})

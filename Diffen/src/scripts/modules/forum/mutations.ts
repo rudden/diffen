@@ -19,8 +19,13 @@ import {
 } from './types'
 
 export const Mutations: MutationTree<State> = {
-    [SET_PAGED_POSTS]: (state: State, pagedPosts: Paging<Post>) => { 
-        state.pagedPosts = pagedPosts 
+    [SET_PAGED_POSTS]: (state: State, payload: { pagedPosts: Paging<Post>, concat: boolean }) => { 
+        state.pagedPosts = {
+            data: payload.concat ? state.pagedPosts.data.concat(payload.pagedPosts.data) : payload.pagedPosts.data,
+            currentPage: payload.pagedPosts.currentPage,
+            numberOfPages: payload.pagedPosts.numberOfPages,
+            total: payload.pagedPosts.total
+        }
     },
     [SET_POST_AFTER_VOTE]: (state: State, payload: { vote: CrudVote, nickName: string }) => { 
         for (let i = 0; i < state.pagedPosts.data.length; i++) {
