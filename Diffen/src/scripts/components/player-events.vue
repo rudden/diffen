@@ -1,7 +1,11 @@
 <template>
     <div class="card mb-4">
         <div class="card-body">
-            <template v-if="loggedInUserIsAdminOrScissor">
+            <template v-if="header">
+                <h6>{{ header }}</h6>
+                <hr />
+            </template>
+            <template v-if="loggedInUserIsAdminOrScissor && !isSmall">
                 <div class="row mb-3">
                     <div class="col">
                         <div class="form-group">
@@ -66,57 +70,13 @@
                 <hr />
             </template>
             <ul class="list-unstyled list-spaced mb-0" v-if="!loading">
-                <li><strong>Skytteliga</strong></li>
-                <li class="ellipsis" v-for="item in goals" :key="`goals-${item.player.id}`">
-                    <modal v-bind="{ attributes: { name: `goals-${item.player.id}` }, header: `${item.player.fullName}s mål`, button: { badge: 'badge-primary float-right', text: item.total } }">
-                        <template slot="body">
-                            <div v-for="event in item.events">
-                                <span class="badge float-right" :class="{ 'badge-primary': event.amount > 0, 'badge-danger': event.amount <= 0 }">{{ event.amount }}</span>
-                                <span class="mr-2">{{ getGameType(event.type) }}</span>
-                            </div>
-                        </template>
-                    </modal>
-                    {{ item.player.fullName }}
-                </li>
+                <events-list :header="'Skytteliga'" :items="goals" :type-name="'gjorda mål'" :is-small="isSmall" />
                 <hr />
-                <li><strong>Assistliga</strong></li>
-                <li class="ellipsis" v-for="item in assists" :key="`assists-${item.player.id}`">
-                    <modal v-bind="{ attributes: { name: `assists-${item.player.id}` }, header: `${item.player.fullName}s assist`, button: { badge: 'badge-primary float-right', text: item.total } }">
-                        <template slot="body">
-                            <div v-for="event in item.events">
-                                <span class="badge float-right" :class="{ 'badge-primary': event.amount > 0, 'badge-danger': event.amount <= 0 }">{{ event.amount }}</span>
-                                <span class="mr-2">{{ getGameType(event.type) }}</span>
-                            </div>
-                        </template>
-                    </modal>
-                    {{ item.player.fullName }}
-                </li>
+                <events-list :header="'Assistliga'" :items="assists" :type-name="'assister'" :is-small="isSmall" />
                 <hr />
-                <li><strong>Gula kort</strong></li>
-                <li class="ellipsis" v-for="item in yellowCards" :key="`yellowCards-${item.player.id}`">
-                    <modal v-bind="{ attributes: { name: `yellowCards-${item.player.id}` }, header: `${item.player.fullName}s gula kort`, button: { badge: 'badge-primary float-right', text: item.total } }">
-                        <template slot="body">
-                            <div v-for="event in item.events">
-                                <span class="badge float-right" :class="{ 'badge-primary': event.amount > 0, 'badge-danger': event.amount <= 0 }">{{ event.amount }}</span>
-                                <span class="mr-2">{{ getGameType(event.type) }}</span>
-                            </div>
-                        </template>
-                    </modal>
-                    {{ item.player.fullName }}
-                </li>
+                <events-list :header="'Gula kort'" :items="yellowCards" :type-name="'gula kort'" :is-small="isSmall" />
                 <hr />
-                <li><strong>Röda kort</strong></li>
-                <li class="ellipsis" v-for="item in redCards" :key="`redCards-${item.player.id}`">
-                    <modal v-bind="{ attributes: { name: `redCards-${item.player.id}` }, header: `${item.player.fullName}s röda kort`, button: { badge: 'badge-primary float-right', text: item.total } }">
-                        <template slot="body">
-                            <div v-for="event in item.events">
-                                <span class="badge float-right" :class="{ 'badge-primary': event.amount > 0, 'badge-danger': event.amount <= 0 }">{{ event.amount }}</span>
-                                <span class="mr-2">{{ getGameType(event.type) }}</span>
-                            </div>
-                        </template>
-                    </modal>
-                    {{ item.player.fullName }}
-                </li>
+                <events-list :header="'Röda kort'" :items="redCards" :type-name="'röda kort'" :is-small="isSmall" />
             </ul>
             <template v-else>
                 <loader v-bind="{ background: '#699ED0' }" />
@@ -147,12 +107,14 @@ interface PlayerItem {
 
 interface Event {
     player: PlayerItem
+    playedOn: string
     gameType: GameType
     eventType: GameEventType
 }
 
 interface IPlayerEvent {
     type: GameType
+    dates: string[]
     amount: number
 }
 
@@ -169,13 +131,28 @@ interface IGameEvent {
 
 import Modal from './modal.vue'
 import FormComponent from './player-events-form.vue'
+import EventsList from './player-events-list.vue'
 import DatePicker from 'vue-bootstrap-datetimepicker'
 
 import { Component as VueComponent } from 'vue/types/options'
 
 @Component({
+    props: {
+        defaultGameType: {
+            type: String,
+            default: undefined
+        },
+        isSmall: {
+            type: Boolean,
+            default: false
+        },
+        header: {
+            type: String,
+            default: undefined
+        }
+    },
     components: {
-        Modal, DatePicker, FormComponent
+        Modal, DatePicker, FormComponent, EventsList
     }
 })
 export default class PlayerEvents extends Vue {
@@ -188,6 +165,10 @@ export default class PlayerEvents extends Vue {
     @ModuleAction(UPDATE_GAME) updateGame: (payload: { game: CrudGame }) => Promise<void>
     @ModuleMutation(SET_CRUD_GAME) setCrudGame: (game: CrudGame) => void
     @ModuleMutation(DELETE_GAME_EVENT) deleteGameEvent: (event: CrudPlayerEvent) => void
+
+    defaultGameType: string
+    isSmall: boolean
+    header: string
 
     loading: boolean = false
     events: Event[] = []
@@ -252,7 +233,6 @@ export default class PlayerEvents extends Vue {
     get yellowCards() {
         return this.listify(GameEventType.YellowCard)
     }
-
     get canSave() {
         return this.selectedDate 
             && this.gameType 
@@ -302,12 +282,19 @@ export default class PlayerEvents extends Vue {
         this.loadGames().then(() => {
             this.events = []
             this.games.forEach((game: Game) => {
+                if (this.defaultGameType) {
+                    if (game.type !== GameType[this.defaultGameType as keyof typeof GameType]) {
+                        return
+                    }
+                }
+
                 game.playerEvents.forEach((playerEvent: PlayerEvent) => {
                     this.events.push({
                         player: {
                             id: playerEvent.player.id,
                             fullName: playerEvent.player.fullName,
                         },
+                        playedOn: game.playedOn,
                         gameType: game.type,
                         eventType: playerEvent.eventType
                     })
@@ -326,24 +313,33 @@ export default class PlayerEvents extends Vue {
 
             let allEvents: Event[] = events.filter((e2: Event) => e2.player.id == e.player.id)
 
+            let cupGames = allEvents.filter((e: Event) => e.gameType == GameType.League)
+            let leagueGames = allEvents.filter((e: Event) => e.gameType == GameType.League)
+            let europeLeagueGames = allEvents.filter((e: Event) => e.gameType == GameType.EuropaLeague)
+            let trainingGames = allEvents.filter((e: Event) => e.gameType == GameType.Training)
+
             items.push({
                 player: e.player,
                 events: [
                     {
                         type: GameType.Cup,
-                        amount: allEvents.filter((e: Event) => e.gameType == GameType.Cup).length
+                        dates: cupGames.map((e: Event) => e.playedOn),
+                        amount: cupGames.length
                     },
                     {
                         type: GameType.League,
-                        amount: allEvents.filter((e: Event) => e.gameType == GameType.League).length
+                        dates: leagueGames.map((e: Event) => e.playedOn),
+                        amount: leagueGames.length
                     },
                     {
                         type: GameType.EuropaLeague,
-                        amount: allEvents.filter((e: Event) => e.gameType == GameType.EuropaLeague).length
+                        dates: europeLeagueGames.map((e: Event) => e.playedOn),
+                        amount: europeLeagueGames.length
                     },
                     {
                         type: GameType.Training,
-                        amount: allEvents.filter((e: Event) => e.gameType == GameType.Training).length
+                        dates: trainingGames.map((e: Event) => e.playedOn),
+                        amount: trainingGames.length
                     }
                 ],
                 total: allEvents.length
@@ -361,7 +357,6 @@ export default class PlayerEvents extends Vue {
     }
 
     newEvent(e: any, event?: CrudPlayerEvent) {
-        console.log('generate event component:', event)
         this.formComponents.push({
             event: event ? event : new CrudPlayerEvent(),
             component: FormComponent
