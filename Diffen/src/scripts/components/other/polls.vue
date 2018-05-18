@@ -1,123 +1,106 @@
 <template>
-    <ul class="list-group media-list media-list-stream">
-        <li class="list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }">
-            <modal v-bind="modalAttributes.newPoll">
-                <template slot="body">
-                    <template v-if="creating">
-                        <loader v-bind="{ background: '#699ED0' }" />
-                    </template>
-                    <template v-else>
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group row">
-                                    <label for="name" class="col-sm-2 col-form-label">Titel</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" id="name" v-model="newPoll.name" class="form-control form-control-sm" placeholder="Namn på omröstningen" />
-                                    </div>
+    <div>
+        <div class="card mb-4" v-if="isSmall">
+            <div class="card-body">
+                <new-poll :on-modal-close="load" />
+                <h6 class="mb-0">Omröstningar</h6>
+                <hr />
+                <template v-if="!loading">
+                    <ul class="list-unstyled list-spaced mb-0">
+                        <li class="ellipsis" v-for="poll in filtered" :key="poll.id">
+                            <template v-if="openInModal">
+                                <div class="media-heading">
+                                    <modal v-bind="{ attributes: { name: `poll-${poll.id}` }, header: poll.name, button: { classes: 'small on-click', text: poll.name }, onClose: () => isCopied = false }">
+                                        <template slot="body">
+                                            <poll-content :poll="poll" />
+                                        </template>
+                                        <template slot="footer">
+                                            <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">
+                                                {{ isCopied ? `Kopierade ${pollUrl}/${poll.slug}` : 'Kopiera länk till omröstningen' }}
+                                            </button>
+                                        </template>
+                                    </modal>
                                 </div>
-                                <div class="form-group row">
-                                    <label for="selection" class="col-sm-2 col-form-label">Alternativ</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" id="selection" v-model="newSelection" class="form-control form-control-sm" :placeholder="selectionPlaceholder" v-on:keyup.enter="addToSelections" :disabled="maxNumberOfSelections" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                </div>
-                                <template v-if="newPoll.selections.length > 0">
-                                    <hr />
-                                    <ul class="list-unstyled list-spaced mb-3">
-                                        <li><strong>Alternativ</strong></li>
-                                        <li v-for="selection in newPoll.selections" :key="selection">
-                                            <a class="float-right" v-on:click="removeSelection(selection)">
-                                                <span class="icon icon-trash"></span>
-                                            </a>
-                                            <span>{{ selection }}</span>
-                                        </li>
-                                    </ul>
-                                </template>
-                            </div>
-                        </div>
-                        <results :items="results" class="pb-3" />
-                        <div class="row">
-                            <div class="col">
-                                <button class="btn btn-success btn-sm btn-block" v-on:click="create" :disabled="!canCreate">Skapa</button>
-                            </div>
-                        </div>
-                    </template>
+                            </template>
+                        </li>
+                    </ul>
                 </template>
-            </modal>
-            <h4 class="mb-0" v-if="!isSmall">Omröstningar</h4>
-        </li>
-        <li class="media list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-show="loading">
-            <loader v-bind="{ background: '#699ED0' }" />
-        </li>
-        <div v-show="!loading">
-            <li class="media list-group-item p-4" v-if="!isSmall && typeOfPolls == 'all'">
-                <div class="col pl-0 pr-0">
-                    <div class="form-group float-right mb-0">
-                        <input type="text" class="form-control form-control-sm" v-model="pollSearch" placeholder="Sök">
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" v-model="pollsFilter" id="open" value="Open">
-                        <label class="form-check-label" for="open">Öppna</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" v-model="pollsFilter" id="closed" value="Closed">
-                        <label class="form-check-label" for="closed">Stängda</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" v-model="pollsFilter" id="my" value="My">
-                        <label class="form-check-label" for="my">Mina</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" v-model="pollsFilter" id="all" value="All">
-                        <label class="form-check-label" for="all">Alla</label>
-                    </div>
-                </div>
+                <template v-else>
+                    <loader v-bind="{ background: '#699ED0' }" />
+                </template>
+            </div>
+        </div>
+        <ul class="list-group media-list media-list-stream" v-else>
+            <li class="list-group-item p-4">
+                <new-poll :on-modal-close="load" />
+                <h4 class="mb-0">Omröstningar</h4>
             </li>
-            <template v-if="filtered.length > 0">
-                <li class="list-group-item media" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="poll in filtered" :key="poll.id">
-                    <span class="icon icon-hand text-muted mr-2" v-if="!isSmall"></span>
-                    <div class="media-body">
-                        <span class="text-muted float-right">
-                            <span class="badge" :class="{ 'badge-success': poll.isOpen, 'badge-danger': !poll.isOpen }">
-                                {{ poll.isOpen ? 'öppen' : 'stängd' }}
-                            </span>
-                        </span>
-                        <template v-if="openInModal">
-                            <div class="media-heading">
-                                <modal v-bind="{ attributes: { name: `poll-${poll.id}` }, header: poll.name, button: { classes: 'font-weight-bold small on-click', text: poll.name }, onClose: () => isCopied = false }">
-                                    <template slot="body">
-                                        <poll-content :poll="poll" />
-                                    </template>
-                                    <template slot="footer">
-                                        <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">
-                                            {{ isCopied ? `Kopierade ${pollUrl}/${poll.slug}` : 'Kopiera länk till omröstningen' }}
-                                        </button>
-                                    </template>
-                                </modal>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <a :href="`/omrostning/${poll.slug}`">{{ poll.name }}</a>
-                        </template>
+            <li class="media list-group-item p-4" v-show="loading">
+                <loader v-bind="{ background: '#699ED0' }" />
+            </li>
+            <div v-show="!loading">
+                <li class="media list-group-item p-4" v-if="typeOfPolls == 'all'">
+                    <div class="col pl-0 pr-0">
+                        <div class="form-group float-right mb-0">
+                            <input type="text" class="form-control form-control-sm" v-model="pollSearch" placeholder="Sök">
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" v-model="pollsFilter" id="open" value="Open">
+                            <label class="form-check-label" for="open">Öppna</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" v-model="pollsFilter" id="closed" value="Closed">
+                            <label class="form-check-label" for="closed">Stängda</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" v-model="pollsFilter" id="my" value="My">
+                            <label class="form-check-label" for="my">Mina</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" v-model="pollsFilter" id="all" value="All">
+                            <label class="form-check-label" for="all">Alla</label>
+                        </div>
                     </div>
                 </li>
-                <template v-if="isSmall">
-                    <li class="list-group-item p-0">
-                        <a href="/omrostning" class="btn btn-sm btn-primary btn-block btn__no-top-radius">Visa fler</a>
+                <template v-if="filtered.length > 0">
+                    <li class="list-group-item media p-4" v-for="poll in filtered" :key="poll.id">
+                        <span class="icon icon-hand text-muted mr-2"></span>
+                        <div class="media-body">
+                            <span class="text-muted float-right">
+                                <span class="badge" :class="{ 'badge-success': poll.isOpen, 'badge-danger': !poll.isOpen }">
+                                    {{ poll.isOpen ? 'öppen' : 'stängd' }}
+                                </span>
+                            </span>
+                            <template v-if="openInModal">
+                                <div class="media-heading">
+                                    <modal v-bind="{ attributes: { name: `poll-${poll.id}` }, header: poll.name, button: { classes: 'font-weight-bold small on-click', text: poll.name }, onClose: () => isCopied = false }">
+                                        <template slot="body">
+                                            <poll-content :poll="poll" />
+                                        </template>
+                                        <template slot="footer">
+                                            <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">
+                                                {{ isCopied ? `Kopierade ${pollUrl}/${poll.slug}` : 'Kopiera länk till omröstningen' }}
+                                            </button>
+                                        </template>
+                                    </modal>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <a :href="`/omrostning/${poll.slug}`">{{ poll.name }}</a>
+                            </template>
+                        </div>
                     </li>
                 </template>
-            </template>
-            <template v-else>
-                <li class="list-group-item media p-4">
-                    <div class="col pl-0 pr-0">
-                        <div class="alert alert-warning mb-0">Hittade inga omröstningar</div>
-                    </div>
-                </li>
-            </template>
-        </div>
-    </ul>
+                <template v-else>
+                    <li class="list-group-item media p-4">
+                        <div class="col pl-0 pr-0">
+                            <div class="alert alert-warning mb-0">Hittade inga omröstningar</div>
+                        </div>
+                    </li>
+                </template>
+            </div>
+        </ul>
+    </div>
 </template>
 
 <script lang="ts">
@@ -134,6 +117,7 @@ import { Poll as CrudPoll } from '../../model/other/crud'
 
 import { GET_POLLS, FETCH_POLLS, FETCH_ACTIVE_POLLS, CREATE_POLL } from '../../modules/other/types'
 
+import NewPoll from './new-poll.vue'
 import PollContent from './poll-content.vue'
 import Results from '../results.vue'
 import Modal from '../modal.vue'
@@ -158,7 +142,7 @@ enum PollFilter {
         }
     },
 	components: {
-        PollContent, Results, Modal
+        PollContent, Results, Modal, NewPoll
 	}
 })
 export default class Polls extends Vue {
@@ -206,18 +190,6 @@ export default class Polls extends Vue {
         this.newPoll.createdByUserId = this.vm.loggedInUser.id
 
         this.load()
-    }
-
-    get canCreate(): boolean {
-        return this.newPoll.name && this.newPoll.selections.length > 1 ? true : false
-    }
-
-    get maxNumberOfSelections(): boolean {
-        return this.newPoll.selections.length == 10 ? true : false
-    }
-
-    get selectionPlaceholder(): string {
-        return this.maxNumberOfSelections ? 'Max antal alternativ' : 'Nytt alternativ'
     }
 
     @Watch('pollsFilter')
@@ -271,28 +243,6 @@ export default class Polls extends Vue {
             .then(() => {
                 this.filteredPolls = this.polls
                 this.loading = false
-            })
-    }
-
-    addToSelections() {
-        if (!this.newPoll.selections.includes(this.newSelection)) {
-            this.newPoll.selections.push(this.newSelection)
-            this.newSelection = ''
-        }
-    }
-
-    removeSelection(selection: string) {
-        this.newPoll.selections = this.newPoll.selections.filter((s: string) => s !== selection)
-    }
-
-    create() {
-        this.creating = true
-        this.createPoll({ poll: this.newPoll })
-            .then((results: Result[]) => {
-                this.results = results
-                this.creating = false
-                this.newPoll = new CrudPoll()
-                this.load()
             })
     }
 }
