@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="input-group">
-            <textarea rows="5" class="form-control" placeholder="Ditt inlägg.." v-model="newPost.message"></textarea>
+            <textarea rows="5" class="form-control" placeholder="Ditt inlägg.." v-model="newPost.message" ref="textarea"></textarea>
         </div>
         <div class="input-group">
             <input type="text" class="form-control" placeholder="Länktips" v-model="newPost.urlTipHref">
@@ -94,6 +94,10 @@ export default class NewPost extends Vue {
     $modal = (this as any).VModal
 
     created() {
+        this.$nextTick(() => {
+            (this as any).$refs.textarea.focus()
+        })
+
         if (this.post) {
             this.newPost.id = this.post.id
             this.newPost.message = this.post.message
