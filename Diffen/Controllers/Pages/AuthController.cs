@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Diffen.Helpers.Extensions;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 using Serilog;
 
@@ -13,6 +14,8 @@ namespace Diffen.Controllers.Pages
 	using ViewModels.Auth;
 	using Repositories.Contracts;
 	using Database.Entities.User;
+	using Helpers.Authorize;
+	using Helpers.Extensions;
 
 	public class AuthController : Controller
 	{
@@ -61,8 +64,8 @@ namespace Diffen.Controllers.Pages
 			if (!string.IsNullOrEmpty(attempt.SecludedUntil) && Convert.ToDateTime(attempt.SecludedUntil) > DateTime.Now)
 			{
 				_logger.Information(
-					"Login: User with email {userEmail} tried to login even though he or she is secluded until {secludedUntil}",
-					attempt.Email, attempt.SecludedUntil);
+					"Login: User with nickname {userNickName} tried to login even though he or she is secluded until {secludedUntil}",
+					attempt.NickName, attempt.SecludedUntil);
 				ModelState.AddModelError("All", $"du är spärrad till och med {attempt.SecludedUntil}");
 				return View();
 			}
@@ -70,7 +73,7 @@ namespace Diffen.Controllers.Pages
 			var result = await _signInManager.PasswordSignInAsync(
 				vm.Email,
 				vm.Password,
-				true, false);
+				isPersistent: vm.RememberMe, lockoutOnFailure: false);
 
 			if (result.Succeeded)
 			{
@@ -146,7 +149,7 @@ namespace Diffen.Controllers.Pages
 						await _userRepository.CreateRegionToUserAsync(user.Id, vm.RegionId);
 					}
 
-					await _signInManager.SignInAsync(user, isPersistent: false);
+					await _signInManager.SignInAsync(user, isPersistent: true);
 
 					if (string.IsNullOrWhiteSpace(returnUrl))
 					{
@@ -191,17 +194,9 @@ namespace Diffen.Controllers.Pages
 			return RedirectToAction("index", "forum");
 		}
 
-		public IActionResult ResetPassword(string userId)
+		public IActionResult ResetPassword()
 		{
-			if (User.GetUserId() != userId)
-			{
-				return RedirectToAction("index", "profile");
-			}
-			var vm = new ResetPasswordViewModel
-			{
-				UserId = userId
-			};
-			return View(vm);
+			return View();
 		}
 
 		[HttpPost]
@@ -217,20 +212,70 @@ namespace Diffen.Controllers.Pages
 				ModelState.AddModelError("", "Lösenorden matchar inte");
 				return View();
 			}
+			if (!await _userRepository.EmailAndInviteCodeIsAMatchAsync(vm.InviteCode, vm.Email))
+			{
+				_logger.Information($"A user tried to reset password. But there is no account created using code {vm.InviteCode} and email {vm.Email}.");
+				ModelState.AddModelError("", $"Hittade inget skapat konto för kod {vm.InviteCode} och email {vm.Email}");
+				return View();
+			}
+			var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == vm.Email);
+			var result = await GenerateNewPasswordAsync(user, vm.NewPassword);
+			if (result.Succeeded)
+			{
+				await _signInManager.SignInAsync(user, isPersistent: true);
+				return RedirectToAction("index", "forum");
+			}
+			_logger.Debug("Result errors {errors}", result.Errors);
+			return View(vm);
+		}
+
+		[Authorize]
+		[VerifyInputToLoggedInUserId("userId")]
+		public IActionResult ResetPasswordForLoggedInUser(string userId)
+		{
+			if (User.GetUserId() != userId)
+			{
+				return RedirectToAction("index", "profile");
+			}
+			var vm = new ResetPasswordForLoggedInUserViewModel
+			{
+				UserId = userId
+			};
+			return View(vm);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ResetPasswordForLoggedInUser(ResetPasswordForLoggedInUserViewModel vm)
+		{
+			if (!ModelState.IsValid)
+			{
+				return View();
+			}
+			if (vm.NewPassword != vm.ConfirmNewPassword)
+			{
+				ModelState.AddModelError("", "Lösenorden matchar inte");
+				return View();
+			}
 			if (User.GetUserId() != vm.UserId)
 			{
 				ModelState.AddModelError("", "Du kan inte ändra lösenord för en annan användare");
+				return View();
 			}
 			var user = await _userManager.GetUserAsync(User);
-			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-			var result = await _userManager.ResetPasswordAsync(user, token, vm.NewPassword);
-
+			var result = await GenerateNewPasswordAsync(user, vm.NewPassword);
 			if (result.Succeeded)
 			{
 				return RedirectToAction("index", "profile");
 			}
 			_logger.Debug("Result errors {errors}", result.Errors);
 			return View(vm);
+		}
+
+		private async Task<IdentityResult> GenerateNewPasswordAsync(AppUser user, string newPassword)
+		{
+			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+			return await _userManager.ResetPasswordAsync(user, token, newPassword);
 		}
 	}
 }

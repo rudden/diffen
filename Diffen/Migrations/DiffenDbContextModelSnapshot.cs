@@ -290,6 +290,20 @@ namespace Diffen.Migrations
                     b.ToTable("Formations");
                 });
 
+            modelBuilder.Entity("Diffen.Database.Entities.Squad.Game", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("OnDate");
+
+                    b.Property<int>("Type");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Games");
+                });
+
             modelBuilder.Entity("Diffen.Database.Entities.Squad.Lineup", b =>
                 {
                     b.Property<int>("Id")
@@ -332,6 +346,26 @@ namespace Diffen.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Squad.PlayerEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("GameId");
+
+                    b.Property<int>("PlayerId");
+
+                    b.Property<int>("Type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("PlayerEvents");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Squad.PlayerToLineup", b =>
@@ -384,6 +418,22 @@ namespace Diffen.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Positions");
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Squad.Title", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("Type");
+
+                    b.Property<string>("Year");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Titles");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.User.AppUser", b =>
@@ -472,6 +522,10 @@ namespace Diffen.Migrations
 
                     b.Property<string>("ExcludedUserIds");
 
+                    b.Property<bool>("HideLeftMenu");
+
+                    b.Property<bool>("HideRightMenu");
+
                     b.Property<int>("PostsPerPage");
 
                     b.Property<string>("UserId");
@@ -537,6 +591,8 @@ namespace Diffen.Migrations
                     b.Property<DateTime>("Created");
 
                     b.Property<string>("FromUserId");
+
+                    b.Property<bool>("IsReadByToUser");
 
                     b.Property<string>("Message");
 
@@ -798,6 +854,19 @@ namespace Diffen.Migrations
                     b.HasOne("Diffen.Database.Entities.Squad.Formation", "Formation")
                         .WithMany()
                         .HasForeignKey("FormationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Diffen.Database.Entities.Squad.PlayerEvent", b =>
+                {
+                    b.HasOne("Diffen.Database.Entities.Squad.Game", "Game")
+                        .WithMany("PlayerEvents")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Diffen.Database.Entities.Squad.Player", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -11,7 +11,6 @@ namespace Diffen.Repositories
 	using Contracts;
 	using Models;
 	using Models.Squad;
-	using Helpers.Extensions;
 	using Database.Clients.Contracts;
 
 	public class SquadRepository : ISquadRepository
@@ -104,6 +103,53 @@ namespace Diffen.Repositories
 			var allPositions = await _dbClient.GetPositionsAsync();
 			_cache.Set("positions", _mapper.Map<List<Position>>(allPositions.OrderBy(x => x.Name)));
 			return _cache.Get<List<Position>>("positions");
+		}
+
+		public async Task<List<Game>> GetGamesAsync()
+		{
+			var games = await _dbClient.GetGamesAsync();
+			return _mapper.Map<List<Game>>(games);
+		}
+
+		public async Task<bool> CreateGameAsync(Models.Squad.CRUD.Game game)
+		{
+			var newGame = _mapper.Map<Database.Entities.Squad.Game>(game);
+			var result = await _dbClient.CreateGameAsync(newGame);
+			if (!result)
+			{
+				return false;
+			}
+			return await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
+			{
+				PlayerId = x.PlayerId,
+				Type = x.Type,
+				GameId = newGame.Id
+			}).ToList());
+		}
+
+		public async Task<bool> UpdateGameAsync(Models.Squad.CRUD.Game game)
+		{
+			var updateGame = _mapper.Map<Database.Entities.Squad.Game>(game);
+			var existingGame = await _dbClient.GetGameOnIdAsync(game.Id);
+
+			if (!existingGame.OnDate.Equals(updateGame.OnDate) || !existingGame.Type.Equals(updateGame.Type))
+			{
+				await _dbClient.UpdateGameAsync(updateGame);
+			}
+
+			await _dbClient.DeletePlayerEventsOnGameIdAsync(updateGame.Id);
+			return await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
+			{
+				PlayerId = x.PlayerId,
+				Type = x.Type,
+				GameId = updateGame.Id
+			}).ToList());
+		}
+
+		public async Task<List<Title>> GetTitlesAsync()
+		{
+			var titles = await _dbClient.GetTitlesAsync();
+			return _mapper.Map<List<Title>>(titles);
 		}
 	}
 }

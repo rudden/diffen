@@ -28,6 +28,8 @@ import {
 	SET_CHRONICLE_CATEGORIES
 } from './types'
 
+axios.defaults.withCredentials = true
+
 // export everything compliant to the vuex specification for actions
 export const Actions: ActionTree<State, any> = {
 	[FETCH_POLL]: (store: ActionContext<State, any>, payload: { slug: string }): Promise<void> => {

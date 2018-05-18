@@ -14,7 +14,7 @@ namespace Diffen.Controllers.Api
 
 	[Authorize]
 	[Route("api/[controller]")]
-	public class RegionsController : Controller
+	public class RegionsController : ControllerBase
 	{
 		private readonly IRegionRepository _regionRepository;
 

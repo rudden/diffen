@@ -3,7 +3,7 @@
 		<navbar />
 		<div class="container pt-4 pb-5">
 			<div class="row">
-				<div class="col-lg-12 col-md-12">
+				<div class="col-lg-8 col-md-8 col-sm-12">
 					<ul class="list-group media-list media-list-stream">
 						<li class="list-group-item p-4">
 							<modal v-bind="modalAttributes.newPlayer" v-if="loggedInUserIsAdmin">
@@ -54,6 +54,9 @@
 						</li>
 					</ul>
 				</div>
+				<div class="col-lg-4 col-md-4 col-sm-12">
+					<player-events />
+				</div>
 			</div>
 		</div>
 	</div>
@@ -81,10 +84,11 @@ import {
 
 import FormComponent from './form.vue'
 import Modal from '../../../components/modal.vue'
+import PlayerEvents from '../../../components/player-events.vue'
 
 @Component({
 	components: {
-		Modal, FormComponent
+		Modal, FormComponent, PlayerEvents
 	}
 })
 export default class Wrapper extends Vue {

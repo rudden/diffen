@@ -27,6 +27,8 @@ import {
 	SET_SELECTED_CONVERSATION
 } from './types'
 
+axios.defaults.withCredentials = true
+
 // export everything compliant to the vuex specification for actions
 export const Actions: ActionTree<State, any> = {
 	[FETCH_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<Post> => {
@@ -39,9 +41,14 @@ export const Actions: ActionTree<State, any> = {
 		return axios.get(`${store.rootState.vm.api}/posts/${payload.postId}/conversation`)
 			.then((res) => store.commit(SET_SELECTED_CONVERSATION, res.data)).catch((error) => console.warn(error))
 	},
-	[FETCH_PAGED_POSTS]: (store: ActionContext<State, any>, payload: { pageNumber: number, pageSize: number, filter: Filter }): Promise<void> => {
-		return axios.get(`${store.rootState.vm.api}/posts/page/${payload.pageNumber}/${payload.pageSize}?filter=${JSON.stringify(payload.filter)}`)
-			.then((res) => store.commit(SET_PAGED_POSTS, res.data)).catch((error) => console.warn(error))
+	[FETCH_PAGED_POSTS]: (store: ActionContext<State, any>, payload: { pageNumber: number, pageSize: number, filter: Filter }): Promise<Paging<Post>> => {
+		return new Promise<Paging<Post>>((resolve, reject) => {
+			return axios.get(`${store.rootState.vm.api}/posts/page/${payload.pageNumber}/${payload.pageSize}?filter=${JSON.stringify(payload.filter)}`)
+				.then((res) => {
+					store.commit(SET_PAGED_POSTS, res.data)
+					resolve(res.data)
+				}).catch((error) => console.warn(error))
+		})
 	},
 	[CREATE_POST]: (store: ActionContext<State, any>, payload: { post: CrudPost }): Promise<Result[]> => {
 		return new Promise<Result[]>((resolve, reject) => {

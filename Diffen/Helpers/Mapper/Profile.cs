@@ -35,6 +35,10 @@
 			CreateMap<Models.Other.CRUD.Chronicle, Database.Entities.Other.Chronicle>().ConvertUsing<ChronicleResolver>();
 			CreateMap<Database.Entities.Other.Region, Models.Other.Region>().ConvertUsing<RegionResolver>();
 			CreateMap<Models.Other.CRUD.Region, Database.Entities.Other.Region>().ConvertUsing<RegionResolver>();
+			CreateMap<Database.Entities.Squad.Game, Models.Squad.Game>().ConvertUsing<SquadResolver>();
+			CreateMap<Database.Entities.Squad.PlayerEvent, Models.Squad.PlayerEvent>().ConvertUsing<SquadResolver>();
+			CreateMap<Models.Squad.CRUD.Game, Database.Entities.Squad.Game> ().ConvertUsing<SquadResolver>();
+			CreateMap<Database.Entities.Squad.Title, Models.Squad.Title>().ConvertUsing<SquadResolver>();
 		}
 	}
 }

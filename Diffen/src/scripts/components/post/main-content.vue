@@ -26,7 +26,7 @@
                 </div>
             </div>
         </template>
-        <p v-html="postMessage"></p>
+        <p v-html="postMessage" style="font-weight: 400 !important"></p>
         <embeds :href="post.urlTipHref" />
     </div>
 </template>

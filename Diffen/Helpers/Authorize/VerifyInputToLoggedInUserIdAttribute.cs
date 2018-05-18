@@ -36,7 +36,7 @@ namespace Diffen.Helpers.Authorize
 			var loggedInUserId = context.HttpContext.User.GetUserId();
 			if (!string.IsNullOrWhiteSpace(requestUserId) && !string.IsNullOrWhiteSpace(loggedInUserId))
 			{
-				if (requestUserId.Equals(loggedInUserId))
+				if (requestUserId.Equals(loggedInUserId) || context.HttpContext.User.IsInRole("Admin"))
 				{
 					base.OnActionExecuting(context);
 					return;

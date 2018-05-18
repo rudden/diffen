@@ -18,7 +18,8 @@ namespace Diffen.Controllers.Pages
 		[Authorize]
 		public IActionResult Index()
 		{
-			return View("_Page", Model);
+			return RedirectToAction("index", "forum");
+			//return View("_Page", Model);
 		}
 	}
 }

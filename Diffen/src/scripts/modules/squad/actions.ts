@@ -3,8 +3,8 @@ import State from './state'
 import { Store, ActionTree, ActionContext } from 'vuex'
 
 import { Result, KeyValuePair } from '../../model/common'
-import { Lineup, Player, Formation } from '../../model/squad'
-import { Lineup as CrudLineup, Player as CrudPlayer } from '../../model/squad/crud'
+import { Lineup, Player, Formation, Title } from '../../model/squad'
+import { Lineup as CrudLineup, Player as CrudPlayer, Game as CrudGame } from '../../model/squad/crud'
 
 import { 
 	FETCH_KVP_USERS,
@@ -21,8 +21,15 @@ import {
 	SET_SELECTED_LINEUP,
 	SET_POSITIONS,
     UPDATE_PLAYER,
-	CREATE_PLAYER
+	CREATE_PLAYER,
+	FETCH_GAMES,
+	SET_GAMES,
+	CREATE_GAME,
+	UPDATE_GAME,
+    FETCH_TITLES
 } from './types'
+
+axios.defaults.withCredentials = true
 
 // export everything compliant to the vuex specification for actions
 export const Actions: ActionTree<State, any> = {
@@ -75,6 +82,28 @@ export const Actions: ActionTree<State, any> = {
 	[UPDATE_PLAYER]: (store: ActionContext<State, any>, payload: { player: CrudPlayer }): Promise<Result[]> => {
 		return new Promise<Result[]>((resolve, reject) => {
 			return axios.post(`${store.rootState.vm.api}/squads/players/update`, payload.player)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[FETCH_GAMES]: (store: ActionContext<State, any>): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/squads/games`)
+			.then((res) => store.commit(SET_GAMES, res.data)).catch((error) => console.warn(error))
+	},
+	[CREATE_GAME]: (store: ActionContext<State, any>, payload: { game: CrudGame }): Promise<boolean> => {
+		return new Promise<boolean>((resolve, reject) => {
+			return axios.post(`${store.rootState.vm.api}/squads/game/create`, payload.game)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[UPDATE_GAME]: (store: ActionContext<State, any>, payload: { game: CrudGame }): Promise<boolean> => {
+		return new Promise<boolean>((resolve, reject) => {
+			return axios.post(`${store.rootState.vm.api}/squads/game/update`, payload.game)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[FETCH_TITLES]: (store: ActionContext<State, any>): Promise<Title[]> => {
+		return new Promise<Title[]>((resolve, reject) => {
+			return axios.get(`${store.rootState.vm.api}/squads/titles`)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},

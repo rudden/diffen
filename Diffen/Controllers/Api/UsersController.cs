@@ -21,7 +21,7 @@ namespace Diffen.Controllers.Api
 
 	[Authorize]
 	[Route("api/[controller]")]
-	public class UsersController : Controller
+	public class UsersController : ControllerBase
 	{
 		private readonly IPmRepository _pmRepository;
 		private readonly IPostRepository _postRepository;
@@ -75,6 +75,7 @@ namespace Diffen.Controllers.Api
 			return _userRepository.SecludeUserAsync(userId, to);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpPost("{userId}/update")]
 		public Task<List<Result>> UpdateUser(string userId, [FromBody] Models.User.CRUD.User user)
 		{
@@ -127,10 +128,11 @@ namespace Diffen.Controllers.Api
 			return _pmRepository.GetPmsSentFromUserToUserAsync(userId, to);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpGet("{userId}/pm/users")]
-		public Task<List<KeyValuePair<string, string>>> GetUsersThatUserHasConversationWith(string userId)
+		public Task<List<Conversation>> GetUsersThatUserHasConversationWith(string userId)
 		{
-			_logger.Debug("Requesting to get a list of users in the form av keyvaluepair that the selected user has a conversation with (personal message)");
+			_logger.Debug("Requesting to get a list of users that the selected user has a conversation with (personal message)");
 			return _pmRepository.GetUsersWithConversationForUserAsKeyValuePairAsync(userId);
 		}
 

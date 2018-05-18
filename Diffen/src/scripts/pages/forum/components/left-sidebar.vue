@@ -1,7 +1,7 @@
 <template>
     <div class="col-lg-3 d-none d-lg-block" v-if="showLeftSideBar">
         <div class="card card-profile mb-4">
-            <div class="card-header" style="background-image: url(bg.jpg);"></div>
+            <div class="card-header" style="background-image: url(/bg.jpg);"></div>
             <div class="card-body text-center">
                 <a href="/profil">
                     <img class="card-profile-img" :src="user.avatar">
@@ -58,15 +58,16 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
-import { Getter, Action, State, namespace } from 'vuex-class'
+import { Getter, Action, Mutation, State, namespace } from 'vuex-class'
 
 import { PageViewModel } from '../../../model/common'
 import { UrlTip } from '../../../model/forum'
 
 const ModuleGetter = namespace('forum', Getter)
 const ModuleAction = namespace('forum', Action)
+const ModuleMutation = namespace('forum', Mutation)
 
-import { GET_URLTIP_TOPLIST, GET_SHOW_LEFT_SIDEBAR, FETCH_URLTIP_TOPLIST } from '../../../modules/forum/types'
+import { GET_URLTIP_TOPLIST, GET_SHOW_LEFT_SIDEBAR, SET_SHOW_LEFT_SIDEBAR, FETCH_URLTIP_TOPLIST } from '../../../modules/forum/types'
 
 import Url from '../../../components/url.vue'
 
@@ -80,8 +81,10 @@ export default class LeftSidebar extends Vue {
     @ModuleGetter(GET_URLTIP_TOPLIST) urlTips: UrlTip[]
     @ModuleGetter(GET_SHOW_LEFT_SIDEBAR) showLeftSideBar: boolean
     @ModuleAction(FETCH_URLTIP_TOPLIST) loadUrlTipTopList: () => Promise<void>
+    @ModuleMutation(SET_SHOW_LEFT_SIDEBAR) setShowLeftSideBar: (payload: { value: boolean }) => void
 
     mounted() {
+        this.setShowLeftSideBar({ value: !this.vm.loggedInUser.filter.hideLeftMenu })
         this.loadUrlTipTopList()
     }
 

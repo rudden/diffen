@@ -16,11 +16,14 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
-import { Getter, State, namespace } from 'vuex-class'
+import { Getter, Mutation, State, namespace } from 'vuex-class'
 
 const ModuleGetter = namespace('forum', Getter)
+const ModuleMutation = namespace('forum', Mutation)
 
-import { GET_SHOW_RIGHT_SIDEBAR } from '../../../modules/forum/types'
+import { GET_SHOW_RIGHT_SIDEBAR, SET_SHOW_RIGHT_SIDEBAR } from '../../../modules/forum/types'
+
+import { PageViewModel } from '../../../model/common'
 
 import FilterComponent from './filter.vue'
 import PollsComponent from '../../../components/other/polls.vue'
@@ -33,8 +36,14 @@ import RssFeed from '../../../components/rss.vue'
 	}
 })
 export default class RightSideBar extends Vue {
+    @State(state => state.vm) vm: PageViewModel
 	@ModuleGetter(GET_SHOW_RIGHT_SIDEBAR) showRightSideBar: boolean
+    @ModuleMutation(SET_SHOW_RIGHT_SIDEBAR) setShowRightSideBar: (payload: { value: boolean }) => void
 	
 	currentYear: number = (new Date()).getFullYear()
+
+	mounted() {
+        this.setShowRightSideBar({ value: !this.vm.loggedInUser.filter.hideRightMenu })
+	}
 }
 </script>

@@ -18,5 +18,9 @@ namespace Diffen.Repositories.Contracts
 		Task<List<Result>> UpdatePlayerAsync(Models.Squad.CRUD.Player player);
 		Task<List<Position>> GetPositionsAsync();
 		Task<List<Formation>> GetFormationsAsync();
+		Task<List<Game>> GetGamesAsync();
+		Task<bool> CreateGameAsync(Models.Squad.CRUD.Game game);
+		Task<bool> UpdateGameAsync(Models.Squad.CRUD.Game game);
+		Task<List<Title>> GetTitlesAsync();
 	}
 }

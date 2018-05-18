@@ -18,7 +18,7 @@ namespace Diffen.Controllers.Api
 
 	[Authorize]
 	[Route("api/[controller]")]
-	public class ChroniclesController : Controller
+	public class ChroniclesController : ControllerBase
 	{
 		private readonly IChronicleRepository _chronicleRepository;
 

@@ -4,24 +4,30 @@
 	.with-top-navbar {
 		padding: 0 !important;
 	}
-	.with-top-navbar .container {
-		padding: 0 !important;
-	}
+
+		.with-top-navbar .container {
+			padding: 0 !important;
+		}
 </style>
 
 <div class="container-fluid container-fill-height">
 	<div class="container-content-middle">
 		<form role="form" method="post" class="mx-auto text-center app-login-form">
 			@*<a href="../index.html" class="app-brand mb-5">
-				<img src="../assets/img/brand.png" alt="brand">
-			</a>*@
+					<img src="../assets/img/brand.png" alt="brand">
+				</a>*@
 			<h4>Välkommen!</h4>
-			<hr/>
+			<hr />
 			<div class="form-group">
 				<input type="text" class="form-control" asp-for="Email" placeholder="din@epost.com" required autofocus>
 			</div>
 			<div class="form-group mb-3">
 				<input type="password" class="form-control" asp-for="Password" placeholder="Lösenord" required>
+			</div>
+			<div class="checkbox mb-3">
+				<label class="mb-0">
+					<input type="checkbox" asp-for="RememberMe"> Håll mig inloggad
+				</label>
 			</div>
 			@if (!ViewData.ModelState.IsValid)
 			{
@@ -29,8 +35,11 @@
 					@Html.ValidationSummary(false, "", new { @class = "auth-validation" })
 				</div>
 			}
-			<div class="mb-5">
+			<div class="mb-3">
 				<button type="submit" class="btn btn-success"><span class="oi oi-account-login"></span> Logga in</button>
+				<a href="/auth/resetpassword" class="btn btn-danger"> Glömt lösenord</a>
+			</div>
+			<div class="mb-5">
 				<a href="/auth/register" class="btn btn-primary"> Skapa konto</a>
 			</div>
 		</form>

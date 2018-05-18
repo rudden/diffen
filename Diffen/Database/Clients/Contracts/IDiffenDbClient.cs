@@ -54,6 +54,10 @@ namespace Diffen.Database.Clients.Contracts
 		Task<List<PersonalMessage>> GetPmsSentFromUserToUserAsync(string fromUserId, string toUserId);
 		Task<List<AppUser>> GetUsersThatUserHasOngoingConversationWithAsync(string userId);
 		Task<bool> CreatePersonalMessageAsync(PersonalMessage personalMessage);
+		Task<bool> MarkPmAsReadByOnIdAsync(int personalMessageId);
+		Task<List<PersonalMessage>> GetUnReadPersonalMessagesForUserWithIdAsync(string userId);
+		Task<int> GetNumberOfUnReadPersonalMessagesForUserWithIdAsync(string userId);
+		Task<int> GetNumberOfUnReadPersonalMessagesFromUserToUserAsync(string fromUserId, string toUserId);
 		Task<bool> UpdateUserAsync(AppUser user);
 		Task<bool> UpdateUserBioAsync(string userId, string newBio);
 		Task<bool> UserHasAFavoritePlayerSelectedAsync(string userId);
@@ -65,6 +69,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> CreateBaseFilterForForumOnUserAsync(Filter filter);
 		Task<bool> UpdateBaseFilterForForumOnUserAsync(Filter filter);
 		Task<bool> AnActiveInviteExistsOnCodeAsync(string code);
+		Task<bool> AnActiveAccountIsCreatedOnEmailUsingCodeAsync(string code, string email);
 		Task<bool> CreateInviteAsync(Invite invite);
 		Task<bool> UpdateInviteAsync(Invite invite);
 		Task<bool> DeleteInviteAsync(int inviteId);
@@ -82,6 +87,14 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> UpdatePlayerAsync(Player player);
 		Task<bool> DeleteFavoritePlayerRelationToUserForPlayerAsync(int playerId);
 		Task<bool> UpdateAvailablePositionsForPlayerAsync(int playerId, IEnumerable<int> positionIds);
+		Task<List<Game>> GetGamesAsync();
+		Task<Game> GetGameOnIdAsync(int gameId);
+		Task<List<PlayerEvent>> GetPlayerEventsAsync();
+		Task<bool> CreateGameAsync(Game game);
+		Task<bool> UpdateGameAsync(Game game);
+		Task<bool> CreatePlayerEventsAsync(List<PlayerEvent> events);
+		Task<bool> DeletePlayerEventsOnGameIdAsync(int gameId);
+		Task<List<Title>> GetTitlesAsync();
 
 		// Poll Related Requests
 		Task<List<Poll>> GetPollsAsync();

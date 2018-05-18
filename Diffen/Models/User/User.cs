@@ -8,7 +8,6 @@ namespace Diffen.Models.User
 	{
 		public string Id { get; set; }
 		public string Bio { get; set; }
-		public string Email { get; set; }
 		public string NickName { get; set; }
 		public string Avatar { get; set; }
 		public string Region { get; set; }
@@ -21,6 +20,7 @@ namespace Diffen.Models.User
 		public Player FavoritePlayer { get; set; }
 		public IEnumerable<int> SavedPostsIds { get; set; }
 		public IEnumerable<string> InRoles { get; set; }
+		public int NumberOfUnReadPersonalMessages { get; set; }
 
 		public string Joined { get; set; }
 		public string SecludedUntil { get; set; }

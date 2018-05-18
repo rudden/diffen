@@ -32,6 +32,9 @@ namespace Diffen.Database
 		public DbSet<Lineup> Lineups { get; set; }
 		public DbSet<PlayerToLineup> PlayersToLineups { get; set; }
 		public DbSet<PlayerToPosition> PlayersToPositions { get; set; }
+		public DbSet<Game> Games { get; set; }
+		public DbSet<PlayerEvent> PlayerEvents { get; set; }
+		public DbSet<Title> Titles { get; set; }
 
 		public DbSet<Poll> Polls { get; set; }
 		public DbSet<PollSelection> PollSelections { get; set; }

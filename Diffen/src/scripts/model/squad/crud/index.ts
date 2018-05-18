@@ -1,3 +1,5 @@
+import { GameType, GameEventType } from ".."
+
 export class Lineup {
     id?: number
     formationId: number
@@ -21,4 +23,16 @@ export class Player {
     isHereOnLoan: boolean
     isOutOnLoan: boolean
     availablePositionsIds: number[] = []
+}
+
+export class Game {
+    id?: number
+    type: GameType
+    playedDate?: Date
+    events: PlayerEvent[] = []
+}
+
+export class PlayerEvent {
+    playerId: number = 0
+    type: GameEventType = GameEventType.Goal
 }

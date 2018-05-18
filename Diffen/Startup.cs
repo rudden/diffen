@@ -1,8 +1,12 @@
 ﻿using System;
+using System.IO;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -65,13 +69,13 @@ namespace Diffen
 
 			services.AddDbContext<DiffenDbContext>();
 
-			services.AddIdentity<AppUser, IdentityRole>(c =>
-			{
-				c.User.RequireUniqueEmail = true;
-				c.Password.RequiredLength = 8;
-			})
-			.AddEntityFrameworkStores<DiffenDbContext>()
-			.AddDefaultTokenProviders();
+			services.AddIdentity<AppUser, IdentityRole>(options =>
+				{
+					options.User.RequireUniqueEmail = true;
+					options.Password.RequiredLength = 8;
+				})
+				.AddEntityFrameworkStores<DiffenDbContext>()
+				.AddDefaultTokenProviders();
 
 			services.ConfigureApplicationCookie(options =>
 			{
@@ -87,14 +91,29 @@ namespace Diffen
 
 			services.AddCors(options =>
 			{
-				options.AddPolicy("CorsPolicy", policy =>
-				{
-					policy.AllowAnyHeader();
-					policy.AllowAnyMethod();
-					policy.AllowAnyOrigin();
-					policy.AllowCredentials();
-				});
+				options.AddPolicy("CorsPolicy", builder => builder
+					.AllowAnyHeader()
+					.AllowAnyMethod()
+					.AllowAnyOrigin()
+					.AllowCredentials());
 			});
+
+			services.AddAntiforgery(
+				options =>
+				{
+					// Rename the form input name from "__RequestVerificationToken" to "f" for the same reason above
+					// e.g. <input name="__RequestVerificationToken" type="hidden" value="..." />
+					options.FormFieldName = "f";
+
+					// Rename the Anti-Forgery HTTP header from RequestVerificationToken to X-XSRF-TOKEN. X-XSRF-TOKEN
+					// is not a standard but a common name given to this HTTP header popularized by Angular.
+					options.HeaderName = "X-XSRF-TOKEN";
+				}
+			);
+
+			services.AddDataProtection()
+				.SetApplicationName("app-blaranderna")
+				.PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "key-ring\\keys")));
 
 			services.AddMvc();
 
@@ -110,7 +129,7 @@ namespace Diffen
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IAntiforgery antiforgery)
 		{
 			if (env.IsDevelopment())
 			{
@@ -124,6 +143,25 @@ namespace Diffen
 			app.UseAuthentication();
 			app.UseStaticFiles();
 			app.UseCors("CorsPolicy");
+
+			app.Use(next => context =>
+			{
+				var path = context.Request.Path.Value;
+				if (
+					string.Equals(path, "/", StringComparison.OrdinalIgnoreCase) ||
+					string.Equals(path, "/auth/login", StringComparison.OrdinalIgnoreCase))
+				{
+					// The request token can be sent as a JavaScript-readable cookie, 
+					// and Angular uses it by default.
+					var tokens = antiforgery.GetAndStoreTokens(context);
+					context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken,
+						new CookieOptions
+						{
+							HttpOnly = false
+						});
+				}
+				return next(context);
+			});
 
 			app.UseMvc(r =>
 			{

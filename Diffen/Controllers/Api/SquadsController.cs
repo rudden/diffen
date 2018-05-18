@@ -15,7 +15,7 @@ namespace Diffen.Controllers.Api
 
 	[Authorize]
 	[Route("api/[controller]")]
-	public class SquadsController : Controller
+	public class SquadsController : ControllerBase
 	{
 		private readonly ISquadRepository _squadRepository;
 
@@ -90,6 +90,37 @@ namespace Diffen.Controllers.Api
 		{
 			_logger.Debug("Requesting to create a new lineup");
 			return _squadRepository.CreateLineupAsync(lineup);
+		}
+
+		[HttpGet("games")]
+		public Task<List<Game>> GetGames()
+		{
+			_logger.Debug("Requesting all games");
+			return _squadRepository.GetGamesAsync();
+		}
+
+
+		[Authorize(Policy = "IsManager")]
+		[HttpPost, Route("game/create")]
+		public Task<bool> CreateGame([FromBody] Models.Squad.CRUD.Game game)
+		{
+			_logger.Debug("Requesting to create a new game");
+			return _squadRepository.CreateGameAsync(game);
+		}
+
+		[Authorize(Policy = "IsManager")]
+		[HttpPost, Route("game/update")]
+		public Task<bool> UpdateGame([FromBody] Models.Squad.CRUD.Game game)
+		{
+			_logger.Debug("Requesting to update a game with id {gameId}", game.Id);
+			return _squadRepository.UpdateGameAsync(game);
+		}
+
+		[HttpGet("titles")]
+		public Task<List<Title>> GetTitles()
+		{
+			_logger.Debug("Requesting all titles");
+			return _squadRepository.GetTitlesAsync();
 		}
 	}
 }

@@ -20,6 +20,8 @@ namespace Diffen.Database.Entities.User
 		public AppUser ToUser { get; set; }
 		public string ToUserId { get; set; }
 
+		public bool IsReadByToUser { get; set; }
+
 		public DateTime Created { get; set; }
 	}
 }

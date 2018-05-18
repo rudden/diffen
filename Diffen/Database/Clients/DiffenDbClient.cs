@@ -396,6 +396,34 @@ namespace Diffen.Database.Clients
 			return CommitedResultIsSuccessfulAsync();
 		}
 
+		public async Task<bool> MarkPmAsReadByOnIdAsync(int personalMessageId)
+		{
+			var pm = await _dbContext.PersonalMessages.FindAsync(personalMessageId);
+			if (pm == null)
+			{
+				return false;
+			}
+			pm.IsReadByToUser = true;
+			_dbContext.PersonalMessages.Update(pm);
+			return await CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<List<PersonalMessage>> GetUnReadPersonalMessagesForUserWithIdAsync(string userId)
+		{
+			return _dbContext.PersonalMessages.Where(pm => pm.ToUserId.Equals(userId) && !pm.IsReadByToUser).ToListAsync();
+		}
+
+		public Task<int> GetNumberOfUnReadPersonalMessagesFromUserToUserAsync(string fromUserId, string toUserId)
+		{
+			return _dbContext.PersonalMessages.CountAsync(pm =>
+				pm.ToUserId.Equals(toUserId) && pm.FromUserId.Equals(fromUserId) && !pm.IsReadByToUser);
+		}
+
+		public Task<int> GetNumberOfUnReadPersonalMessagesForUserWithIdAsync(string userId)
+		{
+			return _dbContext.PersonalMessages.CountAsync(pm => pm.ToUserId.Equals(userId) && !pm.IsReadByToUser);
+		}
+
 		public Task<bool> UpdateUserAsync(AppUser user)
 		{
 			_dbContext.Users.Update(user);
@@ -467,6 +495,20 @@ namespace Diffen.Database.Clients
 		public async Task<bool> AnActiveInviteExistsOnCodeAsync(string code)
 		{
 			return await _dbContext.Invites.CountAsync(x => x.UniqueCode.Equals(code) && !x.AccountIsCreated) > 0;
+		}
+
+		public async Task<bool> AnActiveAccountIsCreatedOnEmailUsingCodeAsync(string code, string email)
+		{
+			var invite = await _dbContext.Invites.FirstOrDefaultAsync(x => x.UniqueCode.Equals(code) && x.AccountIsCreated);
+			if (invite == null)
+				return false;
+
+			var user = await _dbContext.Users.FirstOrDefaultAsync(
+				x => x.Email.Equals(email) && invite.InviteUsedByUserId == x.Id);
+			if (user == null)
+				return false;
+
+			return true;
 		}
 
 		public async Task<bool> CreateInviteAsync(Invite invite)
@@ -790,6 +832,55 @@ namespace Diffen.Database.Clients
 			}
 			_dbContext.UsersToRegions.Remove(currentRegionSelection);
 			return await CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<List<Game>> GetGamesAsync()
+		{
+			return _dbContext.Games.IncludeAll().OrderByDescending(x => x.OnDate).ToListAsync();
+		}
+
+		public Task<Game> GetGameOnIdAsync(int gameId)
+		{
+			return _dbContext.Games.IncludeAll().FirstOrDefaultAsync(game => game.Id == gameId);
+		}
+
+		public Task<List<PlayerEvent>> GetPlayerEventsAsync()
+		{
+			return _dbContext.PlayerEvents.IncludeAll().ToListAsync();
+		}
+
+		public Task<bool> CreateGameAsync(Game game)
+		{
+			_dbContext.Games.Add(game);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<bool> UpdateGameAsync(Game game)
+		{
+			_dbContext.Games.Update(game);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<bool> CreatePlayerEventsAsync(List<PlayerEvent> events)
+		{
+			_dbContext.PlayerEvents.AddRange(events);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public async Task<bool> DeletePlayerEventsOnGameIdAsync(int gameId)
+		{
+			var events = _dbContext.PlayerEvents.Where(x => x.GameId == gameId);
+			if (!events.Any())
+			{
+				return false;
+			}
+			_dbContext.PlayerEvents.RemoveRange(events);
+			return await CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<List<Title>> GetTitlesAsync()
+		{
+			return _dbContext.Titles.OrderByDescending(x => x.Year).ToListAsync();
 		}
 
 		private async Task<bool> CommitedResultIsSuccessfulAsync()

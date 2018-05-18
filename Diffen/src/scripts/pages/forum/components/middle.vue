@@ -1,6 +1,6 @@
 <template>
     <div :class="{ 'col': !showRightSideBar || !showLeftSideBar, 'col-lg-6': showRightSideBar && showLeftSideBar }">
-        <post-stream :page-size="pageSize" :state-stored-items="pagedPosts" :paging="paging" :loader-predicate="isLoadingPosts">
+        <post-stream :page-size="pageSize" :paging="paging" :infinite-scroll="true" :loader-predicate="isLoadingPosts">
             <template slot="top">
                 <li class="media list-group-item p-4" style="display: block">
                     <div class="flow-root">
@@ -41,7 +41,7 @@ import {
 } from '../../../modules/forum/types'
 
 import { Post, Filter } from '../../../model/forum'
-import { PageViewModel, Paging } from '../../../model/common'
+import { ForumViewModel, Paging } from '../../../model/common'
 
 import NewPost from '../../../components/post/new.vue'
 
@@ -55,7 +55,7 @@ import { Pagination } from 'vue-pagination-2'
     }
 })
 export default class Middle extends Vue {
-  	@State(state => state.vm) vm: PageViewModel
+  	@State(state => state.vm) vm: ForumViewModel
     @ModuleGetter(GET_IS_LOADING_POSTS) isLoadingPosts: boolean
     @ModuleGetter(GET_FILTER) filter: Filter
     @ModuleGetter(GET_PAGED_POSTS) pagedPosts: Paging<Post>
@@ -68,7 +68,7 @@ export default class Middle extends Vue {
     @ModuleMutation(SET_SHOW_LEFT_SIDEBAR) setShowLeftSideBar: (payload: { value: boolean }) => void
     @ModuleMutation(SET_SHOW_RIGHT_SIDEBAR) setShowRightSideBar: (payload: { value: boolean }) => void
 
-    page: number = 1
+    page: number
     private pageSize: number
 
     created() {
@@ -76,11 +76,16 @@ export default class Middle extends Vue {
         this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers }})
     }
 
-    paging(page: number) {
+    paging(page: number): Promise<Paging<Post>> {
         this.page = page
         this.setIsLoadingPosts({ value: true })
-        this.loadPaged({ pageNumber: this.page, pageSize: this.pageSize, filter: this.filter })
-            .then(() => this.setIsLoadingPosts({ value: false }))
+        return new Promise<Paging<Post>>((resolve, reject) => {
+            this.loadPaged({ pageNumber: this.page, pageSize: this.pageSize, filter: this.filter })
+                .then((paging: Paging<Post>) => {
+                    resolve(paging)
+                    this.setIsLoadingPosts({ value: false })
+                })
+        }) 
     }
 
     toggleRightSideBar() {
