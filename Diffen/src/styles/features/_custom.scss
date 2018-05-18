@@ -76,7 +76,7 @@ div.flow-root {
 	display: flow-root;
 }
 
-.btn {
+.btn, .list-group-item {
 	&__no-top-radius {
 		border-top-left-radius: 0;
 		border-top-right-radius: 0;
