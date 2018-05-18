@@ -1,9 +1,5 @@
 <template>
 	<div class="col-lg-3" v-show="showRightSideBar">
-		<!-- <polls-component :type-of-polls="'active'" :is-small="true" class="mb-4" />
-		<chronicles-component :is-small="true" :amount-of-chronicles="5" class="mb-4" /> -->
-		<rss-feed :url="'https://www.jarnkaminerna.se/feed/'" :feed-name="'Senaste från Järnkaminerna'" />
-		<rss-feed :url="'https://diftv.solidtango.com/feed/'" :feed-name="'Senaste från DIFTV'" />
 		<div class="card mb-4">
             <div class="card-body">
                 <h6 class="mb-3">Länktipstoppen</h6>
@@ -14,8 +10,12 @@
                         <url :tip="tip" class="ml-1" />
                     </li>
                 </ul>
+                <div class="alert alert-warning mb-0" v-else>Inga länktips delade idag</div>
             </div>
         </div>
+        <polls-component :type-of-polls="'active'" :is-small="true" class="mb-4" />
+		<chronicles-component :is-small="true" :amount-of-chronicles="5" class="mb-4" />
+        <player-events :default-game-type="'League'" :is-small="true" :header="'Händelser från Allsvenskan'" />
 		<div class="card card-link-list">
 			<div class="card-body">
 				© {{ currentYear }} Blåränderna
@@ -41,12 +41,12 @@ import { UrlTip } from '../../../model/forum'
 import FilterComponent from './filter.vue'
 import PollsComponent from '../../../components/other/polls.vue'
 import ChroniclesComponent from '../../../components/other/chronicles.vue'
-import RssFeed from '../../../components/rss.vue'
 import Url from '../../../components/url.vue'
+import PlayerEvents from '../../../components/player-events.vue'
 
 @Component({
 	components: {
-		FilterComponent, PollsComponent, ChroniclesComponent, RssFeed, Url
+		FilterComponent, PollsComponent, ChroniclesComponent, Url, PlayerEvents
 	}
 })
 export default class RightSideBar extends Vue {
