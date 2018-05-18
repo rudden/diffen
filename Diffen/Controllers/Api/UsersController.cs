@@ -75,6 +75,7 @@ namespace Diffen.Controllers.Api
 			return _userRepository.SecludeUserAsync(userId, to);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpPost("{userId}/update")]
 		public Task<List<Result>> UpdateUser(string userId, [FromBody] Models.User.CRUD.User user)
 		{
@@ -127,6 +128,7 @@ namespace Diffen.Controllers.Api
 			return _pmRepository.GetPmsSentFromUserToUserAsync(userId, to);
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpGet("{userId}/pm/users")]
 		public Task<List<Conversation>> GetUsersThatUserHasConversationWith(string userId)
 		{
