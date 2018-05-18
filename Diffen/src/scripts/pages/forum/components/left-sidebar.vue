@@ -40,6 +40,8 @@
                 </ul>
             </div>
         </div>
+        <rss-feed :url="'https://www.jarnkaminerna.se/feed/'" :amount="5" :feed-name="'Senaste från Järnkaminerna'" />
+		<rss-feed :url="'https://diftv.solidtango.com/feed/'" :amount="5" :feed-name="'Senaste från DIFTV'" />
     </div>
 </template>
 
@@ -56,7 +58,13 @@ const ModuleMutation = namespace('forum', Mutation)
 
 import { GET_SHOW_LEFT_SIDEBAR, SET_SHOW_LEFT_SIDEBAR } from '../../../modules/forum/types'
 
-@Component({})
+import RssFeed from '../../../components/rss.vue'
+
+@Component({
+    components: {
+        RssFeed
+    }
+})
 export default class LeftSidebar extends Vue {
     @State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_SHOW_LEFT_SIDEBAR) showLeftSideBar: boolean
