@@ -1,19 +1,32 @@
 <template>
-    <ul class="list-group media-list media-list-stream">
-        <li class="list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-if="loggedInUserIsAuthor || !isSmall">
-            <template v-if="isSmall">
+    <div>
+        <div class="card mb-4" v-if="isSmall">
+            <div class="card-body">
+                <a href="/kronika/ny" v-if="loggedInUserIsAuthor" style="color: black">
+                    <span class="icon icon-plus float-right" v-tooltip="'Skapa ny krönika'"></span>
+                </a>
                 <h6 class="mb-0">Krönikor</h6>
-            </template>
-            <template v-else>
+                <hr />
+                <template v-if="!loading">
+                    <ul class="list-unstyled list-spaced mb-0">
+                        <li class="ellipsis" v-for="chronicle in filtered" :key="chronicle.id">
+                            <small>
+                                <a :href="`/kronika/${chronicle.slug}`">{{ chronicle.title }}</a>
+                            </small>
+                        </li>
+                    </ul>
+                </template>
+                <template v-else>
+                    <loader v-bind="{ background: '#699ED0' }" />
+                </template>
+            </div>
+        </div>
+        <ul class="list-group media-list media-list-stream" v-else>
+            <li class="list-group-item p-4"v-if="loggedInUserIsAuthor">
                 <a href="/kronika/ny" class="btn btn-sm btn-success float-right" v-if="loggedInUserIsAuthor">Skapa ny krönika</a>
                 <h4 class="mb-0">Krönikor</h4>
-            </template>
-        </li>
-        <li class="media list-group-item" :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-show="loading">
-            <loader v-bind="{ background: '#699ED0' }" />
-        </li>
-        <div v-show="!loading">
-            <li class="media list-group-item p-4" v-if="!isSmall">
+            </li>
+            <li class="media list-group-item p-4">
                 <div class="col pl-0 pr-0">
                     <div class="form-group mb-0" :class="{ 'float-right': loggedInUserIsAuthor }">
                         <input type="text" class="form-control form-control-sm" v-model="chronicleSearch" placeholder="Sök">
@@ -38,42 +51,39 @@
                     </template>
                 </div>
             </li>
-            <template v-if="filtered.length > 0">
-                <li class="list-group-item media"  :class="{ 'p-3': isSmall, 'p-4': !isSmall }" v-for="chronicle in filtered" :key="chronicle.id">
-                    <span class="icon icon-text-document text-muted mr-2" v-if="!isSmall"></span>
-                    <div class="media-body">
-                        <div class="media-heading">
-                            <a :href="`/kronika/${chronicle.slug}`">
-                                <template v-if="isSmall">
-                                    <small><strong>{{ chronicle.title }}</strong></small>
-                                </template>
-                                <template v-else>
+            <template v-if="!loading">
+                <template v-if="filtered.length > 0">
+                    <li class="list-group-item media p-4" v-for="chronicle in filtered" :key="chronicle.id">
+                        <span class="icon icon-text-document text-muted mr-2"></span>
+                        <div class="media-body">
+                            <div class="media-heading">
+                                <a :href="`/kronika/${chronicle.slug}`">
                                     <strong>{{ chronicle.title }}</strong>
                                     <span class="badge badge-danger ml-2" v-if="chronicle.published > today">inte publicerad än</span>
-                                </template>
-                            </a>
+                                </a>
+                            </div>
+                            <div>
+                                <small class="text-muted float-right">{{ chronicle.published }}</small>
+                                <small class="text-muted">Av: </small><small><a :href="`/profil/${chronicle.writtenByUser.id}`">{{ chronicle.writtenByUser.nickName }}</a></small>
+                            </div>
                         </div>
-                        <div>
-                            <small class="text-muted float-right">{{ chronicle.published }}</small>
-                            <small class="text-muted">Av: </small><small><a :href="`/profil/${chronicle.writtenByUser.id}`">{{ chronicle.writtenByUser.nickName }}</a></small>
+                    </li>
+                </template>
+                <template v-else>
+                    <li class="list-group-item media p-4">
+                        <div class="media-body">
+                            <div class="alert alert-warning mb-0">Hittade inga krönikor</div>
                         </div>
-                    </div>
-                </li>
-                <template v-if="isSmall">
-                    <li class="list-group-item p-0">
-                        <a href="/kronika" class="btn btn-sm btn-primary btn-block btn__no-top-radius">Visa fler</a>
                     </li>
                 </template>
             </template>
             <template v-else>
-                <li class="list-group-item media" :class="{ 'p-3': isSmall, 'p-4': !isSmall }">
-                    <div class="media-body">
-                        <div class="alert alert-warning mb-0">Hittade inga krönikor</div>
-                    </div>
+                <li class="media list-group-item p-4">
+                    <loader v-bind="{ background: '#699ED0' }" />
                 </li>
             </template>
-        </div>
-    </ul>
+        </ul>
+    </div>
 </template>
 
 <script lang="ts">
