@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using AutoMapper;
-
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -27,14 +27,16 @@ namespace Diffen.Repositories
 		private readonly UserManager<AppUser> _userManager;
 		private readonly IUploadRepository _uploadRepository;
 		private readonly IMemoryCache _cache;
+		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public UserRepository(IMapper mapper, IDiffenDbClient dbClient, UserManager<AppUser> userManager, IUploadRepository uploadRepository, IMemoryCache cache)
+		public UserRepository(IMapper mapper, IDiffenDbClient dbClient, UserManager<AppUser> userManager, IUploadRepository uploadRepository, IMemoryCache cache, IHttpContextAccessor httpContextAccessor)
 		{
 			_mapper = mapper;
 			_dbClient = dbClient;
 			_userManager = userManager;
 			_uploadRepository = uploadRepository;
 			_cache = cache;
+			_httpContextAccessor = httpContextAccessor;
 		}
 
 		public async Task<List<KeyValuePair<string, string>>> GetUsersAsKeyValuePairAsync()
@@ -121,12 +123,15 @@ namespace Diffen.Repositories
 				}
 			}
 
-			var currentRoles = await _userManager.GetRolesAsync(currentUser);
-			if (!currentRoles.SequenceEqual(user.Roles))
+			if (_httpContextAccessor.HttpContext.User.IsInRole("Admin"))
 			{
-				var removeResult = await _userManager.RemoveFromRolesAsync(currentUser, currentRoles);
-				var addResult = await _userManager.AddToRolesAsync(currentUser, user.Roles);
-				results.Update(removeResult.Succeeded && addResult.Succeeded, ResultMessages.UpdateRoles);
+				var currentRoles = await _userManager.GetRolesAsync(currentUser);
+				if (!currentRoles.SequenceEqual(user.Roles))
+				{
+					var removeResult = await _userManager.RemoveFromRolesAsync(currentUser, currentRoles);
+					var addResult = await _userManager.AddToRolesAsync(currentUser, user.Roles);
+					results.Update(removeResult.Succeeded && addResult.Succeeded, ResultMessages.UpdateRoles);
+				}
 			}
 
 			if (currentUser.FavoritePlayer != null)
