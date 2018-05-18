@@ -43,7 +43,6 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				Id = source.Id,
 				Bio = source.Bio,
-				Email = source.Email,
 				NickName = source.NickNames.Current() ?? "anonymous",
 				Avatar = GetAvatar(source),
 				Region = source.Region?.Region?.Name,
