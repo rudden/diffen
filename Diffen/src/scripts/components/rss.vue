@@ -39,11 +39,16 @@ interface RssItem {
 @Component({
     props: {
         url: String,
+        amount: {
+            type: Number,
+            default: 10
+        },
         feedName: String
     }
 })
 export default class RssParser extends Vue {
     url: string
+    amount: number
     feedName: string
 
     items: RssItem[] = []
@@ -60,7 +65,8 @@ export default class RssParser extends Vue {
         return new Promise<void>((resolve, reject) => {
             new Parser().parseURL(`${this.corsBaseUrl}${this.url}`, (err: any, feed: any) => {
                 if (feed) {
-                    for (let i = 0; i < feed.items.length; i++) {
+                    let numberOfItems: number = feed.items.length > this.amount ? this.amount : feed.items.length
+                    for (let i = 0; i < numberOfItems; i++) {
                         this.items.push({
                             id: i,
                             title: feed.items[i].title,
