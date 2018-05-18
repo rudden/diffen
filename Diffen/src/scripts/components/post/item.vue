@@ -41,7 +41,7 @@
                                         <new-post :parent-id="post.id" :modal-name="modalAttributes.replyPost.attributes.name" />
                                     </template>
                                 </modal>
-                                <a v-on:click="bookmarkPost" v-if="canBookmark">
+                                <a v-on:click="bookmarkPost" v-if="canBookmark" v-tooltip="'Spara'">
                                     · <span class="icon icon-bookmark"></span>
                                 </a>
                                 <span v-if="(post.lineupId || post.urlTipHref || createdByLoggedInUser || canBookmark) && loggedInUserIsAdmin"> · </span>
@@ -52,7 +52,7 @@
                                         </div>
                                     </template>
                                 </modal>
-                                <a :href="`/forum/inlagg/${post.id}`" class="no-hover">
+                                <a :href="`/forum/inlagg/${post.id}`" class="no-hover" v-tooltip="'Gå till'">
                                     · <span class="icon icon-eye"></span>
                                 </a>
                                 <voting :post="post" />
@@ -168,7 +168,8 @@ export default class PostComponent extends Vue {
             },
             header: 'Editera inlägg',
             button: {
-                icon: 'icon icon-edit'
+                icon: 'icon icon-edit',
+                text: 'Editera'
             },
             onOpen: () => this.post.inEdit = true,
             // onClose: this.closePostActionModal
@@ -179,7 +180,8 @@ export default class PostComponent extends Vue {
             },
             header: 'Saxa inlägg',
             button: {
-                icon: 'icon icon-scissors'
+                icon: 'icon icon-scissors',
+                text: 'Saxa'
             }
         },
         replyPost: {
@@ -190,7 +192,8 @@ export default class PostComponent extends Vue {
             },
             header: 'Svara inlägg',
             button: {
-                icon: 'icon icon-quote'
+                icon: 'icon icon-quote',
+                text: 'Svara'
             },
             onOpen: () => this.post.inReply = true,
             // onClose: this.closePostActionModal

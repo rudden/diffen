@@ -2,13 +2,13 @@
     <div class="wrap">
         <a :class="button.classes" v-on:click="show">
             <template v-if="button.icon">
-                <span :class="button.icon"></span>
+                <span :class="button.icon" v-tooltip="button.text"></span>
             </template>
-            <template v-if="button.badge">
+            <template v-else-if="button.badge">
                 <span class="badge" :class="button.badge">{{ button.text }}</span>
             </template>
             <template v-else>
-                {{ button.text }}                
+                {{ button.text }}
             </template>
         </a>
         <v-modal v-bind="attributes" @before-open="open" @before-close="close">

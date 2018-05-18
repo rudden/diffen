@@ -44,7 +44,7 @@
 			<ul id="#js-popoverContent" class="nav navbar-nav float-right mr-0 d-none d-md-flex">
 				<li class="nav-item" v-if="vm.loggedInUser.numberOfUnReadPersonalMessages > 0">
 					<a class="app-notifications nav-link" href="/profil">
-						<span class="icon icon-bell"></span>
+						<span class="icon icon-bell" v-tooltip.left="vm.loggedInUser.numberOfUnReadPersonalMessages + ' nya pm'"></span>
 					</a>
 				</li>
 				<li class="nav-item ml-2">

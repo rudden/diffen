@@ -1,6 +1,6 @@
 <template>
 	<small>
-		<a target="_blank" :href="link" v-on:click="click">{{ displayed }}</a>
+		<a target="_blank" :href="link" v-on:click="click" v-tooltip="link">{{ displayed }}</a>
 	</small>
 </template>
 
