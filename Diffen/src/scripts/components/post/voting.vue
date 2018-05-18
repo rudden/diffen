@@ -86,9 +86,9 @@ export default class Voting extends Vue {
 
 <style lang="scss" scoped>
 .icon-thumbs-up {
-    color: green;
+    color: #162248;
 }
 .icon-thumbs-down {
-    color: red;
+    color: #162248;
 }
 </style>
