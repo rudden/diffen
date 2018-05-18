@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Diffen.Helpers.Authorize;
-using Diffen.Helpers.Extensions;
-using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+
 using Serilog;
 
 namespace Diffen.Controllers.Pages
@@ -14,6 +14,8 @@ namespace Diffen.Controllers.Pages
 	using ViewModels.Auth;
 	using Repositories.Contracts;
 	using Database.Entities.User;
+	using Helpers.Authorize;
+	using Helpers.Extensions;
 
 	public class AuthController : Controller
 	{
@@ -62,8 +64,8 @@ namespace Diffen.Controllers.Pages
 			if (!string.IsNullOrEmpty(attempt.SecludedUntil) && Convert.ToDateTime(attempt.SecludedUntil) > DateTime.Now)
 			{
 				_logger.Information(
-					"Login: User with email {userEmail} tried to login even though he or she is secluded until {secludedUntil}",
-					attempt.Email, attempt.SecludedUntil);
+					"Login: User with nickname {userNickName} tried to login even though he or she is secluded until {secludedUntil}",
+					attempt.NickName, attempt.SecludedUntil);
 				ModelState.AddModelError("All", $"du är spärrad till och med {attempt.SecludedUntil}");
 				return View();
 			}
