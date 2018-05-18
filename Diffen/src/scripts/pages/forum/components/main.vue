@@ -18,7 +18,7 @@ import RightSidebar from './right-sidebar.vue'
 	components: {
 		LeftSidebar,
 		Middle,
-		RightSidebar,
+		RightSidebar
 	}
 })
 export default class Main extends Vue {}

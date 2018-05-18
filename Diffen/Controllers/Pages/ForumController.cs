@@ -39,5 +39,13 @@ namespace Diffen.Controllers.Pages
 			Model.FullConversationMode = true;
 			return View("_Page", Model);
 		}
+
+		[Authorize]
+		[Route("sida/{pageNumber}")]
+		public IActionResult SelectedPage(int pageNumber)
+		{
+			Model.SelectedPageNumber = pageNumber;
+			return View("_Page", Model);
+		}
 	}
 }

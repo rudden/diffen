@@ -41,7 +41,7 @@ import {
 } from '../../../modules/forum/types'
 
 import { Post, Filter } from '../../../model/forum'
-import { PageViewModel, Paging } from '../../../model/common'
+import { ForumViewModel, Paging } from '../../../model/common'
 
 import NewPost from '../../../components/post/new.vue'
 
@@ -55,7 +55,7 @@ import { Pagination } from 'vue-pagination-2'
     }
 })
 export default class Middle extends Vue {
-  	@State(state => state.vm) vm: PageViewModel
+  	@State(state => state.vm) vm: ForumViewModel
     @ModuleGetter(GET_IS_LOADING_POSTS) isLoadingPosts: boolean
     @ModuleGetter(GET_FILTER) filter: Filter
     @ModuleGetter(GET_PAGED_POSTS) pagedPosts: Paging<Post>
@@ -68,7 +68,7 @@ export default class Middle extends Vue {
     @ModuleMutation(SET_SHOW_LEFT_SIDEBAR) setShowLeftSideBar: (payload: { value: boolean }) => void
     @ModuleMutation(SET_SHOW_RIGHT_SIDEBAR) setShowRightSideBar: (payload: { value: boolean }) => void
 
-    page: number = 1
+    page: number
     private pageSize: number
 
     created() {

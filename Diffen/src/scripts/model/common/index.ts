@@ -9,6 +9,7 @@ export class PageViewModel {
 
 export class ForumViewModel extends PageViewModel {
 	selectedPostId: number
+	selectedPageNumber: number
 	fullConversationMode: boolean
 }
 
