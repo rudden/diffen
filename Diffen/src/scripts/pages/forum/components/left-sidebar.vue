@@ -1,7 +1,7 @@
 <template>
     <div class="col-lg-3 d-none d-lg-block" v-if="showLeftSideBar">
         <div class="card card-profile mb-4">
-            <div class="card-header" style="background-image: url(bg.jpg);"></div>
+            <div class="card-header" style="background-image: url(/bg.jpg);"></div>
             <div class="card-body text-center">
                 <a href="/profil">
                     <img class="card-profile-img" :src="user.avatar">
