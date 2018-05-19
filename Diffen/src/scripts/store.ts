@@ -55,4 +55,8 @@ Vue.use(ToggleButton)
 import VTooltip from 'v-tooltip'
 Vue.use(VTooltip)
 
+import 'chart.js'
+import 'hchs-vue-charts'
+Vue.use((<any>window).VueCharts)
+
 export default store
