@@ -6,14 +6,16 @@
                 <hr />
             </template>
             <template v-if="loggedInUserIsAdminOrScissor && !isSmall">
-                <div class="row mb-3">
-                    <div class="col">
-                        <div class="form-group">
+                <div class="row">
+                    <div class="col-10 pr-0">
+                        <div class="form-group mb-0">
                             <select class="form-control form-control-sm" v-model="selectedGameId">
                                 <option value="0">Hantera händelser i en match</option>
                                 <option v-for="game in games" :value="game.id">{{ getGameType(game.type) }} - {{ game.playedOn }}</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="col-2 mt-1">
                         <modal v-bind="modalAttributes.newEvent">
                             <template slot="body">
                                 <div class="row">
@@ -189,7 +191,7 @@ export default class PlayerEvents extends Vue {
 			},
 			header: 'Matchhändelser',
 			button: {
-				classes: 'btn btn-sm btn-success btn-block float-right',
+				icon: 'icon icon-plus float-right',
 				text: 'Skapa ny match med händelser'
             },
             onClose: () => this.reset()

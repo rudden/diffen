@@ -145,7 +145,7 @@ export default class Wrapper extends Vue {
             },
             header: 'Nytt område',
             button: {
-                classes: 'btn btn-sm btn-success float-right',
+                icon: 'icon icon-plus float-right',
                 text: 'Skapa nytt område'
 			},
 			onClose: this.resetCrudRegion
