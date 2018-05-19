@@ -2,7 +2,7 @@
     <div>
         <div class="card mb-4" v-if="isSmall">
             <div class="card-body">
-                <a href="/kronika/ny" v-if="loggedInUserIsAuthor" style="color: black">
+                <a href="/kronika/ny" class="href-black" v-if="loggedInUserIsAuthor">
                     <span class="icon icon-plus float-right" v-tooltip="'Skapa ny krönika'"></span>
                 </a>
                 <h6 class="mb-0">Krönikor</h6>
@@ -22,8 +22,10 @@
             </div>
         </div>
         <ul class="list-group media-list media-list-stream" v-else>
-            <li class="list-group-item p-4"v-if="loggedInUserIsAuthor">
-                <a href="/kronika/ny" class="btn btn-sm btn-success float-right" v-if="loggedInUserIsAuthor">Skapa ny krönika</a>
+            <li class="list-group-item p-4">
+                <a href="/kronika/ny" class="float-right href-black" v-if="loggedInUserIsAuthor">
+                    <span class="icon icon-plus" v-tooltip="'Skapa ny krönika'"></span>
+                </a>
                 <h4 class="mb-0">Krönikor</h4>
             </li>
             <li class="media list-group-item p-4">
