@@ -153,7 +153,7 @@ namespace Diffen.Controllers.Api
 		}
 
 		[VerifyInputToLoggedInUserId("userId")]
-		[HttpDelete("{userId}/avatar")]
+		[HttpDelete, Route("{userId}/avatar")]
 		public Task<List<Result>> DeleteAvatarForUser(string userId)
 		{
 			_logger.Debug("Requesting to delete avatar for user with id {userId}", userId);

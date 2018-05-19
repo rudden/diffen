@@ -123,7 +123,7 @@ namespace Diffen.Controllers.Api
 		}
 
 		[VerifyInputToLoggedInUserId("userId")]
-		[HttpDelete("{postId}/bookmark")]
+		[HttpDelete, Route("{postId}/bookmark")]
 		public Task<bool> UnBookmark(int postId, string userId)
 		{
 			_logger.Debug("Requesting to un-save a post with id {postId} for user with id {userId}", postId, userId);
