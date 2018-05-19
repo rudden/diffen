@@ -65,9 +65,9 @@
                         <a :href="`/forum/inlagg/${post.id}`" class="no-hover" v-tooltip="'Gå till'">
                             <span class="icon icon-eye"></span>
                         </a>
-                        <a v-on:click="unBookmarkPost" v-if="!canBookmark" v-tooltip="'Ta bort från sparade inlägg'">
+                        <!-- <a v-on:click="unBookmarkPost" v-if="!canBookmark" v-tooltip="'Ta bort från sparade inlägg'">
                             · <span class="icon icon-trash"></span>
-                        </a>
+                        </a> -->
                     </div>
                 </template>
             </div>
