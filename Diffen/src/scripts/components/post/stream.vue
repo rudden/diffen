@@ -12,7 +12,7 @@
 			<li class="media list-group-item p-4" v-if="paged.data.length < paged.total">
 				<div class="input-group">
 					<button class="btn btn-sm btn-success mr-3" style="width: 65%" v-on:click="load" v-if="!isLastPage" :disabled="loaderPredicate">Ladda fler inlägg</button>
-					<select class="form-control form-control-sm" :disabled="loaderPredicate" v-model="selectedPageNumber">
+					<select class="form-control form-control-sm br bl-4" :disabled="loaderPredicate" v-model="selectedPageNumber">
 						<option v-for="page in pages" :value="page">Visa sida {{ page }}</option>
 					</select>
 				</div>

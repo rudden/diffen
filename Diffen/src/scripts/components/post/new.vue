@@ -15,7 +15,7 @@
             </template>
         </div>
         <div class="input-group">
-            <input type="text" class="form-control" placeholder="Länktips" v-model="newPost.urlTipHref">
+            <input type="text" class="form-control br br__br-4" placeholder="Länktips" v-model="newPost.urlTipHref">
             <div class="input-group-btn">
                 <button class="btn btn-success align-self-stretch ml-2" v-on:click="submit" :disabled="!canSubmit">{{ btnText }}</button>
             </div>

@@ -116,3 +116,18 @@ li.ellipsis {
 		width: 15%;
 	}
 }
+
+.br {
+	&__br-4 {
+		border-top-right-radius: 4px !important;
+		border-bottom-right-radius: 4px !important;
+	}
+	&__bl-4 {
+		border-top-left-radius: 4px !important;
+		border-bottom-left-radius: 4px !important;
+	}
+}
+
+.href-black {
+    color: black !important;
+}
