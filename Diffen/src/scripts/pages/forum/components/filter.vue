@@ -2,6 +2,9 @@
     <div class="card pl-2 pr-2" :class="{ 'div-disabled': isLoadingPosts }">
         <div class="card-body">
             <h6 class="mb-0">
+                <span class="badge badge-dark float-right" v-if="!isLoadingPosts">
+                    Visar {{ pagedPosts.data.length }} {{ pagedPosts.data.length !== pagedPosts.total ? `av ${pagedPosts.total} inlägg` : ' inlägg' }}
+                </span>
                 <span style="cursor: pointer" @click="show = !show" v-tooltip.right="tooltipText">
                     Filtrera
                     <span class="icon ml-1" :class="{ 'icon-chevron-small-down': !show, 'icon-chevron-small-up': show }"></span>
@@ -104,6 +107,7 @@ const ModuleMutation = namespace('forum', Mutation)
 const ProfileModuleAction = namespace('profile', Action)
 
 import { 
+    GET_PAGED_POSTS,
     GET_IS_LOADING_POSTS,
     GET_FILTER,
     FETCH_PAGED_POSTS,
@@ -113,8 +117,8 @@ import {
 
 import { FETCH_KVP_USERS } from '../../../modules/profile/types'
 
-import { StartingEleven, Filter } from '../../../model/forum'
-import { PageViewModel, KeyValuePair } from '../../../model/common'
+import { StartingEleven, Filter, Post } from '../../../model/forum'
+import { PageViewModel, KeyValuePair, Paging } from '../../../model/common'
 
 import { Typeahead } from 'uiv'
 import DatePicker from 'vue-bootstrap-datetimepicker'
@@ -125,7 +129,8 @@ import DatePicker from 'vue-bootstrap-datetimepicker'
     }
 })
 export default class FilterComponent extends Vue {
-	@State(state => state.vm) vm: PageViewModel
+    @State(state => state.vm) vm: PageViewModel
+    @ModuleGetter(GET_PAGED_POSTS) pagedPosts: Paging<Post>
 	@ModuleGetter(GET_IS_LOADING_POSTS) isLoadingPosts: boolean
 	@ModuleGetter(GET_FILTER) filter: Filter
     @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
