@@ -37,6 +37,9 @@ export default class Wrapper extends Vue {
 			{
 				id: 1,
 				component: Poll,
+				attributes: {
+					slug: this.vm.selectedPollSlug
+				},
 				active: this.singlePollSelected
 			},
 			{

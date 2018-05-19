@@ -12,7 +12,7 @@
                                 <div class="media-heading">
                                     <modal v-bind="{ attributes: { name: `poll-${poll.id}` }, header: poll.name, button: { classes: 'small on-click', text: poll.name }, onClose: () => isCopied = false }">
                                         <template slot="body">
-                                            <poll-content :poll="poll" />
+                                            <poll-component :slug="poll.slug" />
                                         </template>
                                         <template slot="footer">
                                             <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">
@@ -35,10 +35,10 @@
                 <new-poll :on-modal-close="load" />
                 <h4 class="mb-0">Omröstningar</h4>
             </li>
-            <li class="media list-group-item p-4" v-show="loading">
+            <li class="media list-group-item p-4" v-if="loading">
                 <loader v-bind="{ background: '#699ED0' }" />
             </li>
-            <div v-show="!loading">
+            <template v-else>
                 <li class="media list-group-item p-4" v-if="typeOfPolls == 'all'">
                     <div class="col pl-0 pr-0">
                         <div class="form-group float-right mb-0">
@@ -75,7 +75,7 @@
                                 <div class="media-heading">
                                     <modal v-bind="{ attributes: { name: `poll-${poll.id}` }, header: poll.name, button: { classes: 'font-weight-bold small on-click', text: poll.name }, onClose: () => isCopied = false }">
                                         <template slot="body">
-                                            <poll-content :poll="poll" />
+                                            <poll-component :slug="poll.slug" />
                                         </template>
                                         <template slot="footer">
                                             <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">
@@ -98,7 +98,7 @@
                         </div>
                     </li>
                 </template>
-            </div>
+            </template>
         </ul>
     </div>
 </template>
@@ -118,7 +118,7 @@ import { Poll as CrudPoll } from '../../model/other/crud'
 import { GET_POLLS, FETCH_POLLS, FETCH_ACTIVE_POLLS, CREATE_POLL } from '../../modules/other/types'
 
 import NewPoll from './new-poll.vue'
-import PollContent from './poll-content.vue'
+import PollComponent from './poll.vue'
 import Results from '../results.vue'
 import Modal from '../modal.vue'
 
@@ -142,7 +142,7 @@ enum PollFilter {
         }
     },
 	components: {
-        PollContent, Results, Modal, NewPoll
+        PollComponent, Results, Modal, NewPoll
 	}
 })
 export default class Polls extends Vue {
