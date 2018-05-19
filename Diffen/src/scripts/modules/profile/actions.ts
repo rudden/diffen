@@ -24,7 +24,8 @@ import {
     CHANGE_FILTER,
 	FETCH_INVITES,
 	CREATE_INVITE,
-    FETCH_CONVERSATION_KVP_USERS,
+	FETCH_CONVERSATION_KVP_USERS,
+	UNBOOKMARK_POST
 } from './types'
 
 axios.defaults.withCredentials = true
@@ -102,6 +103,16 @@ export const Actions: ActionTree<State, any> = {
 			return axios.post(`${store.rootState.vm.api}/users/${payload.userId}/seclude?to=${payload.to}`)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
+	},
+	[UNBOOKMARK_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<void> => {
+		return axios.delete(`${store.rootState.vm.api}/posts/${payload.postId}/bookmark?userId=${store.rootState.vm.loggedInUser.id}`)
+			.then((res) => {
+				if (!res) return
+				var index = store.state.savedPosts.data.indexOf(store.state.savedPosts.data.filter((post: Post) => post.id == payload.postId)[0])
+				if (index !== -1) {
+					store.state.savedPosts.data.splice(index, 1)
+				}
+			}).catch((error) => console.warn(error))
 	},
 }
 export default Actions

@@ -1,15 +1,15 @@
 <template>
-	<div class="card">
-        <div class="card-body">
+	<div class="card" :class="{ 'p-0 br br__none': nestedInModal }">
+        <div class="card-body" :class="{ 'p-0': nestedInModal }">
             <template v-if="!loading">
                 <div class="row">
                     <div class="col">
-                        <span class="text-muted float-right">
+                        <span class="text-muted" :class="{ 'float-right': !nestedInModal }">
                             <span class="badge" :class="{ 'badge-warning': poll.isOpen, 'badge-danger': !poll.isOpen }">
                                 {{ poll.isOpen ? `stänger om ${daysUntilPollCloses(poll)} dagar` : 'stängd' }}
                             </span>
                         </span>
-                        <h4 class="mb-3">Av: {{ poll.byUser.nickName }}</h4>
+                        <h4 class="mb-3" v-if="!nestedInModal">Av: {{ poll.byUser.nickName }}</h4>
                     </div>
                 </div>
                 <hr />
@@ -18,30 +18,28 @@
                         <chartjs-horizontal-bar :beginzero="true" :datalabel="poll.name" :labels="labels" :data="values" :bordercolor="'#162248'" :backgroundcolor="'#162248'" :bind="true" />
                     </div>
                 </div>
+                <div class="row mt-3">
+                    <template v-if="placedVoteId <= 0 && poll.isOpen">
+                        <div class="col-8">
+                            <select class="form-control form-control-sm" v-model="pollSelection">
+                                <option value="0">Välj alternativ</option>
+                                <option v-for="selection in poll.selections" :value="selection.id" :key="selection.id">{{ selection.name }}</option>
+                            </select>
+                        </div>
+                        <div class="col-4 mt-0">
+                            <button class="btn btn-success btn-block btn-sm" v-on:click="vote" :disabled="pollSelection == 0">Rösta</button>
+                        </div>
+                    </template>
+                    <div class="col" v-if="placedVoteId > 0">
+                        <div class="alert alert-info mb-0">Du röstade: <strong>{{ selectedVote.name }}</strong></div>
+                    </div>
+                </div>
             </template>
             <template v-else>
                 <div class="row col">
                     <loader v-bind="{ background: '#699ED0' }" />
                 </div>
             </template>
-        </div>
-        <div class="card-footer" v-if="!loading">
-            <div class="row">
-                <template v-if="placedVoteId <= 0 && poll.isOpen">
-                    <div class="col-8">
-                        <select class="form-control form-control-sm" v-model="pollSelection">
-                            <option value="0">Välj alternativ</option>
-                            <option v-for="selection in poll.selections" :value="selection.id" :key="selection.id">{{ selection.name }}</option>
-                        </select>
-                    </div>
-                    <div class="col-4 mt-0">
-                        <button class="btn btn-success btn-block btn-sm" v-on:click="vote" :disabled="pollSelection == 0">Rösta</button>
-                    </div>
-                </template>
-                <div class="col" v-if="placedVoteId > 0">
-                    <div class="alert alert-info mb-0">Du röstade: <strong>{{ selectedVote.name }}</strong></div>
-                </div>
-            </div>
         </div>
 	</div>
 </template>
@@ -66,7 +64,11 @@ import Results from '../results.vue'
 
 @Component({
 	props: {
-        slug: String
+        slug: String,
+        nestedInModal: {
+            type: Boolean,
+            default: false
+        }
     },
     components: {
         Results

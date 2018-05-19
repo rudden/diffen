@@ -114,11 +114,20 @@ namespace Diffen.Controllers.Api
 			return _postRepository.GetLastMonthsMostClickedUrlTipsAsync();
 		}
 
+		[VerifyInputToLoggedInUserId("userId")]
 		[HttpPost("{postId}/bookmark")]
 		public Task<bool> Bookmark(int postId, string userId)
 		{
 			_logger.Debug("Requesting to save a post with id {postId} for user with id {userId}", postId, userId);
 			return _postRepository.SavePostAsync(postId, userId);
+		}
+
+		[VerifyInputToLoggedInUserId("userId")]
+		[HttpDelete("{postId}/bookmark")]
+		public Task<bool> UnBookmark(int postId, string userId)
+		{
+			_logger.Debug("Requesting to un-save a post with id {postId} for user with id {userId}", postId, userId);
+			return _postRepository.UnSavePostAsync(postId, userId);
 		}
 	}
 }

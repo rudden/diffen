@@ -24,7 +24,7 @@
                         </li>
                         <li class="list-group-item media">
                             <div class="media-body">
-                                <div v-html="chronicle.text"></div>
+                                <div v-html="chronicle.text" class="more-readable"></div>
                                 <hr class="divider" />
                                 <div class="pt-2 pb-2" style="display: flow-root">
                                     <small class="text-muted float-right">{{ chronicle.created }}</small>

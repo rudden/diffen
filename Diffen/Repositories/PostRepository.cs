@@ -125,6 +125,12 @@ namespace Diffen.Repositories
 			return _dbClient.SavePostForUserAsync(savedPost);
 		}
 
+		public async Task<bool> UnSavePostAsync(int postId, string userId)
+		{
+			var savedPost = await _dbClient.GetSavedPostsOnPostAndUserIdAsync(postId, userId);
+			return await _dbClient.DeleteSavedPostForUserAsync(savedPost);
+		}
+
 		public async Task<List<UrlTip>> GetLastMonthsMostClickedUrlTipsAsync()
 		{
 			var urlTips = await _dbClient.GetUrlTipsAsync();

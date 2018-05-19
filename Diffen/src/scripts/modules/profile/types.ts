@@ -17,6 +17,7 @@ export const CHANGE_FILTER = 'profile/CHANGE_FILTER'
 export const FETCH_INVITES = 'profile/FETCH_INVITES'
 export const CREATE_INVITE = 'profile/CREATE_INVITE'
 export const SECLUDE_USER = 'profile/SECLUDE_USER'
+export const UNBOOKMARK_POST = 'profile/UNBOOKMARK_POST'
 
 // mutations
 export const SET_USER = 'profile/SET_USER'

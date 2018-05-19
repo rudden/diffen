@@ -126,8 +126,15 @@ li.ellipsis {
 		border-top-left-radius: 4px !important;
 		border-bottom-left-radius: 4px !important;
 	}
+	&__none {
+		border: 0;
+	}
 }
 
 .href-black {
     color: black !important;
+}
+
+.more-readable {
+    font-weight: 400 !important;
 }

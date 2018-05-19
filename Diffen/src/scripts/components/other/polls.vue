@@ -12,7 +12,7 @@
                                 <div class="media-heading">
                                     <modal v-bind="{ attributes: { name: `poll-${poll.id}` }, header: poll.name, button: { classes: 'small on-click', text: poll.name }, onClose: () => isCopied = false }">
                                         <template slot="body">
-                                            <poll-component :slug="poll.slug" />
+                                            <poll-component :slug="poll.slug" :nested-in-modal="true" />
                                         </template>
                                         <template slot="footer">
                                             <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">

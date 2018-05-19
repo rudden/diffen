@@ -17,6 +17,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<List<Post>> GetPostsOnFilterAsync(Models.Forum.Filter filter);
 		Task<List<Post>> GetPostsOnUserIdAsync(string userId);
 		Task<List<Post>> GetSavedPostsOnUserIdAsync(string userId);
+		Task<SavedPost> GetSavedPostsOnPostAndUserIdAsync(int postId, string userId);
 		Task<Post> GetPostOnIdAsync(int postId);
 		Task<List<Post>> GetConversationOnPostIdAsync(int postId);
 		Task<List<UrlTip>> GetUrlTipsAsync();
@@ -29,6 +30,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> DeletePostAsync(int postId);
 		Task<bool> ScissorPostAsync(Scissored scissoredPost);
 		Task<bool> SavePostForUserAsync(SavedPost savedPost);
+		Task<bool> DeleteSavedPostForUserAsync(SavedPost savedPost);
 		Task<bool> ConnectLineupToPostAsync(PostToLineup postToLineup);
 		Task<bool> DeleteLineupConnectionToPostAsync(int postId);
 		Task<bool> PostHasALineupConnectedToItAsync(int postId);

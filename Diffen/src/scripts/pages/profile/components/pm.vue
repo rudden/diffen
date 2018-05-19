@@ -48,7 +48,7 @@
 							</template>
 							<div class="media-body">
 								<div class="media-body-text">
-									<span>{{ pm.message }}</span>
+									<span class="more-readable">{{ pm.message }}</span>
 								</div>
 								<div class="media-footer">
 									<small class="text-muted">

@@ -67,14 +67,14 @@ export default class Posts extends Vue {
     pageCreatedPosts(page: number) {
 		this.isLoadingCreatedPosts = true
         this.pageForPostsCreatedBySelectedUser = page
-		this.loadPosts({ userId: this.userId, pageNumber: this.pageForPostsCreatedBySelectedUser })
+		return this.loadPosts({ userId: this.userId, pageNumber: this.pageForPostsCreatedBySelectedUser })
 			.then(() => this.isLoadingCreatedPosts = false)
 	}
 	
 	pageSavedPosts(page: number) {
 		this.isLoadingSavedPosts = true
 		this.pageForPostsSavedBySelectedUser = page
-		this.loadSavedPosts({ userId: this.userId, pageNumber: this.pageForPostsSavedBySelectedUser })
+		return this.loadSavedPosts({ userId: this.userId, pageNumber: this.pageForPostsSavedBySelectedUser })
 			.then(() => this.isLoadingSavedPosts = false)
     }
 }

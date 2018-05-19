@@ -89,6 +89,11 @@ namespace Diffen.Database.Clients
 				.Where(post => post.CreatedByUserId == userId).OrderByCreated().ToListAsync();
 		}
 
+		public Task<SavedPost> GetSavedPostsOnPostAndUserIdAsync(int postId, string userId)
+		{
+			return _dbContext.SavedPosts.FirstOrDefaultAsync(sp => sp.PostId.Equals(postId) && sp.SavedByUserId.Equals(userId));
+		}
+
 		public async Task<List<Post>> GetSavedPostsOnUserIdAsync(string userId)
 		{
 			var savedPosts = await _dbContext.SavedPosts.IncludeAll().ToListAsync();
@@ -221,6 +226,12 @@ namespace Diffen.Database.Clients
 		public Task<bool> SavePostForUserAsync(SavedPost savedPost)
 		{
 			_dbContext.SavedPosts.Add(savedPost);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<bool> DeleteSavedPostForUserAsync(SavedPost savedPost)
+		{
+			_dbContext.SavedPosts.Remove(savedPost);
 			return CommitedResultIsSuccessfulAsync();
 		}
 

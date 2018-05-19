@@ -19,14 +19,14 @@
                                     <small class="float-right text-muted">{{ post.parentPost.since }}</small>
                                     <h6>{{ post.parentPost.user.nickName }}</h6>
                                 </div>
-                                <span class="message">{{ post.parentPost.message }}</span>
+                                <span class="message more-readable">{{ post.parentPost.message }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </template>
-        <p v-html="postMessage" style="font-weight: 400 !important"></p>
+        <p v-html="postMessage" class="more-readable"></p>
         <embeds :href="post.urlTipHref" />
     </div>
 </template>

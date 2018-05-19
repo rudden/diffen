@@ -21,6 +21,7 @@ namespace Diffen.Repositories.Contracts
 		Task<List<Result>> UpdatePostAsync(Models.Forum.CRUD.Post post);
 		Task<bool> ScissorPostAsync(int postId);
 		Task<bool> SavePostAsync(int postId, string userId);
+		Task<bool> UnSavePostAsync(int postId, string userId);
 		Task<List<UrlTip>> GetLastMonthsMostClickedUrlTipsAsync();
 		Task<bool> UpdateUrlTipClickCountAsync(string subject, int id);
 		Task<List<Vote>> GetVotesOnPostIdAsync(int postId);

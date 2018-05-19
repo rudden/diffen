@@ -62,8 +62,11 @@
                 </template>
                 <template v-else>
                     <div class="message-footer">
-                        <a :href="`/forum/inlagg/${post.id}`" class="no-hover">
+                        <a :href="`/forum/inlagg/${post.id}`" class="no-hover" v-tooltip="'Gå till'">
                             <span class="icon icon-eye"></span>
+                        </a>
+                        <a v-on:click="unBookmarkPost" v-if="!canBookmark" v-tooltip="'Ta bort från sparade inlägg'">
+                            · <span class="icon icon-trash"></span>
                         </a>
                     </div>
                 </template>
@@ -82,6 +85,7 @@ const ModuleAction = namespace('forum', Action)
 const ModuleMutation = namespace('forum', Mutation)
 const SquadModuleGetter = namespace('squad', Getter)
 const SquadModuleAction = namespace('squad', Action)
+const ProfileModuleAction = namespace('profile', Action)
 
 import {
     GET_FILTER,
@@ -94,6 +98,7 @@ import {
     SET_SHOULD_RELOAD_POST_STREAM
 } from '../../modules/forum/types'
 import { FETCH_LINEUP } from '../../modules/squad/types'
+import { UNBOOKMARK_POST } from '../../modules/profile/types'
 
 import { Lineup } from '../../model/squad'
 import { Post, Vote, VoteType, Filter } from '../../model/forum'
@@ -140,6 +145,8 @@ export default class PostComponent extends Vue {
 	@ModuleMutation(SET_SHOULD_RELOAD_POST_STREAM) setShouldReloadPostStream: (payload: { value: boolean }) => void
     
     @SquadModuleAction(FETCH_LINEUP) loadLineup: (payload: { id: number }) => Promise<Lineup>
+
+    @ProfileModuleAction(UNBOOKMARK_POST) unBookmark: (payload: { postId: number }) => Promise<void>
 
     post: Post
     fullSize: boolean
@@ -243,6 +250,9 @@ export default class PostComponent extends Vue {
     }
     bookmarkPost() {
         this.bookmark({ postId: this.post.id }).then(() => this.$forceUpdate())
+    }
+    unBookmarkPost() {
+        this.unBookmark({ postId: this.post.id }).then(() => this.$forceUpdate())
     }
     scissorPost() {
         this.scissor({ postId: this.post.id }).then(() => this.$forceUpdate())
