@@ -109,8 +109,8 @@ export default class Wrapper extends Vue {
 			},
 			header: 'Ny spelare',
 			button: {
-				classes: 'btn btn-sm btn-primary float-right',
-				text: 'Ny spelare'
+				icon: 'icon icon-plus float-right',
+				text: 'Skapa ny spelare'
 			}
 		}
 	}
