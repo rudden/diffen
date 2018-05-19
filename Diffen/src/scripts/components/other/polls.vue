@@ -164,19 +164,6 @@ export default class Polls extends Vue {
 
     results: Result[] = []
 
-    modalAttributes: any = {
-        newPoll: {
-            attributes: {
-                name: 'new-poll'
-            },
-            header: 'Ny omröstning',
-            button: {
-                classes: `btn btn-sm btn-success ${this.isSmall ? 'btn-block' : 'float-right'}`,
-                text: 'Skapa ny omröstning'
-            }
-        }
-    }
-
     pollsFilter: string = ''
     filteredPolls: Poll[] = []
 	pollSearch: string = ''
