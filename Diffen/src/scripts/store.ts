@@ -28,12 +28,11 @@ const store = new Vuex.Store({
 })
 
 import * as helpers from './helpers'
-const helperMethodsPlugin = {
+Vue.use({
     install () {
         Vue.prototype.$helpers = helpers
     }
-}
-Vue.use(helperMethodsPlugin)
+})
 
 import VueClipboards from 'vue-clipboards'
 Vue.use(VueClipboards, store)
