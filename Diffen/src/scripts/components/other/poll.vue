@@ -72,7 +72,7 @@ import Results from '../results.vue'
         Results
     }
 })
-export default class Poll extends Vue {
+export default class PollComponent extends Vue {
     @State(state => state.vm) vm: PollViewModel
     @ModuleGetter(GET_POLL) poll: Poll
     @ModuleAction(FETCH_POLL) loadPoll: (payload: { slug: string }) => Promise<void>
