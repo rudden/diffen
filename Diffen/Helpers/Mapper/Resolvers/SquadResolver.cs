@@ -17,6 +17,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Models.Squad.CRUD.Player, Database.Entities.Squad.Player>,
 		ITypeConverter<Database.Entities.Squad.Game, Models.Squad.Game>,
 		ITypeConverter<Database.Entities.Squad.PlayerEvent, Models.Squad.PlayerEvent>,
+		ITypeConverter<Database.Entities.Squad.PlayerEvent, Models.Squad.PlayerEventOnPlayer>,
 		ITypeConverter<Models.Squad.CRUD.Game, Database.Entities.Squad.Game>,
 		ITypeConverter<Database.Entities.Squad.Title, Models.Squad.Title>
 	{
@@ -31,13 +32,15 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				IsOutOnLoan = source.IsOutOnLoan,
 				IsHereOnLoan = source.IsHereOnLoan,
 				IsCaptain = source.IsCaptain,
+				IsViceCaptain = source.IsViceCaptain,
 				IsSold = source.IsSold,
 				AvailablePositions = source.AvailablePositions.Select(x => new Models.Squad.Position
 				{
 					Id = x.Position.Id,
 					Name = x.Position.Name
 				}),
-				InNumberOfStartingElevens = source.InLineups.Count
+				InNumberOfStartingElevens = source.InLineups.Count,
+				Events = context.Mapper.Map<IEnumerable<Models.Squad.PlayerEventOnPlayer>>(source.PlayerEvents)
 			};
 		}
 
@@ -96,6 +99,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				LastName = source.Player.LastName,
 				KitNumber = source.Player.KitNumber,
 				IsOutOnLoan = source.Player.IsOutOnLoan,
+				IsViceCaptain = source.Player.IsViceCaptain,
 				IsHereOnLoan = source.Player.IsHereOnLoan,
 				IsCaptain = source.Player.IsCaptain,
 				IsSold = source.Player.IsSold
@@ -112,6 +116,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				IsCaptain = source.IsCaptain,
 				IsOutOnLoan = source.IsOutOnLoan,
 				IsHereOnLoan = source.IsHereOnLoan,
+				IsViceCaptain = source.IsViceCaptain,
 				KitNumber = source.KitNumber,
 				IsSold = source.IsSold
 			};
@@ -138,6 +143,17 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			};
 		}
 
+		public Models.Squad.PlayerEventOnPlayer Convert(Database.Entities.Squad.PlayerEvent source, Models.Squad.PlayerEventOnPlayer destination, ResolutionContext context)
+		{
+			return new Models.Squad.PlayerEventOnPlayer
+			{
+				GameId = source.GameId,
+				GameType = source.Game.Type,
+				EventType = source.Type,
+				Date = source.Game.OnDate.ToString("yyyy-MM-dd")
+			};
+		}
+
 		public Database.Entities.Squad.Game Convert(Models.Squad.CRUD.Game source, Database.Entities.Squad.Game destination, ResolutionContext context)
 		{
 			return new Database.Entities.Squad.Game
@@ -148,8 +164,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			};
 		}
 
-		public Models.Squad.Title Convert(Database.Entities.Squad.Title source, Models.Squad.Title destination,
-			ResolutionContext context)
+		public Models.Squad.Title Convert(Database.Entities.Squad.Title source, Models.Squad.Title destination, ResolutionContext context)
 		{
 			return new Models.Squad.Title
 			{

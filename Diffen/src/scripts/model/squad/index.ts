@@ -19,11 +19,13 @@ export class Player {
     fullName: string
     kitNumber: number
     isCaptain: boolean
+    isViceCaptain: boolean
     isOutOnLoan: boolean
     isHereOnLoan: boolean
     isSold: boolean
     availablePositions: Position[]
     inNumberOFStartingElevens: number
+    events: PlayerEventOnPlayer[]
 }
 
 export class Formation {
@@ -48,6 +50,13 @@ export class PlayerEvent {
     id: number
     player: Player
     eventType: GameEventType
+}
+
+export class PlayerEventOnPlayer {
+    gameId: number
+    gameType: GameType
+    eventType: GameEventType
+    date: string
 }
 
 export enum GameType {

@@ -174,9 +174,12 @@ namespace Diffen.Controllers.Pages
 						case "PasswordRequiresDigit":
 							ModelState.AddModelError("", "- lösenordet måste innehålla minst en siffra");
 							break;
+						default:
+							ModelState.AddModelError("", error.Description);
+							break;
 					}
 				}
-				_logger.Information("Could not register account due to the following errors {@registerModelErrors}", result.Errors.Select(x => x.Code));
+				_logger.Information("Could not register account with invite code {@inviteCode} and email {@userEmail} due to the following errors {@registerModelErrors}", vm.UniqueCode, vm.Email, result.Errors.Select(x => x.Code));
 			}
 			else
 			{

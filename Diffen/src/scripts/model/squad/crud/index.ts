@@ -20,6 +20,7 @@ export class Player {
     kitNumber: number = 0
     isSold: boolean
     isCaptain: boolean
+    isViceCaptain: boolean
     isHereOnLoan: boolean
     isOutOnLoan: boolean
     availablePositionsIds: number[] = []

@@ -10,6 +10,7 @@ namespace Diffen.Models.Squad.CRUD
 		public int KitNumber { get; set; }
 		public bool IsSold { get; set; }
 		public bool IsCaptain { get; set; }
+		public bool IsViceCaptain { get; set; }
 		public bool IsOutOnLoan { get; set; }
 		public bool IsHereOnLoan { get; set; }
 		public IEnumerable<int> AvailablePositionsIds { get; set; }

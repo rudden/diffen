@@ -12,9 +12,10 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    partial class DiffenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180520114626_ViceCaptainToPlayer")]
+    partial class ViceCaptainToPlayer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -867,7 +868,7 @@ namespace Diffen.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Diffen.Database.Entities.Squad.Player", "Player")
-                        .WithMany("PlayerEvents")
+                        .WithMany()
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

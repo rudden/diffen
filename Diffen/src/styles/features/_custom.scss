@@ -138,3 +138,9 @@ li.ellipsis {
 .more-readable {
     font-weight: 400 !important;
 }
+
+.table-hover {
+	tr:hover {
+		cursor: pointer !important;
+	}
+}

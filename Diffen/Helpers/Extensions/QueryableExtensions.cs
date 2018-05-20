@@ -64,6 +64,15 @@ namespace Diffen.Helpers.Extensions
 				.AsNoTracking();
 		}
 
+		public static IQueryable<Player> IncludeAll(this DbSet<Player> source)
+		{
+			return source
+				.Include(x => x.AvailablePositions).ThenInclude(x => x.Position)
+				.Include(x => x.InLineups)
+				.Include(x => x.PlayerEvents).ThenInclude(x => x.Game)
+				.AsNoTracking();
+		}
+
 		public static IQueryable<AppUser> IncludeAll(this DbSet<AppUser> source)
 		{
 			return source

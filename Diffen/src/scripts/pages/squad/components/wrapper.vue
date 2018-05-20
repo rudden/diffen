@@ -15,38 +15,26 @@
 						</li>
 						<li class="list-group-item media">
 							<template v-if="!loading">
-								<table class="table table-sm mb-0">
-									<thead class="thead-dark">
-										<tr>
-											<th scope="col">Namn</th>
-											<th scope="col" class="d-none d-sm-table-cell">Tröjnummer</th>
-											<th scope="col" class="d-none d-sm-table-cell">I antal startelvor</th>
-											<th scope="col" class="d-none d-sm-table-cell">Antal positioner</th>
-											<th scope="col" v-if="loggedInUserIsAdmin"></th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr v-for="player in players" v-bind:key="player.id">
-											<td>
-												{{ player.fullName }}
-												<span class="badge badge-primary ml-1" v-if="player.isCaptain">kapten</span>
-												<span class="badge badge-danger ml-1" v-if="player.isHereOnLoan">inlånad</span>
-												<span class="badge badge-warning ml-1" v-if="player.isOutOnLoan">utlånad</span>
-												<span class="badge badge-danger ml-1" v-if="player.isSold">såld</span>
-											</td>
-											<td class="d-none d-sm-table-cell">{{ player.kitNumber == 0 ? '' : player.kitNumber }}</td>
-											<td class="d-none d-sm-table-cell">{{ player.inNumberOfStartingElevens }}</td>
-											<td class="d-none d-sm-table-cell">{{ player.availablePositions.length }}</td>
-											<td v-if="loggedInUserIsAdmin">
-												<modal v-bind="{ attributes: { name: `edit-${player.id}`, scrollable: true }, header: player.name, button: { icon: 'icon icon-edit' } }">
-													<template slot="body">
-														<form-component :player="player" :save="update" />
-													</template>
-												</modal>
-											</td>
-										</tr>
-									</tbody>
-								</table>
+								<table-component :data="players" sort-by="lastName" sort-order="desc" @rowClick="rowClick">
+									<table-column label="Förnamn" show="firstName"></table-column>
+									<table-column label="Efternamn" show="lastName"></table-column>
+									<table-column label="Attribut" :filterable="false" :sortable="false">
+										<template slot-scope="row">
+											<span class="badge badge-primary ml-1" v-if="row.isCaptain">kapten</span>
+											<span class="badge badge-info ml-1" v-if="row.isViceCaptain">vice kapten</span>
+											<span class="badge badge-danger ml-1" v-if="row.isHereOnLoan">inlånad</span>
+											<span class="badge badge-warning ml-1" v-if="row.isOutOnLoan">utlånad</span>
+											<span class="badge badge-danger ml-1" v-if="row.isSold">såld</span>
+										</template>
+									</table-column>
+									<table-column label="Tröjnummer" show="kitNumber" data-type="numeric"></table-column>
+									<table-column label="Antal positioner" show="availablePositions.length" data-type="numeric"></table-column>
+								</table-component>
+								<modal v-for="player in players" :key="player.id" v-bind="{ attributes: { name: `show-player-${player.id}`, scrollable: true }, header: player.name, button: { } }">
+									<template slot="body">
+										<form-component :player="player" :save="update" :editable="false" />
+									</template>
+								</modal>
 							</template>
 							<template v-else>
 								<loader v-bind="{ background: '#699ED0' }" />
@@ -115,6 +103,8 @@ export default class Wrapper extends Vue {
 		}
 	}
 
+	$modal: any = (this as any).VModal
+
 	mounted() {
 		Promise.all([this.loadPlayers(), this.loadPositions()])
 			.then(() => this.loading = false)
@@ -122,7 +112,7 @@ export default class Wrapper extends Vue {
 
 	get loggedInUserIsAdmin(): boolean {
         return this.vm.loggedInUser.inRoles.some(role => role == 'Admin')
-    }
+	}
 
 	update(player: CrudPlayer) {
 		return new Promise<Result[]>((resolve, reject) => {
@@ -134,6 +124,11 @@ export default class Wrapper extends Vue {
 		return new Promise<Result[]>((resolve, reject) => {
 			this.createPlayer({ player: player }).then((results: Result[]) => resolve(results))
 		})
+	}
+
+	rowClick(row: any) {
+		console.log(row.data)
+		this.$modal.show(`show-player-${row.data.id}`)
 	}
 }
 </script>

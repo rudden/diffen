@@ -59,4 +59,15 @@ import 'chart.js'
 import 'hchs-vue-charts'
 Vue.use((<any>window).VueCharts)
 
+import TableComponent from 'vue-table-component'
+
+Vue.use(TableComponent, {
+    tableClass: 'table table-hover table-sm',
+    theadClass: 'thead-dark',
+    tbodyClass: '',
+    filterPlaceholder: 'Sök',
+	filterNoResults: 'Hittade inget',
+	filterInputClass: 'form-control form-control-sm'
+})
+
 export default store

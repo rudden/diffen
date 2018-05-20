@@ -564,12 +564,12 @@ namespace Diffen.Database.Clients
 
 		public Task<List<Player>> GetPlayersAsync()
 		{
-			return _dbContext.Players.Include(x => x.AvailablePositions).ThenInclude(x => x.Position).Include(x => x.InLineups).Where(x => !x.IsSold).OrderBy(x => x.LastName).ToListAsync();
+			return _dbContext.Players.IncludeAll().Where(x => !x.IsSold).OrderBy(x => x.LastName).ToListAsync();
 		}
 
 		public Task<Player> GetPlayerOnIdAsync(int playerId)
 		{
-			return _dbContext.Players.Include(x => x.AvailablePositions).ThenInclude(x => x.Position).FirstOrDefaultAsync(x => x.Id == playerId);
+			return _dbContext.Players.IncludeAll().FirstOrDefaultAsync(x => x.Id == playerId);
 		}
 
 		public Task<List<Position>> GetPositionsAsync()

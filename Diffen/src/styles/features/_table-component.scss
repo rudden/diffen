@@ -1,0 +1,27 @@
+.table-component {
+    width: 100%;
+}
+.table-component__filter {
+    width: 20%;
+    float: right;
+    margin-bottom: 1rem;
+    input {
+        float: left;
+    }
+}
+.table-component__filter__clear {
+    float: right;
+    position: absolute;
+    margin-left: -15px;
+    margin-top: 3px;
+    cursor: pointer;
+}
+.table-component__table__caption {
+    display: none;
+}
+.table-component__th--sort-desc:after {
+    content: '↓';
+}
+.table-component__th--sort-asc:after {
+    content: '↑';
+}

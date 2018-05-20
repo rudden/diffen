@@ -14,6 +14,7 @@ namespace Diffen.Database.Entities.Squad
 		public string LastName { get; set; }
 		public int KitNumber { get; set; }
 		public bool IsCaptain { get; set; }
+		public bool IsViceCaptain { get; set; }
 		public bool IsOutOnLoan { get; set; }
 		public bool IsHereOnLoan { get; set; }
 		public bool IsSold { get; set; }
@@ -21,5 +22,6 @@ namespace Diffen.Database.Entities.Squad
 		// Linked Tables
 		public ICollection<PlayerToPosition> AvailablePositions { get; set; }
 		public ICollection<PlayerToLineup> InLineups { get; set; }
+		public ICollection<PlayerEvent> PlayerEvents { get; set; }
 	}
 }
