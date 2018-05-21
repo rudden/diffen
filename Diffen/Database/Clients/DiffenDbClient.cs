@@ -901,7 +901,7 @@ namespace Diffen.Database.Clients
 
 		public Task<List<GameResultGuess>> GetFinishedGameResultGuessesAsync()
 		{
-			return _dbContext.GameResultGuesses.IncludeAll().Where(x => x.Game.OnDate < DateTime.Now).OrderByDescending(x => x.Created).ToListAsync();
+			return _dbContext.GameResultGuesses.IncludeAll().Where(x => x.Game.OnDate < DateTime.Now).OrderByDescending(x => x.Game.OnDate).ToListAsync();
 		}
 
 		public Task<List<GameResultGuess>> GetGameResultGuessesForGameWithIdAsync(int gameId)
