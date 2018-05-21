@@ -283,6 +283,9 @@ export default class PostComponent extends Vue {
     a {
         cursor: pointer;
         color: #3097D1 !important;
+        .icon-thumbs-up, .icon-thumbs-down {
+            color: #162248 !important;
+        }
     }
     a.disabled {
         opacity: 0.4;

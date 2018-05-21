@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Microsoft.Extensions.Caching.Memory;
 
 using AutoMapper;
+using Diffen.Helpers.Extensions;
+using Serilog;
 
 namespace Diffen.Repositories
 {
@@ -18,6 +21,8 @@ namespace Diffen.Repositories
 		private readonly IMapper _mapper;
 		private readonly IMemoryCache _cache;
 		private readonly IDiffenDbClient _dbClient;
+
+		private readonly ILogger _logger = Log.ForContext<SquadRepository>();
 
 		public SquadRepository(IMapper mapper, IMemoryCache cache, IDiffenDbClient dbClient)
 		{
@@ -111,6 +116,12 @@ namespace Diffen.Repositories
 			return _mapper.Map<List<Game>>(games);
 		}
 
+		public async Task<Game> GetUpcomingGameAsync()
+		{
+			var game = await _dbClient.GetUpcomingGameAsync();
+			return _mapper.Map<Game>(game);
+		}
+
 		public async Task<bool> CreateGameAsync(Models.Squad.CRUD.Game game)
 		{
 			var newGame = _mapper.Map<Database.Entities.Squad.Game>(game);
@@ -119,12 +130,8 @@ namespace Diffen.Repositories
 			{
 				return false;
 			}
-			return await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
-			{
-				PlayerId = x.PlayerId,
-				Type = x.Type,
-				GameId = newGame.Id
-			}).ToList());
+			await ComplementGameWithPotentialLineupAndEventsAsync(newGame.Id, game);
+			return true;
 		}
 
 		public async Task<bool> UpdateGameAsync(Models.Squad.CRUD.Game game)
@@ -132,24 +139,81 @@ namespace Diffen.Repositories
 			var updateGame = _mapper.Map<Database.Entities.Squad.Game>(game);
 			var existingGame = await _dbClient.GetGameOnIdAsync(game.Id);
 
-			if (!existingGame.OnDate.Equals(updateGame.OnDate) || !existingGame.Type.Equals(updateGame.Type))
+			try
 			{
-				await _dbClient.UpdateGameAsync(updateGame);
-			}
+				var result = false;
+				if (
+					!existingGame.OnDate.Equals(updateGame.OnDate) ||
+					!existingGame.Type.Equals(updateGame.Type) ||
+					!existingGame.ArenaType.Equals(updateGame.ArenaType) ||
+					!existingGame.OpponentTeamName.Equals(updateGame.OpponentTeamName) ||
+					!existingGame.NumberOfGoalsScoredByOpponent.Equals(updateGame.NumberOfGoalsScoredByOpponent))
+				{
+					result = await _dbClient.UpdateGameAsync(updateGame);
+				}
 
-			await _dbClient.DeletePlayerEventsOnGameIdAsync(updateGame.Id);
-			return await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
+				await _dbClient.DeletePlayerEventsOnGameIdAsync(updateGame.Id);
+				await ComplementGameWithPotentialLineupAndEventsAsync(updateGame.Id, game, existingGame);
+				return result;
+			}
+			catch (Exception e)
 			{
-				PlayerId = x.PlayerId,
-				Type = x.Type,
-				GameId = updateGame.Id
-			}).ToList());
+				_logger.Warning(e, "An unexpected error occured when updating game");
+				return false;
+			}
+		}
+
+		private async Task ComplementGameWithPotentialLineupAndEventsAsync(int gameId, Models.Squad.CRUD.Game game, Database.Entities.Squad.Game existingGame = null)
+		{
+			if (game.Lineup != null)
+			{
+				if (existingGame != null && existingGame.Lineup == null)
+				{
+					var lineup = _mapper.Map<Database.Entities.Squad.Lineup>(game.Lineup);
+					await _dbClient.CreateLineupAsync(lineup);
+					existingGame.LineupId = lineup.Id;
+					await _dbClient.UpdateGameAsync(existingGame);
+				}
+			}
+			if (game.Events.Any())
+			{
+				await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
+				{
+					PlayerId = x.PlayerId,
+					Type = x.Type,
+					GameId = gameId,
+					InMinuteOfGame = x.InMinute
+				}).ToList());
+			}
 		}
 
 		public async Task<List<Title>> GetTitlesAsync()
 		{
 			var titles = await _dbClient.GetTitlesAsync();
 			return _mapper.Map<List<Title>>(titles);
+		}
+
+		public Task<bool> CreateGameResultGuessAsync(Models.Squad.CRUD.GameResultGuess guess)
+		{
+			var newGuess = _mapper.Map<Database.Entities.Squad.GameResultGuess>(guess);
+			return _dbClient.CreateGameResultGuessAsync(newGuess);
+		}
+
+		public async Task<List<GameResultGuessLeagueItem>> GetFinishedGameResultGuessesAsync()
+		{
+			var guesses = await _dbClient.GetFinishedGameResultGuessesAsync();
+			return guesses.Select(x => x.GuessedByUser)
+				.Distinct()
+				.Select(user => new GameResultGuessLeagueItem
+				{
+					User = new IdAndNickNameUser
+					{
+						Id = user.Id,
+						NickName = user.NickNames.Current()
+					},
+					Guesses = _mapper.Map<List<GameResultGuess>>(guesses.Where(x => x.GuessedByUserId.Equals(user.Id) && x.Game.OnDate < DateTime.Now))
+				})
+				.ToList();
 		}
 	}
 }

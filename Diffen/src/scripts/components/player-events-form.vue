@@ -6,7 +6,7 @@
                 <option v-for="player in players" :value="player.id">{{ player.fullName }}</option>
             </select>
         </div>
-        <fieldset class="form-group mb-0">
+        <fieldset class="form-group">
             <div class="row">
                 <legend class="col-sm-2 col-form-label pt-0"><strong>Typ</strong></legend>
                 <div class="col-sm-10">
@@ -26,9 +26,25 @@
                         <input class="form-check-input" type="radio" :id="`rc-${guid}`" v-model="eventType" value="RedCard" />
                         <label class="form-check-label" :for="`rc-${guid}`">Rött kort</label>
                     </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" :id="`s_in-${guid}`" v-model="eventType" value="SubstituteIn" />
+                        <label class="form-check-label" :for="`s_in-${guid}`">Byte in</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" :id="`s_out-${guid}`" v-model="eventType" value="SubstituteOut" />
+                        <label class="form-check-label" :for="`s_out-${guid}`">Byte ut</label>
+                    </div>
                 </div>
             </div>
         </fieldset>
+        <div class="form-group mb-0">
+            <div class="row">
+                <legend class="col-sm-2 col-form-label pt-0"><strong>I minut</strong></legend>
+                <div class="col-sm-10">
+                    <input class="form-control form-control-sm" type="number" minlength="1" max="120" v-model="inMinute" placeholder="Hände i matchminut">
+                </div>                
+            </div>
+        </div>
     </div>
 </template>
 
@@ -63,13 +79,14 @@ export default class PlayerEventsForm extends Vue {
     selectedPlayerId: number = 0
 
     eventType: string = 'Goal'
+    inMinute: number = 1
 
     guid: string = (this as any).$helpers.guid()
 
     created() {
         this.setGameEvent(this.event)
-        console.log('event:', this.event)
         if (this.event.playerId > 0) {
+            this.inMinute = this.event.inMinute
             this.selectedPlayerId = this.event.playerId
             this.eventType = GameEventType[this.event.type]
         }
@@ -84,10 +101,16 @@ export default class PlayerEventsForm extends Vue {
         changeType() {
             this.update()
         }
+    
+    @Watch('inMinute')
+        changeMinute() {
+            this.update()
+        }
 
     update() {
         this.event.playerId = <number>this.selectedPlayerId
         this.event.type = GameEventType[this.eventType as keyof typeof GameEventType]
+        this.event.inMinute = this.inMinute
         this.changeGameEvent(this.event)
     }
 }

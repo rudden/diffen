@@ -12,9 +12,10 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    partial class DiffenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180520170733_RemoveGameToLineupTable")]
+    partial class RemoveGameToLineupTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -295,11 +296,7 @@ namespace Diffen.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ArenaType");
-
                     b.Property<int?>("LineupId");
-
-                    b.Property<int>("NumberOfGoalsScoredByOpponent");
 
                     b.Property<DateTime>("OnDate");
 
@@ -312,30 +309,6 @@ namespace Diffen.Migrations
                     b.HasIndex("LineupId");
 
                     b.ToTable("Games");
-                });
-
-            modelBuilder.Entity("Diffen.Database.Entities.Squad.GameResultGuess", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("GameId");
-
-                    b.Property<string>("GuessedByUserId");
-
-                    b.Property<int>("NumberOfGoalsScoredByDif");
-
-                    b.Property<int>("NumberOfGoalsScoredByOpponent");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameId");
-
-                    b.HasIndex("GuessedByUserId");
-
-                    b.ToTable("GameResultGuesses");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Squad.Lineup", b =>
@@ -890,18 +863,6 @@ namespace Diffen.Migrations
                     b.HasOne("Diffen.Database.Entities.Squad.Lineup", "Lineup")
                         .WithMany()
                         .HasForeignKey("LineupId");
-                });
-
-            modelBuilder.Entity("Diffen.Database.Entities.Squad.GameResultGuess", b =>
-                {
-                    b.HasOne("Diffen.Database.Entities.Squad.Game", "Game")
-                        .WithMany("GameResultGuesses")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Diffen.Database.Entities.User.AppUser", "GuessedByUser")
-                        .WithMany("GameResultGuesses")
-                        .HasForeignKey("GuessedByUserId");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Squad.Lineup", b =>

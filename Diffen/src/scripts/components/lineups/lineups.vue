@@ -1,60 +1,65 @@
 <template>
-	<div class="card">
-		<div class="card-header">
-			Startelvor
-		</div>
-		<div class="card-body">
-			<template v-if="!loading">
-				<div class="row">
-					<template v-if="lineups.length > 0 || noLineupsFound">
-						<div class="col-sm-12" :class="{ 'col-lg-6 col-md-6': userIsLoggedInUser, 'col-lg-12 col-md-6': !userIsLoggedInUser }">
-							<select class="form-control form-control-sm" v-model="selectedLineupId" @change="changeLineup" :disabled="inCreate || !lineups.length > 0">
-								<option value="0">{{ lineups.length > 0 ? 'Välj en startelva' : 'Hittade inga startelvor' }}</option>
-								<option v-for="lineup in lineups" :value="lineup.id">{{ lineup.formation.name }}, skapad {{ lineup.created }}</option>
+	<div>
+		<template v-if="typeOfLineup == fictionLineupType">
+			<span class="icon icon-plus float-right" v-on:click="setInCreate(true)" style="cursor: pointer" v-tooltip="'Skapa ny startelva'" v-if="userIsLoggedInUser && !inCreate"></span>
+			<h6>{{ header }}</h6>
+			<hr />
+		</template>
+		<template v-if="!loading">
+			<template v-if="typeOfLineup == realLineupType">
+				<div class="form-group">
+					<div class="row">
+						<legend class="col-sm-3 col-form-label pt-0"><strong>{{ header }}</strong></legend>
+						<div class="col-sm-9">
+							<select class="form-control form-control-sm" v-model="selectedFormationId" @change="changeFormation" :disabled="selectedLineupId > 0">
+								<option value="0" selected>Välj en formation</option>
+								<option v-for="formation in formations" :value="formation.id" :key="formation.id">{{ formation.name }}</option>
 							</select>
 						</div>
-					</template>
-					<template v-else>
-						<div class="col-sm-12" :class="{ 'col-lg-6 col-md-6': userIsLoggedInUser, 'col-lg-12 col-md-6': !userIsLoggedInUser }">
-							<button class="btn btn-sm btn-primary btn-block" v-on:click="load">Ladda startelvor</button>
-						</div>
-					</template>
-					<template v-if="userIsLoggedInUser">
-						<div class="col-sm-12" v-if="!inCreate" :class="{ 'col-lg-6 col-md-6': userIsLoggedInUser, 'col-lg-12 col-md-6': !userIsLoggedInUser }">
-							<button class="btn btn-sm btn-success btn-block" v-on:click="setInCreate(true)">Skapa ny startelva</button>
-						</div>
-						<div class="col-sm-12" v-if="inCreate" :class="{ 'col-lg-6 col-md-6': userIsLoggedInUser, 'col-lg-12 col-md-6': !userIsLoggedInUser }">
-							<button class="btn btn-sm btn-danger btn-block" v-on:click="setInCreate(false)">Avbryt</button>
-						</div>
-					</template>
+					</div>
 				</div>
-				<template v-if="selectedLineupId > 0">
-					<div class="mt-3">
-						<formation-component :formation="selectedLineup.formation" :players="selectedLineup.players" />
-						<results :items="results" class="pt-3" />
+			</template>
+			<div class="row" v-else>
+				<template v-if="lineups.length > 0 || noLineupsFound">
+					<div class="col">
+						<select class="form-control form-control-sm" v-model="selectedLineupId" @change="changeLineup" :disabled="inCreate || !lineups.length > 0">
+							<option value="0">{{ lineups.length > 0 ? 'Välj en startelva' : 'Hittade inga startelvor' }}</option>
+							<option v-for="lineup in lineups" :value="lineup.id" :key="lineup.id">{{ lineup.formation.name }}, skapad {{ lineup.created }}</option>
+						</select>
 					</div>
 				</template>
-				<div class="row mt-3" v-if="inCreate">
+				<template v-else>
+					<div class="col" v-if="typeOfLineup == fictionLineupType">
+						<button class="btn btn-sm btn-primary btn-block" v-on:click="load">Ladda startelvor</button>
+					</div>
+				</template>
+				<template v-if="inCreate">
 					<div class="col">
 						<select class="form-control form-control-sm" v-model="selectedFormationId" @change="changeFormation">
 							<option value="0" selected>Välj en formation</option>
-							<option v-for="formation in formations" :value="formation.id">{{ formation.name }}</option>
+							<option v-for="formation in formations" :value="formation.id" :key="formation.id">{{ formation.name }}</option>
 						</select>
 					</div>
-				</div>
-				<template v-if="inCreate && selectedFormationId > 0">
-					<div class="row mt-3">
-						<div class="col">
-							<formation-component :formation="selectedFormation" />
-							<button class="btn btn-success btn-sm btn-block mt-3" :disabled="!canCreate" v-on:click="submit">Skapa</button>
-						</div>
-					</div>
 				</template>
+			</div>
+			<template v-if="selectedLineupId > 0">
+				<div class="mt-3">
+					<formation-component :formation="selectedLineup.formation" :players="selectedLineup.players" />
+					<results :items="results" class="pt-3" />
+				</div>
 			</template>
-			<template v-else>
-				<loader v-bind="{ background: '#699ED0' }" />
+			<template v-if="inCreate && selectedFormationId > 0">
+				<div class="row mt-3">
+					<div class="col">
+						<formation-component :formation="selectedFormation" />
+						<button class="btn btn-success btn-sm btn-block mt-3" :disabled="!canCreate" v-on:click="submit" v-if="typeOfLineup == fictionLineupType">Skapa</button>
+					</div>
+				</div>
 			</template>
-		</div>
+		</template>
+		<template v-else>
+			<loader v-bind="{ background: '#699ED0' }" />
+		</template>
 	</div>
 </template>
 
@@ -67,7 +72,7 @@ const ModuleGetter = namespace('squad', Getter)
 const ModuleAction = namespace('squad', Action)
 const ModuleMutation = namespace('squad', Mutation)
 
-import { Lineup, Player, Formation } from '../../model/squad/'
+import { Lineup, Player, Formation, LineupType } from '../../model/squad/'
 import { Lineup as CrudLineup } from '../../model/squad/crud'
 import { ProfileViewModel, Result, ResultType } from '../../model/common'
 
@@ -94,6 +99,14 @@ import FormationComponent from './formation.vue'
 
 @Component({
 	props: {
+		header: {
+			type: String,
+			default: 'Startelvor'
+		},
+		lineupType: {
+			type: String,
+			default: 'Fiction'
+		},
 		preSelectedLineupId: {
 			type: Number,
 			default: 0
@@ -122,6 +135,8 @@ export default class Lineups extends Vue {
 	@ModuleMutation(SET_NEW_LINEUP) setNewLineup: (payload: { formationId: number }) => void
 	@ModuleMutation(SET_SELECTED_LINEUP) setSelectedLineup: (lineup: Lineup) => void
 
+	header: string
+	lineupType: string
 	preSelectedLineupId: number
 
 	selectedLineupId: number = 0
@@ -130,21 +145,36 @@ export default class Lineups extends Vue {
 	loading: boolean = false
 	inCreate: boolean = false
 	noLineupsFound: boolean = false
+	typeOfLineup: LineupType = LineupType.Real
+	preSelectedLineup?: Lineup
 
 	results: Result[] = []
 
 	mounted() {
+		this.typeOfLineup = LineupType[this.lineupType as keyof typeof LineupType]
+		if (this.typeOfLineup == this.realLineupType) {
+			this.setInCreate(true)
+		}
 		if (this.preSelectedLineupId > 0) {
 			new Promise<void>((resolve, reject) => {
-				if (!this.lineups || this.lineups.length == 0)
-					this.loadLineups({ userId: this.userId }).then(() => resolve())
-				else
-					resolve()
+				if (this.typeOfLineup == this.fictionLineupType) {
+					if (!this.lineups || this.lineups.length == 0)
+						this.loadLineups({ userId: this.userId }).then(() => resolve())
+					else
+						resolve()
+				} else if (this.typeOfLineup == this.realLineupType) {
+					this.loadLineup({ id: this.preSelectedLineupId })
+						.then((lineup: Lineup) => {
+							this.preSelectedLineup = lineup
+							resolve()
+						})
+				}
 			}).then(() => {
 				this.selectedLineupId = this.preSelectedLineupId
 				this.changeLineup()
 			})
 		}
+
 	}
 
 	get userId() {
@@ -159,6 +189,12 @@ export default class Lineups extends Vue {
 	get userIsLoggedInUser() {
 		return this.vm.selectedUserId ? this.vm.selectedUserId == this.vm.loggedInUser.id ? true : false : true
 	}
+	get realLineupType() {
+		return LineupType.Real
+	}
+	get fictionLineupType() {
+		return LineupType.Fiction
+	}
 
 	load() {
 		this.loading = true
@@ -170,8 +206,14 @@ export default class Lineups extends Vue {
 	}
 
 	changeLineup() {
-		if (this.selectedLineupId > 0) 
-			this.setSelectedLineup(this.lineups.filter((l: Lineup) => l.id == this.selectedLineupId)[0])
+		if (this.selectedLineupId > 0) {
+			console.log('Pre Selected Lineup:', this.preSelectedLineup)
+			if (this.preSelectedLineup) {
+				this.setSelectedLineup(this.preSelectedLineup)
+			} else {
+				this.setSelectedLineup(this.lineups.filter((l: Lineup) => l.id == this.selectedLineupId)[0])
+			}
+		}
 		else
 			this.setSelectedLineup(new Lineup())
 	}
@@ -206,7 +248,7 @@ export default class Lineups extends Vue {
 	submit() {
 		if (this.canCreate) {
 			this.loading = true
-			this.create({ lineup: { formationId: this.selectedFormationId, players: this.newLineup.players, createdByUserId: this.vm.loggedInUser.id } })
+			this.create({ lineup: { formationId: this.selectedFormationId, players: this.newLineup.players, createdByUserId: this.vm.loggedInUser.id, type: LineupType.Fiction } })
 				.then((res: Result[]) => {
 					this.loadLineups({ userId: this.userId })
 						.then(() => {

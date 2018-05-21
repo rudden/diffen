@@ -90,6 +90,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> DeleteFavoritePlayerRelationToUserForPlayerAsync(int playerId);
 		Task<bool> UpdateAvailablePositionsForPlayerAsync(int playerId, IEnumerable<int> positionIds);
 		Task<List<Game>> GetGamesAsync();
+		Task<Game> GetUpcomingGameAsync();
 		Task<Game> GetGameOnIdAsync(int gameId);
 		Task<List<PlayerEvent>> GetPlayerEventsAsync();
 		Task<bool> CreateGameAsync(Game game);
@@ -97,6 +98,10 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> CreatePlayerEventsAsync(List<PlayerEvent> events);
 		Task<bool> DeletePlayerEventsOnGameIdAsync(int gameId);
 		Task<List<Title>> GetTitlesAsync();
+		Task<List<GameResultGuess>> GetFinishedGameResultGuessesAsync();
+		Task<List<GameResultGuess>> GetGameResultGuessesForGameWithIdAsync(int gameId);
+		Task<List<GameResultGuess>> GetGameResultGuessesForUserWithIdAsync(string userId);
+		Task<bool> CreateGameResultGuessAsync(GameResultGuess guess);
 
 		// Poll Related Requests
 		Task<List<Poll>> GetPollsAsync();

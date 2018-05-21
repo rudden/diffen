@@ -5,6 +5,8 @@
 		Goal,
 		Assist,
 		YellowCard,
-		RedCard
+		RedCard,
+		SubstituteIn,
+		SubstituteOut
 	}
 }

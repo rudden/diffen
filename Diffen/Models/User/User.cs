@@ -21,6 +21,7 @@ namespace Diffen.Models.User
 		public IEnumerable<int> SavedPostsIds { get; set; }
 		public IEnumerable<string> InRoles { get; set; }
 		public int NumberOfUnReadPersonalMessages { get; set; }
+		public IEnumerable<GameResultGuess> GameResultGuesses { get; set; }
 
 		public string Joined { get; set; }
 		public string SecludedUntil { get; set; }

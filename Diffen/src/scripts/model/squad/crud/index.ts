@@ -1,10 +1,11 @@
-import { GameType, GameEventType } from ".."
+import { GameType, GameEventType, LineupType, ArenaType } from ".."
 
 export class Lineup {
     id?: number
     formationId: number
     players: PlayerToLineup[] = []
     createdByUserId: string
+    type: LineupType
     created?: string
 }
 
@@ -29,6 +30,10 @@ export class Player {
 export class Game {
     id?: number
     type: GameType
+    arenaType: ArenaType
+    lineup?: Lineup
+    opponent: string
+    numberOfGoalsScoredByOpponent: number
     playedDate?: Date
     events: PlayerEvent[] = []
 }
@@ -36,4 +41,12 @@ export class Game {
 export class PlayerEvent {
     playerId: number = 0
     type: GameEventType = GameEventType.Goal
+    inMinute: number = 0
+}
+
+export class GameResultGuess {
+    gameId: number
+    numberOfGoalsScoredByDif: number
+    numberOfGoalsScoredByOpponent: number
+    guessedByUserId: string
 }

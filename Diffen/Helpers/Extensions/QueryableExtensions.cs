@@ -86,6 +86,10 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.Posts).ThenInclude(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.Lineups)
 				.Include(x => x.Region).ThenInclude(x => x.Region)
+				.Include(x => x.GameResultGuesses).ThenInclude(x => x.Game).ThenInclude(x => x.PlayerEvents).ThenInclude(x => x.Player)
+				.Include(x => x.GameResultGuesses).ThenInclude(x => x.Game).ThenInclude(x => x.Lineup).ThenInclude(x => x.Players).ThenInclude(x => x.Position)
+				.Include(x => x.GameResultGuesses).ThenInclude(x => x.Game).ThenInclude(x => x.Lineup).ThenInclude(x => x.Players).ThenInclude(x => x.Player).ThenInclude(x => x.AvailablePositions).ThenInclude(x => x.Position)
+				.Include(x => x.GameResultGuesses).ThenInclude(x => x.Game).ThenInclude(x => x.Lineup).ThenInclude(x => x.Formation)
 				.AsNoTracking();
 		}
 
@@ -119,15 +123,25 @@ namespace Diffen.Helpers.Extensions
 
 		public static IQueryable<Game> IncludeAll(this DbSet<Game> source)
 		{
-			return source.Include(x => x.PlayerEvents).ThenInclude(x => x.Player).ThenInclude(x => x.AvailablePositions).ThenInclude(x => x.Position)
-				.Include(x => x.PlayerEvents).ThenInclude(x => x.Player).ThenInclude(x => x.InLineups);
+			return source
+				.Include(x => x.PlayerEvents).ThenInclude(x => x.Player)
+				.Include(x => x.Lineup).ThenInclude(x => x.Players).ThenInclude(x => x.Position)
+				.Include(x => x.Lineup).ThenInclude(x => x.Players).ThenInclude(x => x.Player).ThenInclude(x => x.AvailablePositions).ThenInclude(x => x.Position)
+				.Include(x => x.Lineup).ThenInclude(x => x.Formation)
+				.Include(x => x.GameResultGuesses).ThenInclude(x => x.GuessedByUser).ThenInclude(x => x.NickNames);
 		}
 
 		public static IQueryable<PlayerEvent> IncludeAll(this DbSet<PlayerEvent> source)
 		{
 			return source.Include(x => x.Player).ThenInclude(x => x.AvailablePositions).ThenInclude(x => x.Position)
 				.Include(x => x.Player).ThenInclude(x => x.InLineups);
+		}
 
+		public static IQueryable<GameResultGuess> IncludeAll(this DbSet<GameResultGuess> source)
+		{
+			return source
+				.Include(x => x.Game).ThenInclude(x => x.PlayerEvents).ThenInclude(x => x.Player)
+				.Include(x => x.GuessedByUser).ThenInclude(x => x.NickNames);
 		}
 	}
 }

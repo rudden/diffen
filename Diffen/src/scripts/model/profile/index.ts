@@ -1,5 +1,5 @@
 import { Lineup as CrudLineup } from '../squad/crud'
-import { Player } from '../squad'
+import { Player, GameResultGuess } from '../squad'
 import { KeyValuePair, IdAndNickNameUser } from '../common'
 
 export class User {
@@ -18,6 +18,7 @@ export class User {
     savedPostsIds: number[]
     inRoles: string[]
     numberOfUnReadPersonalMessages: number
+    gameResultGuesses: GameResultGuess[]
 
     joined: string
     secludedUntil: string

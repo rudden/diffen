@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Diffen.Database.Entities.Squad
 {
 	using User;
+	using Helpers.Enum;
 
 	public class Lineup
 	{
@@ -20,7 +21,7 @@ namespace Diffen.Database.Entities.Squad
 		[ForeignKey("CreatedByUserId")]
 		public AppUser User { get; set; }
 		public string CreatedByUserId { get; set; }
-
+		public LineupType Type { get; set; }
 		public DateTime Created { get; set; }
 
 		// Linked Tables

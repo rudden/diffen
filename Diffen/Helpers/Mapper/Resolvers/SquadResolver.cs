@@ -3,6 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 
 using AutoMapper;
+using Diffen.Helpers.Extensions;
+using Diffen.Models;
 
 namespace Diffen.Helpers.Mapper.Resolvers
 {
@@ -19,7 +21,9 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Database.Entities.Squad.PlayerEvent, Models.Squad.PlayerEvent>,
 		ITypeConverter<Database.Entities.Squad.PlayerEvent, Models.Squad.PlayerEventOnPlayer>,
 		ITypeConverter<Models.Squad.CRUD.Game, Database.Entities.Squad.Game>,
-		ITypeConverter<Database.Entities.Squad.Title, Models.Squad.Title>
+		ITypeConverter<Database.Entities.Squad.Title, Models.Squad.Title>,
+		ITypeConverter<Models.Squad.CRUD.GameResultGuess, Database.Entities.Squad.GameResultGuess>,
+		ITypeConverter<Database.Entities.Squad.GameResultGuess, Models.Squad.GameResultGuess>
 	{
 		public Models.Squad.Player Convert(Database.Entities.Squad.Player source, Models.Squad.Player destination, ResolutionContext context)
 		{
@@ -56,6 +60,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					ComponentName = FormationList.All().FirstOrDefault(f => f.Name == source.Formation.Name)?.ComponentName
 				},
 				Players = context.Mapper.Map<List<Models.Squad.PlayerToLineup>>(source.Players),
+				Type = source.Type,
 				Created = source.Created.ToString("yyyy-MM-dd")
 			};
 		}
@@ -86,6 +91,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					PositionId = player.PositionId
 				}).ToList(),
 				CreatedByUserId = source.CreatedByUserId,
+				Type = source.Type,
 				Created = DateTime.Now
 			};
 		}
@@ -128,6 +134,10 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				Id = source.Id,
 				Type = source.Type,
+				ArenaType = source.ArenaType,
+				Opponent = source.OpponentTeamName,
+				NumberOfGoalsScoredByOpponent = source.NumberOfGoalsScoredByOpponent,
+				Lineup = source.Lineup != null ? context.Mapper.Map<Models.Squad.Lineup>(source.Lineup) : null,
 				PlayedOn = source.OnDate.ToString("yyyy-MM-dd"),
 				PlayerEvents = context.Mapper.Map<IEnumerable<Models.Squad.PlayerEvent>>(source.PlayerEvents)
 			};
@@ -138,8 +148,13 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			return new Models.Squad.PlayerEvent
 			{
 				Id = source.Id,
-				Player = context.Mapper.Map<Models.Squad.Player>(source.Player),
-				EventType = source.Type
+				Player = new Models.Squad.EventPlayer
+				{
+					Id = source.PlayerId,
+					FullName = $"{source.Player.FirstName} {source.Player.LastName}"
+				},
+				EventType = source.Type,
+				InMinute = source.InMinuteOfGame
 			};
 		}
 
@@ -160,6 +175,9 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				Id = source.Id,
 				Type = source.Type,
+				ArenaType = source.ArenaType,
+				OpponentTeamName = source.Opponent,
+				NumberOfGoalsScoredByOpponent = source.NumberOfGoalsScoredByOpponent,
 				OnDate = source.PlayedDate
 			};
 		}
@@ -172,6 +190,33 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Type = source.Type,
 				Year = source.Year,
 				Description = source.Description
+			};
+		}
+
+		public Database.Entities.Squad.GameResultGuess Convert(Models.Squad.CRUD.GameResultGuess source, Database.Entities.Squad.GameResultGuess destination, ResolutionContext context)
+		{
+			return new Database.Entities.Squad.GameResultGuess
+			{
+				GameId = source.GameId,
+				NumberOfGoalsScoredByDif = source.NumberOfGoalsScoredByDif,
+				NumberOfGoalsScoredByOpponent = source.NumberOfGoalsScoredByOpponent,
+				GuessedByUserId = source.GuessedByUserId,
+				Created = DateTime.Now
+			};
+		}
+
+		public Models.Squad.GameResultGuess Convert(Database.Entities.Squad.GameResultGuess source, Models.Squad.GameResultGuess destination, ResolutionContext context)
+		{
+			return new Models.Squad.GameResultGuess
+			{
+				Game = context.Mapper.Map<Models.Squad.Game>(source.Game),
+				NumberOfGoalsScoredByDif = source.NumberOfGoalsScoredByDif,
+				NumberOfGoalsScoredByOpponent = source.NumberOfGoalsScoredByOpponent,
+				GuessedByUser = new IdAndNickNameUser
+				{
+					Id = source.GuessedByUserId,
+					NickName = source.GuessedByUser.NickNames.Current()
+				}
 			};
 		}
 	}

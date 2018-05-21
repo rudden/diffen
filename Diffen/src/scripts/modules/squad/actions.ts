@@ -3,8 +3,8 @@ import State from './state'
 import { Store, ActionTree, ActionContext } from 'vuex'
 
 import { Result, KeyValuePair } from '../../model/common'
-import { Lineup, Player, Formation, Title } from '../../model/squad'
-import { Lineup as CrudLineup, Player as CrudPlayer, Game as CrudGame } from '../../model/squad/crud'
+import { Lineup, Player, Formation, Title, Game, GameResultGuess, GameResultGuessLeagueItem } from '../../model/squad'
+import { Lineup as CrudLineup, Player as CrudPlayer, Game as CrudGame, GameResultGuess as CrudResultGuess } from '../../model/squad/crud'
 
 import { 
 	FETCH_KVP_USERS,
@@ -26,7 +26,10 @@ import {
 	SET_GAMES,
 	CREATE_GAME,
 	UPDATE_GAME,
-    FETCH_TITLES
+    FETCH_TITLES,
+	FETCH_UPCOMING_GAME,
+    GUESS_GAME_RESULT,
+    FETCH_FINISHED_GAME_RESULT_GUESSES
 } from './types'
 
 axios.defaults.withCredentials = true
@@ -91,13 +94,13 @@ export const Actions: ActionTree<State, any> = {
 	},
 	[CREATE_GAME]: (store: ActionContext<State, any>, payload: { game: CrudGame }): Promise<boolean> => {
 		return new Promise<boolean>((resolve, reject) => {
-			return axios.post(`${store.rootState.vm.api}/squads/game/create`, payload.game)
+			return axios.post(`${store.rootState.vm.api}/squads/games/create`, payload.game)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},
 	[UPDATE_GAME]: (store: ActionContext<State, any>, payload: { game: CrudGame }): Promise<boolean> => {
 		return new Promise<boolean>((resolve, reject) => {
-			return axios.post(`${store.rootState.vm.api}/squads/game/update`, payload.game)
+			return axios.post(`${store.rootState.vm.api}/squads/games/update`, payload.game)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
 		})
 	},
@@ -105,6 +108,35 @@ export const Actions: ActionTree<State, any> = {
 		return new Promise<Title[]>((resolve, reject) => {
 			return axios.get(`${store.rootState.vm.api}/squads/titles`)
 				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[FETCH_UPCOMING_GAME]: (store: ActionContext<State, any>): Promise<Game> => {
+		return new Promise<Game>((resolve, reject) => {
+			return axios.get(`${store.rootState.vm.api}/squads/games/upcoming`)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[FETCH_FINISHED_GAME_RESULT_GUESSES]: (store: ActionContext<State, any>): Promise<GameResultGuessLeagueItem[]> => {
+		return new Promise<GameResultGuessLeagueItem[]>((resolve, reject) => {
+			return axios.get(`${store.rootState.vm.api}/squads/games/result/finished`)
+				.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
+	},
+	[GUESS_GAME_RESULT]: (store: ActionContext<State, any>, payload: { guess: CrudResultGuess }): Promise<boolean> => {
+		return new Promise<boolean>((resolve, reject) => {
+			return axios.post(`${store.rootState.vm.api}/squads/games/result/guess`, payload.guess)
+				.then((res) => {
+					if (res) {
+						store.rootState.vm.loggedInUser.gameResultGuesses.push({
+							game: {
+								id: payload.guess.gameId
+							},
+							numberOfGoalsScoredByDif: payload.guess.numberOfGoalsScoredByDif,
+							numberOfGoalsScoredByOpponent: payload.guess.numberOfGoalsScoredByOpponent
+						})
+					}
+					resolve(res.data)
+				}).catch((error) => console.warn(error))
 		})
 	},
 }

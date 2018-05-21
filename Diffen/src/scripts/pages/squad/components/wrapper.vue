@@ -8,14 +8,14 @@
 						<li class="list-group-item p-4">
 							<modal v-bind="modalAttributes.newPlayer" v-if="loggedInUserIsAdmin">
 								<template slot="body">
-									<form-component :save="create" />
+									<player-component :save="create" />
 								</template>
 							</modal>
 							<h4 class="mb-0">Spelartruppen</h4>
 						</li>
 						<li class="list-group-item media">
 							<template v-if="!loading">
-								<table-component :data="players" sort-by="lastName" sort-order="desc" @rowClick="rowClick">
+								<table-component :data="filteredPlayers" sort-by="lastName" sort-order="desc" @rowClick="rowClick">
 									<table-column label="Förnamn" show="firstName"></table-column>
 									<table-column label="Efternamn" show="lastName"></table-column>
 									<table-column label="Attribut" :filterable="false" :sortable="false">
@@ -27,12 +27,21 @@
 											<span class="badge badge-danger ml-1" v-if="row.isSold">såld</span>
 										</template>
 									</table-column>
-									<table-column label="Tröjnummer" show="kitNumber" data-type="numeric"></table-column>
-									<table-column label="Antal positioner" show="availablePositions.length" data-type="numeric"></table-column>
+									<template slot="tfoot">
+										<tr>
+											<td colspan="3" style="border-top: 0">
+												<hr />
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="checkbox" id="includePlayersOutOnLoan" v-model="includePlayersOutOnLoan">
+													<label class="form-check-label" for="includePlayersOutOnLoan">Inkludera utlånade spelare</label>
+												</div>
+											</td>
+										</tr>
+									</template>
 								</table-component>
-								<modal v-for="player in players" :key="player.id" v-bind="{ attributes: { name: `show-player-${player.id}`, scrollable: true }, header: player.name, button: { } }">
+								<modal v-for="player in filteredPlayers" :key="player.id" v-bind="{ attributes: { name: `show-player-${player.id}`, scrollable: true }, header: player.name, button: { } }">
 									<template slot="body">
-										<form-component :player="player" :save="update" :editable="false" />
+										<player-component :player="player" :save="update" :editable="false" />
 									</template>
 								</modal>
 							</template>
@@ -46,13 +55,18 @@
 					<player-events />
 				</div>
 			</div>
+			<div class="row mt-3">
+				<div class="col">
+					<game-result-guess-league />
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { Component } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import { Getter, Action, State, namespace } from 'vuex-class'
 
 const ModuleGetter = namespace('squad', Getter)
@@ -70,13 +84,14 @@ import {
 	UPDATE_PLAYER
 } from '../../../modules/squad/types'
 
-import FormComponent from './form.vue'
+import GameResultGuessLeague from './game-result-guess-league.vue'
+import PlayerComponent from './player.vue'
 import Modal from '../../../components/modal.vue'
 import PlayerEvents from '../../../components/player-events.vue'
 
 @Component({
 	components: {
-		Modal, FormComponent, PlayerEvents
+		Modal, PlayerComponent, PlayerEvents, GameResultGuessLeague
 	}
 })
 export default class Wrapper extends Vue {
@@ -103,12 +118,24 @@ export default class Wrapper extends Vue {
 		}
 	}
 
+	filteredPlayers: Player[] = []
+
+	includePlayersOutOnLoan: boolean = false
+
 	$modal: any = (this as any).VModal
 
 	mounted() {
 		Promise.all([this.loadPlayers(), this.loadPositions()])
-			.then(() => this.loading = false)
+			.then(() => {
+				this.filteredPlayers = this.players.filter((player: Player) => !player.isOutOnLoan)
+				this.loading = false
+			})
 	}
+
+	@Watch('includePlayersOutOnLoan')
+		onChange() {
+			this.filteredPlayers = this.includePlayersOutOnLoan ? this.players : this.players.filter((player: Player) => !player.isOutOnLoan)
+		}
 
 	get loggedInUserIsAdmin(): boolean {
         return this.vm.loggedInUser.inRoles.some(role => role == 'Admin')
@@ -127,7 +154,6 @@ export default class Wrapper extends Vue {
 	}
 
 	rowClick(row: any) {
-		console.log(row.data)
 		this.$modal.show(`show-player-${row.data.id}`)
 	}
 }

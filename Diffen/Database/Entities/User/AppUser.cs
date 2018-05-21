@@ -25,5 +25,6 @@ namespace Diffen.Database.Entities.User
 		public ICollection<SavedPost> SavedPosts { get; set; }
 		public ICollection<Lineup> Lineups { get; set; }
 		public RegionToUser Region { get; set; }
+		public ICollection<GameResultGuess> GameResultGuesses { get; set; }
 	}
 }

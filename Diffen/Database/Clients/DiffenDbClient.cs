@@ -852,7 +852,12 @@ namespace Diffen.Database.Clients
 
 		public Task<Game> GetGameOnIdAsync(int gameId)
 		{
-			return _dbContext.Games.IncludeAll().FirstOrDefaultAsync(game => game.Id == gameId);
+			return _dbContext.Games.IncludeAll().AsNoTracking().FirstOrDefaultAsync(game => game.Id == gameId);
+		}
+
+		public Task<Game> GetUpcomingGameAsync()
+		{
+			return _dbContext.Games.IncludeAll().Where(x => x.OnDate > DateTime.Now).OrderByDescending(x => x.OnDate).FirstOrDefaultAsync();
 		}
 
 		public Task<List<PlayerEvent>> GetPlayerEventsAsync()
@@ -892,6 +897,27 @@ namespace Diffen.Database.Clients
 		public Task<List<Title>> GetTitlesAsync()
 		{
 			return _dbContext.Titles.OrderByDescending(x => x.Year).ToListAsync();
+		}
+
+		public Task<List<GameResultGuess>> GetFinishedGameResultGuessesAsync()
+		{
+			return _dbContext.GameResultGuesses.IncludeAll().Where(x => x.Game.OnDate < DateTime.Now).OrderByDescending(x => x.Created).ToListAsync();
+		}
+
+		public Task<List<GameResultGuess>> GetGameResultGuessesForGameWithIdAsync(int gameId)
+		{
+			return _dbContext.GameResultGuesses.IncludeAll().Where(x => x.GameId.Equals(gameId)).OrderByDescending(x => x.Created).ToListAsync();
+		}
+
+		public Task<List<GameResultGuess>> GetGameResultGuessesForUserWithIdAsync(string userId)
+		{
+			return _dbContext.GameResultGuesses.IncludeAll().Where(x => x.GuessedByUserId.Equals(userId)).OrderByDescending(x => x.Created).ToListAsync();
+		}
+
+		public Task<bool> CreateGameResultGuessAsync(GameResultGuess guess)
+		{
+			_dbContext.GameResultGuesses.Add(guess);
+			return CommitedResultIsSuccessfulAsync();
 		}
 
 		private async Task<bool> CommitedResultIsSuccessfulAsync()

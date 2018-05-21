@@ -20,5 +20,7 @@ namespace Diffen.Database.Entities.Squad
 		public int PlayerId { get; set; }
 
 		public GameEventType Type { get; set; }
+
+		public int InMinuteOfGame { get; set; }
 	}
 }

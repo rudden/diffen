@@ -1,7 +1,10 @@
+import { IdAndNickNameUser } from '../common'
+
 export class Lineup {
     id: number
     formation: Formation
     players: PlayerToLineup[]
+    type: LineupType
     created: string
 }
 
@@ -42,20 +45,32 @@ export class Position {
 export class Game {
     id: number
     type: GameType
+    arenaType: ArenaType
+    lineup: Lineup
+    opponent: string
+    numberOfGoalsScoredByOpponent: number
     playedOn: string
     playerEvents: PlayerEvent[]
 }
 
 export class PlayerEvent {
     id: number
-    player: Player
+    player: EventPlayer
     eventType: GameEventType
+    inMinute: number
+}
+
+export class EventPlayer {
+    id: number
+    fullName: string
 }
 
 export class PlayerEventOnPlayer {
     gameId: number
+    opponent: string
     gameType: GameType
     eventType: GameEventType
+    inMinuteOfGame: number
     date: string
 }
 
@@ -70,7 +85,14 @@ export enum GameEventType {
     Goal,
     Assist,
     YellowCard,
-    RedCard
+    RedCard,
+    SubstituteIn,
+    SubstituteOut
+}
+
+export enum ArenaType {
+    Home,
+    Away
 }
 
 export class Title {
@@ -83,4 +105,20 @@ export class Title {
 export enum TitleType {
     Cup,
     League
+}
+
+export enum LineupType {
+    Real,
+    Fiction
+}
+
+export class GameResultGuess {
+    game: Game
+    numberOfGoalsScoredByDif: number
+    numberOfGoalsScoredByOpponent: number
+}
+
+export class GameResultGuessLeagueItem {
+    user: IdAndNickNameUser
+    guesses: GameResultGuess[]
 }

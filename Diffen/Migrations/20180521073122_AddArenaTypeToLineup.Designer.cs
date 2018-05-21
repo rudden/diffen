@@ -12,9 +12,10 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    partial class DiffenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180521073122_AddArenaTypeToLineup")]
+    partial class AddArenaTypeToLineup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -298,8 +299,6 @@ namespace Diffen.Migrations
                     b.Property<int>("ArenaType");
 
                     b.Property<int?>("LineupId");
-
-                    b.Property<int>("NumberOfGoalsScoredByOpponent");
 
                     b.Property<DateTime>("OnDate");
 

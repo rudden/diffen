@@ -99,9 +99,15 @@ namespace Diffen.Controllers.Api
 			return _squadRepository.GetGamesAsync();
 		}
 
+		[HttpGet("games/upcoming")]
+		public Task<Game> GetUpcomingGame()
+		{
+			_logger.Debug("Requesting upcoming game");
+			return _squadRepository.GetUpcomingGameAsync();
+		}
 
 		[Authorize(Policy = "IsManager")]
-		[HttpPost, Route("game/create")]
+		[HttpPost, Route("games/create")]
 		public Task<bool> CreateGame([FromBody] Models.Squad.CRUD.Game game)
 		{
 			_logger.Debug("Requesting to create a new game");
@@ -109,11 +115,26 @@ namespace Diffen.Controllers.Api
 		}
 
 		[Authorize(Policy = "IsManager")]
-		[HttpPost, Route("game/update")]
+		[HttpPost, Route("games/update")]
 		public Task<bool> UpdateGame([FromBody] Models.Squad.CRUD.Game game)
 		{
-			_logger.Debug("Requesting to update a game with id {gameId}", game.Id);
+			_logger.Debug("Requesting to update a game {@game}", game);
 			return _squadRepository.UpdateGameAsync(game);
+		}
+
+		[HttpGet("games/result/finished")]
+		public Task<List<GameResultGuessLeagueItem>> GetFinishedGameResultGuesses()
+		{
+			_logger.Debug("Requesting all finished game result guesses");
+			return _squadRepository.GetFinishedGameResultGuessesAsync();
+		}
+
+		[VerifyInputToLoggedInUserId("guess", "GuessedByUserId")]
+		[HttpPost, Route("games/guessresult")]
+		public Task<bool> GuessGameResult([FromBody] Models.Squad.CRUD.GameResultGuess guess)
+		{
+			_logger.Debug("Requesting to guess a result for a game");
+			return _squadRepository.CreateGameResultGuessAsync(guess);
 		}
 
 		[HttpGet("titles")]

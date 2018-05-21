@@ -58,6 +58,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					DownVotes = source.Votes.Count(x => x.Type == VoteType.Down)
 				} : null,
 				NumberOfUnReadPersonalMessages = _pmRepository.GetAllUnReadMessagesForUserWithIdAsync(source.Id).Result,
+				GameResultGuesses = source.GameResultGuesses != null ? context.Mapper.Map<IEnumerable<Models.Squad.GameResultGuess>>(source.GameResultGuesses) : null,
 				Joined = source.Joined.ToString("yyyy-MM-dd"),
 				SecludedUntil = source.SecludedUntil.GetSecluded(),
 			};

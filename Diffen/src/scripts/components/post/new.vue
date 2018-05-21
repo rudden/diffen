@@ -14,17 +14,17 @@
                 <button class="btn btn-primary btn-sm btn-block" v-on:click="fetchLineups">Ladda startelvor</button>
             </template>
         </div>
+        <template v-if="newPost.lineupId > 0">
+            <div class="mt-3 mb-3">
+                <formation-component :formation="selectedLineup.formation" :players="selectedLineup.players" />
+            </div>
+        </template>
         <div class="input-group">
             <input type="text" class="form-control br br__br-4" placeholder="Länktips" v-model="newPost.urlTipHref">
             <div class="input-group-btn">
                 <button class="btn btn-success align-self-stretch ml-2" v-on:click="submit" :disabled="!canSubmit">{{ btnText }}</button>
             </div>
         </div>
-        <template v-if="newPost.lineupId > 0">
-            <div class="mt-3">
-                <formation-component :formation="selectedLineup.formation" :players="selectedLineup.players" />
-            </div>
-        </template>
         <results :items="results" class="pt-3" />
     </div>
 </template>

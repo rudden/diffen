@@ -38,6 +38,9 @@
 }
 .large-device {
 	display: block;
+	&__contents {
+		display: contents;
+	}
 }
 @media (max-width: 768px) {
 	.container {
@@ -47,6 +50,9 @@
 	}
 	.small-device {
 		display: block;
+		&__contents {
+			display: contents;
+		}
 	}
 	.large-device {
 		display: none;
