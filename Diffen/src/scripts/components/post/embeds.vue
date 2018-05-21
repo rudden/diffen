@@ -34,9 +34,12 @@ export default class Embeds extends Vue {
 	get twitterSrc() { 
         if (this.href && this.href.includes('twitter.com')) {
             let src = this.href.split('status/').pop()
-            if (src && src.includes('?s'))
-                return src.split('?s')[0]
-            return src
+            if (src) {
+                if (src.includes('?s'))
+                    return src.split('?s')[0]
+                return src
+            }
+            return ''
         }
         return '' 
     }
