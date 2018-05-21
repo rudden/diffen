@@ -32,7 +32,13 @@ export default class Embeds extends Vue {
         return this.href ? this.href.includes('youtube.com') ? '//www.youtube.com/embed/' + this.href.split('?v=').pop() + '?rel=0' : '' : ''
     }
 	get twitterSrc() { 
-        return this.href ? this.href.includes('twitter.com') ? this.href.split('status/').pop() : '' : '' 
+        if (this.href && this.href.includes('twitter.com')) {
+            let src = this.href.split('status/').pop()
+            if (src && src.includes('?s'))
+                return src.split('?s')[0]
+            return src
+        }
+        return '' 
     }
     get hasEmbed(): boolean {
         return this.videoSrc || this.twitterSrc ? true : false
