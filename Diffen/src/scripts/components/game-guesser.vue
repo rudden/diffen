@@ -6,28 +6,26 @@
             <template v-if="!loading">
                 <div class="row">
                     <div class="col pr-1">
+                        <strong>DIF</strong>
                         <template v-if="loggedInUsersGameResultGuess">
-                            <strong>DIF</strong>
                             <div class="alert alert-primary p-1 mb-0">
                                 <strong>{{ loggedInUsersGameResultGuess.difGoals }} mål</strong>
                             </div>
                         </template>
                         <template v-else>
-                            <strong>DIF</strong>
                             <select class="form-control form-control-sm" v-model="selectedNumberOfDifGoals">
                                 <option v-for="goal in goals" :value="goal">{{ goal }}</option>
                             </select>
                         </template>
                     </div>
                     <div class="col pl-1">
+                        <strong>{{ upcomingGame.opponent }}</strong>
                         <template v-if="loggedInUsersGameResultGuess">
-                            <strong>{{ upcomingGame.opponent }}</strong>
                             <div class="alert alert-primary p-1 mb-0">
                                 <strong>{{ loggedInUsersGameResultGuess.opponentGoals }} mål</strong>
                             </div>
                         </template>
                         <template v-else>
-                            <strong>{{ upcomingGame.opponent }}</strong>
                             <select class="form-control form-control-sm" v-model="selectedNumberOfOpponentGoals" :readonly="loggedInUsersGameResultGuess">
                                 <option v-for="goal in goals" :value="goal">{{ goal }}</option>
                             </select>
