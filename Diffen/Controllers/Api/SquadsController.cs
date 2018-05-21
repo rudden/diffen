@@ -130,7 +130,7 @@ namespace Diffen.Controllers.Api
 		}
 
 		[VerifyInputToLoggedInUserId("guess", "GuessedByUserId")]
-		[HttpPost, Route("games/guessresult")]
+		[HttpPost, Route("games/result/guess")]
 		public Task<bool> GuessGameResult([FromBody] Models.Squad.CRUD.GameResultGuess guess)
 		{
 			_logger.Debug("Requesting to guess a result for a game");
