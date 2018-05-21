@@ -15,12 +15,42 @@
             </li>
             <li class="list-group-item media">
                 <template v-if="!loading">
-                    <table-component :data="table" sort-by="id" sort-order="desc" :show-filter="false" :table-class="'table table-sm mb-0'">
+                    <table-component :data="table" sort-by="id" sort-order="desc" :show-filter="false" @rowClick="rowClick">
                         <table-column label="#" show="id" data-type="numeric"></table-column>
                         <table-column label="Användare" show="user.nickName" :sortable="false"></table-column>
                         <table-column label="Poäng" show="points" data-type="numeric"></table-column>
-                        <table-column label="Antal tippningar" show="numberOfGuesses" data-type="numeric"></table-column>
+                        <table-column label="Antal tippningar" show="guesses.length" data-type="numeric"></table-column>
                     </table-component>
+                    <modal v-for="item in table" :key="item.id" v-bind="{ attributes: { name: `show-data-${item.user.id}`, scrollable: true }, header: item.user.nickName, button: { } }">
+                        <template slot="body">
+                            <div class="row">
+                                <div class="col">
+                                    <table-component :data="userTable" sort-by="playedDate" sort-order="desc" :show-filter="false" :table-class="'table table-sm mb-0'">
+                                        <table-column label="Spelades" show="playedDate"></table-column>
+                                        <table-column label="Hemmalag" :sortable="false">
+                                            <template slot-scope="row">
+                                                <strong>{{ row.homeTeam.name }}</strong>
+                                                <br />
+                                                Gjorda mål: {{ row.homeTeam.goal.outcome }}
+                                                <br />
+                                                Gissade: {{ row.homeTeam.goal.guess }}
+                                            </template>
+                                        </table-column>
+                                        <table-column label="Bortalag" :sortable="false">
+                                            <template slot-scope="row">
+                                                <strong>{{ row.awayTeam.name }}</strong>
+                                                <br />
+                                                Gjorda mål: {{ row.awayTeam.goal.outcome }}
+                                                <br />
+                                                Gissade: {{ row.awayTeam.goal.guess }}
+                                            </template>
+                                        </table-column>
+                                        <table-column label="Poäng" show="points" data-type="numeric"></table-column>
+                                    </table-component>
+                                </div>
+                            </div>
+                        </template>
+                    </modal>
                 </template>
                 <template v-else>
                     <loader v-bind="{ background: '#699ED0' }" />
@@ -38,19 +68,37 @@ import { Getter, Action, State, namespace } from 'vuex-class'
 const ModuleGetter = namespace('squad', Getter)
 const ModuleAction = namespace('squad', Action)
 
-import { Game, GameResultGuess, PlayerEvent, GameEventType, GameResultGuessLeagueItem } from '../../../model/squad'
+import { Game, GameResultGuess, PlayerEvent, GameEventType, GameResultGuessLeagueItem, ArenaType } from '../../../model/squad'
 import { PageViewModel, Result, ResultType, IdAndNickNameUser } from '../../../model/common'
 
 import { FETCH_FINISHED_GAME_RESULT_GUESSES } from '../../../modules/squad/types'
 
 import Modal from '../../../components/modal.vue'
+import { GET_SHOULD_RELOAD_POST_STREAM } from '../../../modules/forum/types';
 
 interface IGuessLeagueItem {
     id?: number
     user: IdAndNickNameUser
     result: IGuessResult
-    numberOfGuesses: number
+    guesses: GameResultGuess[]
     points?: number
+}
+
+interface IGoal {
+    outcome: number
+    guess: number
+}
+
+interface ITeam {
+    name: string
+    goal: IGoal
+}
+
+interface IGuess {
+    homeTeam: ITeam
+    awayTeam: ITeam
+    playedDate: string
+    points: number
 }
 
 interface IGuessResult {
@@ -86,6 +134,10 @@ export default class GameGuessResultLeage extends Vue {
 		}
     }
 
+    selectedUserId: string = ''
+
+	$modal: any = (this as any).VModal
+
 	mounted() {
         this.loadFinishedGameResultGuesses()
             .then((guesses: GameResultGuessLeagueItem[]) => {
@@ -100,10 +152,34 @@ export default class GameGuessResultLeage extends Vue {
                 return <IGuessLeagueItem> {
                     user: g.user,
                     result: this.getNumberOfCorrectResultGuesses(g.guesses),
-                    numberOfGuesses: g.guesses.length
+                    guesses: g.guesses
                 }
             })
         )
+    }
+
+    get userTable() {
+        var item = this.guesses.filter((g: GameResultGuessLeagueItem) => g.user.id == this.selectedUserId)[0]
+        if (item) {
+            return item.guesses.map((guess: GameResultGuess) => {
+                    return <IGuess> {
+                        homeTeam: this.getTeamData(guess.game.arenaType == ArenaType.Home, guess),
+                        awayTeam: this.getTeamData(guess.game.arenaType == ArenaType.Away, guess),
+                        playedDate: guess.game.playedOn,
+                        points: this.getPoints(this.getPointForGuess(guess))
+                    }
+                })
+        }
+    }
+
+    getTeamData(difIsHomeTeam: boolean, guess: GameResultGuess): ITeam {
+        return {
+            name: difIsHomeTeam ? 'DIF' : guess.game.opponent,
+            goal: {
+                outcome: difIsHomeTeam ? guess.game.playerEvents.filter((e: PlayerEvent) => e.eventType == GameEventType.Goal).length : guess.game.numberOfGoalsScoredByOpponent,
+                guess: difIsHomeTeam ? guess.numberOfGoalsScoredByDif : guess.numberOfGoalsScoredByOpponent
+            }
+        }
     }
 
     complementTableItems(items: IGuessLeagueItem[]) {
@@ -122,36 +198,49 @@ export default class GameGuessResultLeage extends Vue {
     }
 
     getNumberOfCorrectResultGuesses(guesses: GameResultGuess[]): IGuessResult {
+        let guessResults: IGuessResult[] = []
+        guesses.forEach((guess: GameResultGuess) => guessResults.push(this.getPointForGuess(guess)))
+        return <IGuessResult> {
+            numberOfCorrectResultGuesses: guessResults.map((result: IGuessResult) => result.numberOfCorrectResultGuesses).reduce((acc: number, val: number) => { return acc + val }),
+            numberOfCorrectDifGoalGuesses: guessResults.map((result: IGuessResult) => result.numberOfCorrectDifGoalGuesses).reduce((acc: number, val: number) => { return acc + val }),
+            numberOfCorrectOpponentGoalGuesses: guessResults.map((result: IGuessResult) => result.numberOfCorrectOpponentGoalGuesses).reduce((acc: number, val: number) => { return acc + val }),
+            numberOfCorrectAmountOfGoalsGuesses: guessResults.map((result: IGuessResult) => result.numberOfCorrectAmountOfGoalsGuesses).reduce((acc: number, val: number) => { return acc + val }),
+        }
+    }
+
+    getTotalPoints(guessResults: IGuessResult[]) {
+        return 
+    }
+
+    getPointForGuess(guess: GameResultGuess) {
         let numberOfCorrectDifGoalGuesses: number = 0
         let numberOfCorrectOpponentGoalGuesses: number = 0
         let numberOfCorrectResultGuesses: number = 0
         let numberOfCorrectAmountOfGoalsGuesses: number = 0
 
-        guesses.forEach((guess: GameResultGuess) => {
-            let numberOfGoalsScoredByOpponent: number = guess.game.numberOfGoalsScoredByOpponent
-            let guessForNumberOfGoalsScoredByOpponent: number = guess.numberOfGoalsScoredByOpponent
+        let numberOfGoalsScoredByOpponent: number = guess.game.numberOfGoalsScoredByOpponent
+        let guessForNumberOfGoalsScoredByOpponent: number = guess.numberOfGoalsScoredByOpponent
 
-            let numberOfGoalsScoredByDif: number = guess.game.playerEvents.filter((e: PlayerEvent) => e.eventType == GameEventType.Goal).length
-            let guessForNumberOfGoalsScoredByDif: number = guess.numberOfGoalsScoredByDif
+        let numberOfGoalsScoredByDif: number = guess.game.playerEvents.filter((e: PlayerEvent) => e.eventType == GameEventType.Goal).length
+        let guessForNumberOfGoalsScoredByDif: number = guess.numberOfGoalsScoredByDif
 
-            if (
-                numberOfGoalsScoredByDif == guessForNumberOfGoalsScoredByDif &&
-                numberOfGoalsScoredByOpponent == guessForNumberOfGoalsScoredByOpponent
-            ) {
-                numberOfCorrectResultGuesses++
-            } else {
-                if (numberOfGoalsScoredByDif == guessForNumberOfGoalsScoredByDif)
-                    numberOfCorrectDifGoalGuesses++
-            
-                if (numberOfGoalsScoredByOpponent == guessForNumberOfGoalsScoredByOpponent)
-                    numberOfCorrectOpponentGoalGuesses++
+        if (
+            numberOfGoalsScoredByDif == guessForNumberOfGoalsScoredByDif &&
+            numberOfGoalsScoredByOpponent == guessForNumberOfGoalsScoredByOpponent
+        ) {
+            numberOfCorrectResultGuesses++
+        } else {
+            if (numberOfGoalsScoredByDif == guessForNumberOfGoalsScoredByDif)
+                numberOfCorrectDifGoalGuesses++
+        
+            if (numberOfGoalsScoredByOpponent == guessForNumberOfGoalsScoredByOpponent)
+                numberOfCorrectOpponentGoalGuesses++
 
-                let amountOfGoalsScoredGuess: number = guessForNumberOfGoalsScoredByDif + guessForNumberOfGoalsScoredByOpponent
-                let amountOfGoalsScoredOutcome: number = numberOfGoalsScoredByDif + numberOfGoalsScoredByOpponent
-                if (amountOfGoalsScoredGuess == amountOfGoalsScoredOutcome)
-                    numberOfCorrectAmountOfGoalsGuesses++
-            }
-        })
+            let amountOfGoalsScoredGuess: number = guessForNumberOfGoalsScoredByDif + guessForNumberOfGoalsScoredByOpponent
+            let amountOfGoalsScoredOutcome: number = numberOfGoalsScoredByDif + numberOfGoalsScoredByOpponent
+            if (amountOfGoalsScoredGuess == amountOfGoalsScoredOutcome)
+                numberOfCorrectAmountOfGoalsGuesses++
+        }
         return <IGuessResult> {
             numberOfCorrectResultGuesses: numberOfCorrectResultGuesses,
             numberOfCorrectDifGoalGuesses: numberOfCorrectDifGoalGuesses,
@@ -167,6 +256,11 @@ export default class GameGuessResultLeage extends Vue {
         points += (result.numberOfCorrectAmountOfGoalsGuesses) * 2
         points += (result.numberOfCorrectResultGuesses) * 3
         return points
+    }
+
+    rowClick(row: any) {
+        this.selectedUserId = row.data.user.id
+        this.$modal.show(`show-data-${this.selectedUserId}`)
     }
 }
 </script>
