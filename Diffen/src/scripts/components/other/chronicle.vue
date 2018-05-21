@@ -70,7 +70,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="card mb-4">
+            <div class="card mb-4" v-if="relatedChronicles.length > 0">
                 <div class="card-body">
                     <h6>Relaterade</h6>
                     <hr />
