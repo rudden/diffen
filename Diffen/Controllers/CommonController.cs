@@ -68,6 +68,9 @@ namespace Diffen.Controllers
 				case "profile":
 					pageTitle = "Profil";
 					break;
+				case "aboutdif":
+					pageTitle = "Om DIF";
+					break;
 				default:
 					pageTitle = "";
 					break;
