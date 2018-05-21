@@ -1,10 +1,28 @@
 <template>
     <div class="wrap float-right">
         <template v-if="post.loggedInUserCanVote">
-            <a v-on:click="createVote(upvoteType)">
+            <modal v-bind="{ attributes: { name: `vote-up-${post.id}` }, header: 'Vill du rösta upp inlägget?', button: { classes: 'small-device small-device__contents', icon: 'icon icon-thumbs-up' } }">
+                <template slot="body">
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-sm btn-success btn-block" v-on:click="createVote(upvoteType)">Ja! <span class="icon icon-thumbs-up"></span></button>
+                        </div>
+                    </div>
+                </template>
+            </modal>
+            <modal v-bind="{ attributes: { name: `vote-down-${post.id}` }, header: 'Vill du rösta ner inlägget?', button: { classes: 'small-device small-device__contents', icon: 'icon icon-thumbs-down' } }">
+                <template slot="body">
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-sm btn-success btn-block" v-on:click="createVote(downvoteType)">Ja! <span class="icon icon-thumbs-down"></span></button>
+                        </div>
+                    </div>
+                </template>
+            </modal>
+            <a v-on:click="createVote(upvoteType)" class="large-device large-device__contents">
                 <span class="icon icon-thumbs-up"></span>
             </a>
-            <a v-on:click="createVote(downvoteType)">
+            <a v-on:click="createVote(downvoteType)" class="large-device large-device__contents">
                 <span class="icon icon-thumbs-down"></span>
             </a> · 
         </template>
@@ -18,7 +36,7 @@
                         <div v-for="vote in post.votes">
                             <span class="icon icon-thumbs-up" v-show="vote.type == upvoteType"></span>
                             <span class="icon icon-thumbs-down" v-show="vote.type == downvoteType"></span>
-                            <span class="mr-2">{{ vote.byNickName }}</span>
+                            <span class="mr-2 ml-2">{{ vote.byNickName }}</span>
                         </div>
                     </div>
                 </template>
@@ -43,6 +61,8 @@ import { Post, VoteType, Vote } from '../../model/forum'
 import { Vote as CrudVote } from '../../model/forum/crud'
 import { PageViewModel } from '../../model/common'
 
+import Modal from '../modal.vue'
+
 import { Popover } from 'uiv'
 
 @Component({
@@ -50,7 +70,7 @@ import { Popover } from 'uiv'
         post: Object
     },
     components: {
-        Popover
+        Popover, Modal
     }
 })
 export default class Voting extends Vue {
@@ -83,12 +103,3 @@ export default class Voting extends Vue {
     }
 }
 </script>
-
-<style lang="scss" scoped>
-.icon-thumbs-up {
-    color: #162248;
-}
-.icon-thumbs-down {
-    color: #162248;
-}
-</style>
