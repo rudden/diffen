@@ -13,7 +13,7 @@
                     <input id="lastName" type="text" :class="{ 'form-control': inEdit, 'form-control-plaintext': !inEdit }" v-model="crudPlayer.lastName" placeholder="Efternamn" required :readonly="!inEdit" />
                 </div>
             </div>
-            <div class="form-group row" v-if="inEdit || player.kitNumber > 0">
+            <div class="form-group row" v-if="inEdit || player && player.kitNumber > 0">
                 <label for="kitNumber" class="col-sm-2 col-form-label">Tröjnummer</label>
                 <div class="col-sm-10">
                     <input id="kitNumber" type="number" :class="{ 'form-control': inEdit, 'form-control-plaintext': !inEdit }" v-model="crudPlayer.kitNumber" placeholder="Tröjnummer" required :readonly="!inEdit" />
@@ -65,18 +65,18 @@
                                 <label class="form-check-label" :for="position.id">{{ position.name }}</label>
                             </div>
                         </template>
-                        <template v-else>
+                        <template v-else-if="!inEdit && player">
                             <span class="badge badge-dark ml-1" v-for="position in player.availablePositions" :key="position.id">{{ position.name }}</span>
                         </template>
                     </div>
                 </div>
             </fieldset>
-            <div class="form-group" v-if="!inEdit && player.events.length > 0">
+            <div class="form-group" v-if="!inEdit && player && player.events.length > 0">
                 <strong>Statistik</strong>
                 <hr/>
                 <chartjs-bar :beginzero="true" :labels="chartLabels" :datasets="chartData" />
             </div>
-            <div class="form-group row mb-0" v-if="loggedInUserIsAdmin">
+            <div class="form-group row mb-0" v-if="loggedInUserIsAdmin && player">
                 <div class="col">
                     <span class="icon icon-edit float-right" @click="inEdit = !inEdit" style="cursor: pointer"></span>
                 </div>
@@ -125,7 +125,7 @@ import Results from '../../../components/results.vue'
 		Modal, Results
 	}
 })
-export default class FormComponent extends Vue {
+export default class PlayerComponent extends Vue {
     @State(state => state.vm) vm: PageViewModel
 	@ModuleGetter(GET_PLAYERS) players: Player[]
 	@ModuleGetter(GET_POSITIONS) positions: Position[]
@@ -139,9 +139,18 @@ export default class FormComponent extends Vue {
     saving: boolean = false
     inEdit: boolean = false
     results: Result[] = []
+
+    private yellow: string = '#E0A541'
+    private red: string = '#E21F26'
+    private darkBlue: string = '#0568AF'
+    private lightBlue: string = '#699ED0'
     
     mounted() {
-       this.setPlayer(this.player)
+        if (!this.player) {
+            this.inEdit = true
+        } else {
+            this.setPlayer(this.player)
+        }
     }
 
 	get takenKitNumber() {
@@ -164,7 +173,7 @@ export default class FormComponent extends Vue {
     }
 
     get hasAnyAttribute() {
-        return this.player.isCaptain || this.player.isViceCaptain || this.player.isSold || this.player.isOutOnLoan || this.player.isHereOnLoan
+        return this.player && (this.player.isCaptain || this.player.isViceCaptain || this.player.isSold || this.player.isOutOnLoan || this.player.isHereOnLoan)
     }
 
     get loggedInUserIsAdmin(): boolean {
@@ -183,13 +192,20 @@ export default class FormComponent extends Vue {
     }
     get chartData() {
         return [
-            { label: 'Allsvenskan', data: this.getPlayerEventData(GameType.League), borderColor: this.chartColors('#E0A541'), backgroundColor: this.chartColors('#E0A541') },
-            { label: 'Cupen', data: this.getPlayerEventData(GameType.Cup), borderColor: this.chartColors('#E21F26'), backgroundColor: this.chartColors('#E21F26') },
-            { label: 'Europa League', data: this.getPlayerEventData(GameType.EuropaLeague), borderColor: this.chartColors('#0568AF'), backgroundColor: this.chartColors('#0568AF') },
-            { label: 'Träningsmatch', data: this.getPlayerEventData(GameType.Training), borderColor: this.chartColors('#699ED0'), backgroundColor: this.chartColors('#699ED0') }
+            this.getChartItem('Allsvenskan', GameType.League, this.yellow),
+            this.getChartItem('Cupen', GameType.Cup, this.red),
+            this.getChartItem('Europa League', GameType.EuropaLeague, this.darkBlue),
+            this.getChartItem('Träningsmatch', GameType.Training, this.lightBlue)
         ]
     }
 
+    getChartItem(label: string, gameType: GameType, color: string) {
+        return {
+            label: label,
+            data: this.getPlayerEventData(gameType),
+            borderColor: this.chartColors(color), backgroundColor: this.chartColors(color)
+        }
+    }
     getPlayerEventData(gameType: GameType) {
         return [
             this.getNumberOfEvents(gameType, GameEventType.Goal),
