@@ -12,8 +12,8 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    [Migration("20180521104742_AddNumberOfGoalsScoredByOpponentToGame")]
-    partial class AddNumberOfGoalsScoredByOpponentToGame
+    [Migration("20180521215005_ResetMigrations")]
+    partial class ResetMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

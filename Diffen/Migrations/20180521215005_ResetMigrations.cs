@@ -5,11 +5,15 @@ using System.Collections.Generic;
 
 namespace Diffen.Migrations
 {
-    public partial class AddGameResultGuesses : Migration
+    public partial class ResetMigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+	        migrationBuilder.AddColumn<int>("ArenaType", "Games", defaultValue: 0);
+	        migrationBuilder.AddColumn<int>("NumberOfGoalsScoredByOpponent", "Games", defaultValue: 0);
+	        migrationBuilder.AddColumn<string>("OpponentTeamName", "Games", defaultValue: "");
+
+			migrationBuilder.CreateTable(
                 name: "GameResultGuesses",
                 columns: table => new
                 {
@@ -38,7 +42,10 @@ namespace Diffen.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateIndex(
+	        migrationBuilder.AddColumn<int>("InMinuteOfGame", "PlayerEvents", defaultValue: 0);
+
+
+			migrationBuilder.CreateIndex(
                 name: "IX_GameResultGuesses_GameId",
                 table: "GameResultGuesses",
                 column: "GameId");
@@ -53,6 +60,10 @@ namespace Diffen.Migrations
         {
             migrationBuilder.DropTable(
                 name: "GameResultGuesses");
-        }
+	        migrationBuilder.DropColumn("ArenaType", "Games");
+	        migrationBuilder.DropColumn("NumberOfGoalsScoredByOpponent", "Games");
+	        migrationBuilder.DropColumn("OpponentTeamName", "Games");
+	        migrationBuilder.DropColumn("InMinuteOfGame", "PlayerEvents");
+		}
     }
 }
