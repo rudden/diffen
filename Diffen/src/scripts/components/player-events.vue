@@ -5,7 +5,7 @@
                 <h6>{{ header }}</h6>
                 <hr />
             </template>
-            <template v-if="loggedInUserIsAdminOrScissor && !isSmall">
+            <template v-if="loggedInUserIsGameAdmin && !isSmall">
                 <div class="row">
                     <div class="col-10 pr-0">
                         <div class="form-group mb-0">
@@ -266,8 +266,8 @@ export default class PlayerEvents extends Vue {
         this.fetchGames()
     }
 
-    get loggedInUserIsAdminOrScissor(): boolean {
-        return this.vm.loggedInUser.inRoles.some(role => role == 'Admin' || role == 'Scissor')
+    get loggedInUserIsGameAdmin(): boolean {
+        return this.vm.loggedInUser.inRoles.some(role => role == 'Admin' || role == 'GameAdmin')
     }
 
     get goals() {

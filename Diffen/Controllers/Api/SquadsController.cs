@@ -106,7 +106,7 @@ namespace Diffen.Controllers.Api
 			return _squadRepository.GetUpcomingGameAsync();
 		}
 
-		[Authorize(Policy = "IsManager")]
+		[Authorize(Policy = "IsGameAdmin")]
 		[HttpPost, Route("games/create")]
 		public Task<bool> CreateGame([FromBody] Models.Squad.CRUD.Game game)
 		{
@@ -114,7 +114,7 @@ namespace Diffen.Controllers.Api
 			return _squadRepository.CreateGameAsync(game);
 		}
 
-		[Authorize(Policy = "IsManager")]
+		[Authorize(Policy = "IsGameAdmin")]
 		[HttpPost, Route("games/update")]
 		public Task<bool> UpdateGame([FromBody] Models.Squad.CRUD.Game game)
 		{

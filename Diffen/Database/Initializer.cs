@@ -146,6 +146,14 @@ namespace Diffen.Database
 				};
 				await roleManager.CreateAsync(role);
 			}
+			if (!await roleManager.RoleExistsAsync("GameAdmin"))
+			{
+				var role = new IdentityRole
+				{
+					Name = "GameAdmin"
+				};
+				await roleManager.CreateAsync(role);
+			}
 		}
 
 		private static async Task SeedUsersToRolesAsync(UserManager<AppUser> userManager)

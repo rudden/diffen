@@ -63,6 +63,10 @@ namespace Diffen
 				{
 					policy.RequireAssertion(ctx => ctx.User.IsInRole("Admin") || ctx.User.IsInRole("Scissor"));
 				});
+				options.AddPolicy("IsGameAdmin", policy =>
+				{
+					policy.RequireAssertion(ctx => ctx.User.IsInRole("Admin") || ctx.User.IsInRole("GameAdmin"));
+				});
 			});
 
 			services.AddSingleton(Configuration);
