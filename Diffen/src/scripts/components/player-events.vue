@@ -452,6 +452,9 @@ export default class PlayerEvents extends Vue {
             if (this.crudGame.id && this.crudGame.id > 0) {
                 game.id = this.crudGame.id
                 game.lineup = this.crudGame.lineup ? this.crudGame.lineup : this.newLineup.formationId > 0 && this.newLineup.players.length == 11 ? this.newLineup : undefined
+                if (game.lineup) {
+                    game.lineup.createdByUserId = this.vm.loggedInUser.id
+                }
                 this.updateGame({ game: game }).then(() => resolve())
             } else {
                 game.lineup = this.newLineup

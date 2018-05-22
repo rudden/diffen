@@ -2,7 +2,8 @@
 	<div class="col-lg-3" v-show="showRightSideBar">
 		<div class="card mb-4">
             <div class="card-body">
-                <h6 class="mb-3">Länktipstoppen</h6>
+                <h6 class="mb-0">Länktipstoppen</h6>
+                <hr />
                 <ul class="list-unstyled list-spaced mb-0" v-if="urlTips.length > 0">
                     <li class="ellipsis" v-for="tip in urlTips" :key="tip.href + tip.clicks">
                         <span class="text-muted icon" :class="icon(tip.href)"></span>

@@ -1,10 +1,15 @@
 <template>
     <div>
         <div class="form-group">
-            <select class="form-control form-control-sm" v-model="selectedPlayerId">
-                <option value="0">Välj en spelare</option>
-                <option v-for="player in players" :value="player.id">{{ player.fullName }}</option>
-            </select>
+            <div class="row">
+                <legend class="col-sm-2 col-form-label pt-0"><strong>Spelare</strong></legend>
+                <div class="col-sm-10">
+                    <select class="form-control form-control-sm" v-model="selectedPlayerId">
+                        <option value="0">Välj en spelare</option>
+                        <option v-for="player in players" :value="player.id">{{ player.fullName }}</option>
+                    </select>
+                </div>
+            </div>
         </div>
         <fieldset class="form-group">
             <div class="row">
