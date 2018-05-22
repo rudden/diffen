@@ -3,12 +3,14 @@ using System.Linq;
 using System.Collections.Generic;
 
 using AutoMapper;
-using Diffen.Helpers.Extensions;
-using Diffen.Models;
+
 
 namespace Diffen.Helpers.Mapper.Resolvers
 {
+	using Enum;
+	using Models;
 	using Business;
+	using Extensions;
 
 	public class SquadResolver : 
 		ITypeConverter<Database.Entities.Squad.Player, Models.Squad.Player>, 
@@ -38,6 +40,13 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				IsCaptain = source.IsCaptain,
 				IsViceCaptain = source.IsViceCaptain,
 				IsSold = source.IsSold,
+				BirthDay = source.BirthDay.Year > 0001 ? source.BirthDay.ToString("yyyy-MM-dd") : null, //.Year > 0001 ? DateTime.Now.Year - source.BirthDay.Year : 0,
+				HeightInCentimeters = source.HeightInCentimeters,
+				Weight = source.Weight,
+				PreferredFoot = source.PreferredFoot,
+				About = source.About,
+				ContractUntil = source.ContractUntil.Year > 0001 ? source.ContractUntil.ToString("yyyy-MM-dd") : null,
+				ImageUrl = source.ImageUrl,
 				AvailablePositions = source.AvailablePositions.Select(x => new Models.Squad.Position
 				{
 					Id = x.Position.Id,
@@ -124,7 +133,14 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				IsHereOnLoan = source.IsHereOnLoan,
 				IsViceCaptain = source.IsViceCaptain,
 				KitNumber = source.KitNumber,
-				IsSold = source.IsSold
+				IsSold = source.IsSold,
+				BirthDay = source.BirthDay,
+				HeightInCentimeters = source.HeightInCentimeters,
+				Weight = source.Weight,
+				PreferredFoot = source.PreferredFoot,
+				About = source.About,
+				ContractUntil = source.ContractUntil,
+				ImageUrl = source.ImageUrl
 			};
 		}
 

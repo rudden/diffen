@@ -12,9 +12,10 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    partial class DiffenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180522114844_ChangePlayerData")]
+    partial class ChangePlayerData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -392,8 +393,6 @@ namespace Diffen.Migrations
                     b.Property<string>("LastName");
 
                     b.Property<int>("PreferredFoot");
-
-                    b.Property<int>("Weight");
 
                     b.HasKey("Id");
 

@@ -70,4 +70,10 @@ Vue.use(TableComponent, {
 	filterInputClass: 'form-control form-control-sm mb-3'
 })
 
+import DatePicker from 'vue-bootstrap-datetimepicker'
+Vue.component('date-picker', DatePicker)
+
+import Datepicker from 'vuejs-datepicker'
+Vue.component('v-datepicker', Datepicker)
+
 export default store

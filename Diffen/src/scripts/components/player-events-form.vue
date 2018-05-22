@@ -88,8 +88,7 @@ export default class PlayerEventsForm extends Vue {
 
     guid: string = (this as any).$helpers.guid()
 
-    created() {
-        this.setGameEvent(this.event)
+    mounted() {
         if (this.event.playerId > 0) {
             this.inMinute = this.event.inMinute
             this.selectedPlayerId = this.event.playerId

@@ -207,7 +207,6 @@ export default class Lineups extends Vue {
 
 	changeLineup() {
 		if (this.selectedLineupId > 0) {
-			console.log('Pre Selected Lineup:', this.preSelectedLineup)
 			if (this.preSelectedLineup) {
 				this.setSelectedLineup(this.preSelectedLineup)
 			} else {

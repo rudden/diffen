@@ -2,6 +2,7 @@
 
 namespace Diffen.Models.Squad
 {
+	using Helpers.Enum;
 	using Helpers.Extensions;
 
 	public class Player
@@ -17,6 +18,14 @@ namespace Diffen.Models.Squad
 		public bool IsSold { get; set; }
 		public IEnumerable<Position> AvailablePositions { get; set; }
 		public IEnumerable<PlayerEventOnPlayer> Events { get; set; }
+
+		public string BirthDay { get; set; }
+		public int HeightInCentimeters { get; set; }
+		public int Weight { get; set; }
+		public PreferredFoot PreferredFoot { get; set; }
+		public string About { get; set; }
+		public string ContractUntil { get; set; }
+		public string ImageUrl { get; set; }
 
 		public int InNumberOfStartingElevens { get; set; }
 

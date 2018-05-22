@@ -70,7 +70,7 @@
                                             <div class="row">
                                                 <legend class="col-sm-3 col-form-label pt-0"><strong>Datum</strong></legend>
                                                 <div class="col-sm-9">
-                                                    <date-picker v-model="selectedDate" :config="dpConfig" placeholder="Välj startdatum för matchen" :class="{ 'form-control-sm': true }" />
+                                                    <v-datepicker v-model="selectedDate" :format="'yyyy-MM-dd'" :bootstrap-styling="true" :input-class="'form-control-sm'" :monday-first="true" :placeholder="'Välj datum'" />
                                                 </div>
                                             </div>
                                         </div>
@@ -85,21 +85,24 @@
                                         <div class="form-group">
                                             <lineups :header="'Startelvan'" :lineup-type="'Real'" :pre-selected-lineup-id="preSelectedLineupId" />
                                         </div>
-                                        <div class="form-group mb-0">
+                                        <div class="form-group">
                                             <hr />
-                                            <span class="icon icon-plus float-right" style="cursor: pointer" v-on:click="newEvent"></span>
+                                            <span class="icon icon-plus float-right" style="cursor: pointer" v-on:click="newEvent" v-tooltip="'Ny händelse'"></span>
                                             <h6>Händelser</h6>
                                         </div>
-                                        <div class="form-group mt-3 mb-0" v-for="(item, index) in formComponents" :key="index" v-if="formComponents.length > 0">
-                                            <div class="row">
-                                                <legend class="col-sm-1 col-form-label pt-0">{{ index + 1 }}.</legend>
-                                                <div class="col-sm-10">
-                                                    <component :is="item.component" v-bind="{ event: item.event }" />
-                                                </div>
-                                                <div class="col-sm-1">
-                                                    <span v-on:click="removeEvent(index, item.event)" class="icon icon-trash" style="cursor: pointer; margin-left: 7px" />
-                                                </div>
-                                            </div>
+                                        <div class="form-group mb-0">
+                                            <ul class="list-group">
+                                                <li class="list-group-item" v-for="(item, index) in gameEvents" :key="index">
+                                                    <div class="row">
+                                                        <div class="col-11 pr-0">
+                                                            <component :is="item.component" v-bind="{ event: item.event }" :key="item.event.guid" />
+                                                        </div>
+                                                        <div class="col-1 pl-0">
+                                                            <span v-on:click="removeEvent(item.event.guid)" class="float-right remove-event" v-tooltip="'Ta bort händelse'">&times;</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -141,7 +144,7 @@ const ModuleGetter = namespace('squad', Getter)
 const ModuleAction = namespace('squad', Action)
 const ModuleMutation = namespace('squad', Mutation)
 
-import { GET_GAMES, GET_PLAYERS, GET_CRUD_GAME, GET_NEW_LINEUP, FETCH_GAMES, CREATE_GAME, UPDATE_GAME, DELETE_GAME_EVENT, SET_CRUD_GAME } from '../modules/squad/types'
+import { GET_GAMES, GET_PLAYERS, GET_CRUD_GAME, GET_NEW_LINEUP, FETCH_GAMES, CREATE_GAME, UPDATE_GAME, DELETE_GAME_EVENT, SET_CRUD_GAME, SET_GAME_EVENT, SET_GAME_EVENTS } from '../modules/squad/types'
 
 interface PlayerItem {
     id: number
@@ -168,6 +171,7 @@ interface ListItem {
 }
 
 interface IGameEvent {
+    id: string
     event: CrudPlayerEvent
     component: VueComponent
 }
@@ -176,7 +180,6 @@ import Modal from './modal.vue'
 import FormComponent from './player-events-form.vue'
 import EventsList from './player-events-list.vue'
 import Lineups from './lineups/lineups.vue'
-import DatePicker from 'vue-bootstrap-datetimepicker'
 
 import { Component as VueComponent } from 'vue/types/options'
 
@@ -196,7 +199,7 @@ import { Component as VueComponent } from 'vue/types/options'
         }
     },
     components: {
-        Modal, DatePicker, FormComponent, EventsList, Lineups
+        Modal, FormComponent, EventsList, Lineups
     }
 })
 export default class PlayerEvents extends Vue {
@@ -209,6 +212,8 @@ export default class PlayerEvents extends Vue {
     @ModuleAction(CREATE_GAME) createGame: (payload: { game: CrudGame }) => Promise<void>
     @ModuleAction(UPDATE_GAME) updateGame: (payload: { game: CrudGame }) => Promise<void>
     @ModuleMutation(SET_CRUD_GAME) setCrudGame: (game: CrudGame) => void
+    @ModuleMutation(SET_GAME_EVENT) setGameEvent: (event: CrudPlayerEvent) => void
+    @ModuleMutation(SET_GAME_EVENTS) setGameEvents: (events: CrudPlayerEvent[]) => void
     @ModuleMutation(DELETE_GAME_EVENT) deleteGameEvent: (event: CrudPlayerEvent) => void
 
     defaultGameType: string
@@ -217,8 +222,6 @@ export default class PlayerEvents extends Vue {
 
     loading: boolean = false
     events: Event[] = []
-
-    formComponents: IGameEvent[] = []
 
     gameType: string = ''
     arenaType: string = ''
@@ -282,6 +285,12 @@ export default class PlayerEvents extends Vue {
     get yellowCards() {
         return this.listify(GameEventType.YellowCard)
     }
+    get substitutesIn() {
+        return this.listify(GameEventType.SubstituteIn)
+    }
+    get substitutesOut() {
+        return this.listify(GameEventType.SubstituteOut)
+    }
     get canSave() {
         return this.selectedDate 
             && this.opponentTeamName
@@ -290,6 +299,14 @@ export default class PlayerEvents extends Vue {
             && (this.newLineup.formationId > 0 && this.newLineup.players.length < 11 ? false : true)
             && this.crudGame.events.filter((e: CrudPlayerEvent) => e.playerId == 0).length <= 0
             && this.crudGame.events.filter((e: CrudPlayerEvent) => e.inMinute == 0).length <= 0
+    }
+    get gameEvents() {
+        return this.crudGame.events.map((e: CrudPlayerEvent) => {
+            return <IGameEvent> {
+                event: e,
+                component: FormComponent
+            }
+        })
     }
 
     @Watch('selectedGameId')
@@ -303,7 +320,7 @@ export default class PlayerEvents extends Vue {
                 type: selectedGame.type,
                 arenaType: selectedGame.arenaType,
                 lineup: selectedGame.lineup ? {
-                    id: selectedGame.id,
+                    id: selectedGame.lineup.id,
                     formationId: selectedGame.lineup.formation.id,
                     players: selectedGame.lineup.players.map((ptl: PlayerToLineup) => {
                         return {
@@ -317,7 +334,16 @@ export default class PlayerEvents extends Vue {
                 opponent: selectedGame.opponent,
                 numberOfGoalsScoredByOpponent: selectedGame.numberOfGoalsScoredByOpponent,
                 playedDate: new Date(selectedGame.playedOn),
-                events: [] // each events is set in player-events-form.vue component
+                events: selectedGame.playerEvents.map((e: PlayerEvent) => {
+                    return <CrudPlayerEvent> {
+                        id: e.id,
+                        playerId: e.player.id,
+                        type: e.eventType,
+                        inMinute: e.inMinute,
+
+                        guid: (this as any).$helpers.guid()
+                    }
+                })
             })
 
             this.gameType = GameType[selectedGame.type]
@@ -326,14 +352,6 @@ export default class PlayerEvents extends Vue {
             this.arenaType = ArenaType[selectedGame.arenaType]
             this.preSelectedLineupId = this.crudGame.lineup ? <number>this.crudGame.lineup.id : 0
             this.numberOfGoalsScoredByOpponent = this.crudGame.numberOfGoalsScoredByOpponent
-            
-            selectedGame.playerEvents.forEach((e: PlayerEvent) => {
-                this.newEvent(undefined, {
-                        playerId: e.player.id,
-                        inMinute: e.inMinute,
-                        type: e.eventType
-                    })
-            })
 
             this.$modal.show(this.modalAttributes.newEvent.attributes.name)
         }
@@ -345,7 +363,6 @@ export default class PlayerEvents extends Vue {
         this.selectedDate = undefined
         this.opponentTeamName = ''
         this.arenaType = ''
-        this.formComponents = []
     }
 
     fetchGames() {
@@ -426,16 +443,12 @@ export default class PlayerEvents extends Vue {
         return items
     }
 
-    newEvent(e: any, event?: CrudPlayerEvent) {
-        this.formComponents.push({
-            event: event ? event : new CrudPlayerEvent(),
-            component: FormComponent
-        })
+    newEvent(e: any) {
+        this.setGameEvent(new CrudPlayerEvent((this as any).$helpers.guid()))
     }
 
-    removeEvent(index: number, event: CrudPlayerEvent) {
-        this.deleteGameEvent(event)
-        this.formComponents.splice(index, 1)
+    removeEvent(guid: string) {
+        this.deleteGameEvent(this.crudGame.events.filter((e: CrudPlayerEvent) => e.guid == guid)[0])
     }
 
     save() {
@@ -447,7 +460,10 @@ export default class PlayerEvents extends Vue {
                 opponent: this.opponentTeamName,
                 numberOfGoalsScoredByOpponent: this.numberOfGoalsScoredByOpponent,
                 lineup: undefined,
-                events: this.crudGame.events
+                events: this.crudGame.events.map((e: CrudPlayerEvent) => {
+                    delete e.guid
+                    return e
+                })
             }
             if (this.crudGame.id && this.crudGame.id > 0) {
                 game.id = this.crudGame.id
@@ -467,7 +483,6 @@ export default class PlayerEvents extends Vue {
             
             this.gameType = ''
             this.selectedDate = undefined
-            this.formComponents = []
         })
     }
 
@@ -487,3 +502,12 @@ export default class PlayerEvents extends Vue {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+span.remove-event {
+    cursor: pointer;
+    color: black;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+</style>

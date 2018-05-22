@@ -19,6 +19,7 @@ namespace Diffen.Models.Squad.CRUD
 
 	public class PlayerEvent
 	{
+		public int Id { get; set; }
 		public int PlayerId { get; set; }
 		public GameEventType Type { get; set; }
 		public int InMinute { get; set; }

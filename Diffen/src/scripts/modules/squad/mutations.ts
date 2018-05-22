@@ -18,7 +18,8 @@ import {
     SET_GAME_EVENT,
     CHANGE_GAME_EVENT,
     DELETE_GAME_EVENT,
-    SET_CRUD_GAME
+    SET_CRUD_GAME,
+    SET_GAME_EVENTS
 } from './types'
 
 export const Mutations: MutationTree<State> = {
@@ -52,7 +53,12 @@ export const Mutations: MutationTree<State> = {
     },
     [SET_GAMES]: (state: State, games: Game[]) => { state.games = games },
     [SET_CRUD_GAME]: (state: State, game: CrudGame) => { state.crudGame = game },
-    [SET_GAME_EVENT]: (state: State, event: PlayerEvent) => { state.crudGame.events.push(event) },
+    [SET_GAME_EVENT]: (state: State, event: PlayerEvent) => {
+        state.crudGame.events.unshift(event)
+    },
+    [SET_GAME_EVENTS]: (state: State, events: PlayerEvent[]) => {
+        state.crudGame.events = events
+    },
     [CHANGE_GAME_EVENT]: (state: State, event: PlayerEvent) => {
         let index = state.crudGame.events.indexOf(event)
         if (index !== -1) {

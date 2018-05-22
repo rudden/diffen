@@ -165,27 +165,31 @@ namespace Diffen.Repositories
 
 		private async Task ComplementGameWithPotentialLineupAndEventsAsync(int gameId, Models.Squad.CRUD.Game game, Database.Entities.Squad.Game existingGame = null)
 		{
-			if (game.Lineup != null)
+			try
 			{
-				if (existingGame != null && existingGame.Lineup == null)
-				{
-					var lineup = _mapper.Map<Database.Entities.Squad.Lineup>(game.Lineup);
-					await _dbClient.CreateLineupAsync(lineup);
-					existingGame.LineupId = lineup.Id;
-					await _dbClient.UpdateGameAsync(existingGame);
+				if (game.Lineup != null) {
+					if (existingGame != null && existingGame.Lineup == null)
+					{
+						var lineup = _mapper.Map<Database.Entities.Squad.Lineup>(game.Lineup);
+						await _dbClient.CreateLineupAsync(lineup);
+						await _dbClient.UpdateGameWithLineupAsync(gameId, lineup.Id);
+					}
+				}
+				if (game.Events.Any()) {
+					await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
+					{
+						PlayerId = x.PlayerId,
+						Type = x.Type,
+						GameId = gameId,
+						InMinuteOfGame = x.InMinute
+					}).ToList());
 				}
 			}
-			if (game.Events.Any())
+			catch (Exception e)
 			{
-				await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
-				{
-					PlayerId = x.PlayerId,
-					Type = x.Type,
-					GameId = gameId,
-					InMinuteOfGame = x.InMinute
-				}).ToList());
+				_logger.Warning(e, "An unexpected error occured when complementing game");
 			}
-		}
+	}
 
 		public async Task<List<Title>> GetTitlesAsync()
 		{

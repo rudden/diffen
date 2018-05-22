@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Diffen.Database.Entities.Squad
 {
+	using Helpers.Enum;
+
 	public class Player
 	{
 		[Key]
@@ -18,6 +21,14 @@ namespace Diffen.Database.Entities.Squad
 		public bool IsOutOnLoan { get; set; }
 		public bool IsHereOnLoan { get; set; }
 		public bool IsSold { get; set; }
+
+		public DateTime BirthDay { get; set; }
+		public int HeightInCentimeters { get; set; }
+		public int Weight { get; set; }
+		public PreferredFoot PreferredFoot { get; set; }
+		public string About { get; set; }
+		public DateTime ContractUntil { get; set; }
+		public string ImageUrl { get; set; }
 
 		// Linked Tables
 		public ICollection<PlayerToPosition> AvailablePositions { get; set; }

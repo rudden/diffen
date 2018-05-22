@@ -2,13 +2,9 @@
 	<div>
         <ul class="list-group media-list media-list-stream">
             <li class="list-group-item p-4">
-                <modal v-bind="modalAttributes.info">
+                <modal v-bind="modalAttributes.new">
                     <template slot="body">
-                        <ul class="list-unstyled list-spaced mb-0">
-                            <li><strong>1 poäng</strong> - Rätt antal mål för DIF eller motståndare</li>
-                            <li><strong>2 poäng</strong> - Rätt antal totala mål</li>
-                            <li><strong>3 poäng</strong> - Rätt resultat</li>
-                        </ul>
+                        <game-guesser :guesser-only="true" />
                     </template>
                 </modal>
                 <h4 class="mb-0">Tipsligan</h4>
@@ -20,6 +16,22 @@
                         <table-column label="Användare" show="user.nickName" :sortable="false"></table-column>
                         <table-column label="Poäng" show="points" data-type="numeric"></table-column>
                         <table-column label="Antal tippningar" show="guesses.length" data-type="numeric"></table-column>
+                        <template slot="tfoot">
+                            <tr>
+                                <td colspan="4" style="border-top: 0">
+                                    <hr />
+                                    <modal v-bind="modalAttributes.info">
+                                        <template slot="body">
+                                            <ul class="list-unstyled list-spaced mb-0">
+                                                <li><strong>1 poäng</strong> - Rätt antal mål för DIF eller motståndare</li>
+                                                <li><strong>2 poäng</strong> - Rätt antal totala mål</li>
+                                                <li><strong>3 poäng</strong> - Rätt resultat</li>
+                                            </ul>
+                                        </template>
+                                    </modal>
+                                </td>
+                            </tr>
+                        </template>
                     </table-component>
                     <modal v-for="item in table" :key="item.id" v-bind="{ attributes: { name: `show-data-${item.user.id}`, scrollable: true }, header: item.user.nickName, button: { } }">
                         <template slot="body">
@@ -73,9 +85,6 @@ import { PageViewModel, Result, ResultType, IdAndNickNameUser } from '../../../m
 
 import { FETCH_FINISHED_GAME_RESULT_GUESSES } from '../../../modules/squad/types'
 
-import Modal from '../../../components/modal.vue'
-import { GET_SHOULD_RELOAD_POST_STREAM } from '../../../modules/forum/types';
-
 interface IGuessLeagueItem {
     id?: number
     user: IdAndNickNameUser
@@ -108,9 +117,12 @@ interface IGuessResult {
     numberOfCorrectAmountOfGoalsGuesses: number
 }
 
+import Modal from '../../../components/modal.vue'
+import GameGuesser from '../../../components/game-guesser.vue'
+
 @Component({
 	components: {
-		Modal
+		Modal, GameGuesser
 	}
 })
 export default class GameGuessResultLeage extends Vue {
@@ -130,6 +142,17 @@ export default class GameGuessResultLeage extends Vue {
 			button: {
 				icon: 'icon icon-info float-right',
 				text: 'Visa hur poängen räknas ut'
+            }
+        },
+        new: {
+			attributes: {
+				name: 'new',
+				scrollable: true
+			},
+			header: 'Hur slutar nästa match?',
+			button: {
+				icon: 'icon icon-plus float-right',
+				text: 'Tippa nästa match'
             }
 		}
     }

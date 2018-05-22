@@ -877,6 +877,14 @@ namespace Diffen.Database.Clients
 			return CommitedResultIsSuccessfulAsync();
 		}
 
+		public async Task<bool> UpdateGameWithLineupAsync(int gameId, int lineupId)
+		{
+			var game = await _dbContext.Games.FindAsync(gameId);
+			game.LineupId = lineupId;
+			_dbContext.Games.Update(game);
+			return await CommitedResultIsSuccessfulAsync();
+		}
+
 		public Task<bool> CreatePlayerEventsAsync(List<PlayerEvent> events)
 		{
 			_dbContext.PlayerEvents.AddRange(events);

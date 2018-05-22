@@ -1,4 +1,4 @@
-import { GameType, GameEventType, LineupType, ArenaType } from ".."
+import { GameType, GameEventType, LineupType, ArenaType, PreferredFoot } from ".."
 
 export class Lineup {
     id?: number
@@ -25,6 +25,13 @@ export class Player {
     isHereOnLoan: boolean
     isOutOnLoan: boolean
     availablePositionsIds: number[] = []
+    birthDay?: Date = new Date()
+    heightInCentimeters: number
+    weight: number
+    preferredFoot: PreferredFoot
+    about: string
+    contractUntil?: Date = new Date()
+    imageUrl: string
 }
 
 export class Game {
@@ -39,9 +46,19 @@ export class Game {
 }
 
 export class PlayerEvent {
+    id: number = 0
     playerId: number = 0
     type: GameEventType = GameEventType.Goal
     inMinute: number = 0
+
+    guid?: string = ''
+
+    /**
+     *
+     */
+    constructor(guid?: string) {
+        this.guid = guid
+    }
 }
 
 export class GameResultGuess {

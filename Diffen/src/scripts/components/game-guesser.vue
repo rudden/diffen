@@ -1,56 +1,67 @@
 <template>
-    <div class="card mb-4">
-        <div class="card-body">
-            <h6>Tippa nästa match<span v-if="!loading"> - {{ upcomingGame.playedOn }}</span></h6>
-            <hr />
+    <div :class="{ 'card mb-4': !guesserOnly }">
+        <div :class="{ 'card-body': !guesserOnly }">
+            <template v-if="!guesserOnly">
+                <small v-if="!loading && upcomingGame" class="float-right text-muted">
+                    <span class="icon icon-clock"></span>
+                    {{ upcomingGame.playedOn }}
+                </small>
+                <h6>Tippa nästa match</h6>
+                <hr />
+            </template>
             <template v-if="!loading">
-                <div class="row">
-                    <div class="col pr-1">
-                        <strong>{{ difPlaysAtHome ? 'DIF' : upcomiongGame.opponent }}</strong>
-                        <template v-if="guess">
-                            <div class="alert alert-primary p-1 mb-0">
-                                <strong>{{ difPlaysAtHome ? guess.difGoals : guess.opponentGoals }} mål</strong>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <template v-if="difPlaysAtHome">
-                                <select class="form-control form-control-sm" v-model="selectedNumberOfDifGoals">
-                                    <option v-for="goal in goals" :value="goal" :key="goal">{{ goal }}</option>
-                                </select>
+                <template v-if="upcomingGame">
+                    <div class="row">
+                        <div class="col pr-1">
+                            <strong>{{ difPlaysAtHome ? 'DIF' : upcomingGame.opponent }}</strong>
+                            <template v-if="guess">
+                                <div class="alert alert-primary p-1 mb-0">
+                                    <strong>{{ difPlaysAtHome ? guess.difGoals : guess.opponentGoals }} mål</strong>
+                                </div>
                             </template>
                             <template v-else>
-                                <select class="form-control form-control-sm" v-model="selectedNumberOfOpponentGoals">
-                                    <option v-for="goal in goals" :value="goal" :key="goal">{{ goal }}</option>
-                                </select>
+                                <template v-if="difPlaysAtHome">
+                                    <select class="form-control form-control-sm" v-model="selectedNumberOfDifGoals">
+                                        <option v-for="goal in goals" :value="goal" :key="goal">{{ goal }}</option>
+                                    </select>
+                                </template>
+                                <template v-else>
+                                    <select class="form-control form-control-sm" v-model="selectedNumberOfOpponentGoals">
+                                        <option v-for="goal in goals" :value="goal" :key="goal">{{ goal }}</option>
+                                    </select>
+                                </template>
                             </template>
-                        </template>
-                    </div>
-                    <div class="col pl-1">
-                        <strong>{{ difPlaysAtHome ? 'DIF' : upcomiongGame.opponent }}</strong>
-                        <template v-if="guess">
-                            <div class="alert alert-primary p-1 mb-0">
-                                <strong>{{ difPlaysAtHome ? guess.difGoals : guess.opponentGoals }} mål</strong>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <template v-if="difPlaysAtHome">
-                                <select class="form-control form-control-sm" v-model="selectedNumberOfDifGoals">
-                                    <option v-for="goal in goals" :value="goal" :key="goal">{{ goal }}</option>
-                                </select>
+                        </div>
+                        <div class="col pl-1">
+                            <strong>{{ !difPlaysAtHome ? 'DIF' : upcomingGame.opponent }}</strong>
+                            <template v-if="guess">
+                                <div class="alert alert-primary p-1 mb-0">
+                                    <strong>{{ !difPlaysAtHome ? guess.difGoals : guess.opponentGoals }} mål</strong>
+                                </div>
                             </template>
                             <template v-else>
-                                <select class="form-control form-control-sm" v-model="selectedNumberOfOpponentGoals">
-                                    <option v-for="goal in goals" :value="goal" :key="goal">{{ goal }}</option>
-                                </select>
+                                <template v-if="!difPlaysAtHome">
+                                    <select class="form-control form-control-sm" v-model="selectedNumberOfDifGoals">
+                                        <option v-for="goal in goals" :value="goal" :key="goal">{{ goal }}</option>
+                                    </select>
+                                </template>
+                                <template v-else>
+                                    <select class="form-control form-control-sm" v-model="selectedNumberOfOpponentGoals">
+                                        <option v-for="goal in goals" :value="goal" :key="goal">{{ goal }}</option>
+                                    </select>
+                                </template>
                             </template>
-                        </template>
+                        </div>
                     </div>
-                </div>
-                <div class="row mt-3" v-if="!guess">
-                    <div class="col">
-                        <button class="btn btn-sm btn-success btn-block" @click="createGuessGameResult">Spara</button>
+                    <div class="row mt-3" v-if="!guess">
+                        <div class="col">
+                            <button class="btn btn-sm btn-success btn-block" @click="createGuessGameResult">Spara</button>
+                        </div>
                     </div>
-                </div>
+                </template>
+                <template v-else>
+                    <div class="alert alert-warning mb-0">Ingen kommande match</div>
+                </template>
             </template>
             <template v-else>
                 <loader v-bind="{ background: '#699ED0' }" />
@@ -78,11 +89,20 @@ interface IGameResultGuess {
     opponentGoals: number
 }
 
-@Component({})
+@Component({
+    props: {
+        guesserOnly: {
+            type: Boolean,
+            default: false
+        }
+    }
+})
 export default class GameGuesser extends Vue {
     @State(state => state.vm) vm: PageViewModel
     @ModuleAction(FETCH_UPCOMING_GAME) loadUpcomingGame: () => Promise<Game>
     @ModuleAction(GUESS_GAME_RESULT) guessGameResult: (payload: { guess: CrudResultGuess }) => Promise<void>
+
+    guesserOnly: boolean
 
     loading: boolean = false
     upcomingGame: Game = new Game()

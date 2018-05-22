@@ -26,6 +26,13 @@ export class Player {
     isOutOnLoan: boolean
     isHereOnLoan: boolean
     isSold: boolean
+    birthDay: string
+    heightInCentimeters: number
+    weight: number
+    preferredFoot: PreferredFoot
+    about: string
+    contractUntil: string
+    imageUrl: string
     availablePositions: Position[]
     inNumberOFStartingElevens: number
     events: PlayerEventOnPlayer[]
@@ -121,4 +128,10 @@ export class GameResultGuess {
 export class GameResultGuessLeagueItem {
     user: IdAndNickNameUser
     guesses: GameResultGuess[]
+}
+
+export enum PreferredFoot {
+    None,
+    Left,
+    Right
 }

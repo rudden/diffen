@@ -39,7 +39,7 @@
 										</tr>
 									</template>
 								</table-component>
-								<modal v-for="player in filteredPlayers" :key="player.id" v-bind="{ attributes: { name: `show-player-${player.id}`, scrollable: true }, header: player.name, button: { } }">
+								<modal v-for="player in filteredPlayers" :key="player.id" v-bind="{ attributes: { name: `show-player-${player.id}`, scrollable: true }, header: 'Spelarinformation', button: { } }">
 									<template slot="body">
 										<player-component :player="player" :save="update" :editable="false" />
 									</template>
