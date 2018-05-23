@@ -5,6 +5,15 @@
 	}
 }
 
+.more-readable {
+	max-width: 450px;
+    word-wrap: break-word;
+}
+@media (max-width: 768px) { 
+	.more-readable {
+		max-width: 300px;
+	}
+}
 /* profile */
 .container {
 	&__profile {
