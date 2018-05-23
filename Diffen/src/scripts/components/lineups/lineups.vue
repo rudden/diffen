@@ -20,11 +20,11 @@
 				</div>
 			</template>
 			<div class="row" v-else>
-				<template v-if="lineups.length > 0 || noLineupsFound">
+				<template v-if="filteredLineups.length > 0 || noLineupsFound">
 					<div class="col">
-						<select class="form-control form-control-sm" v-model="selectedLineupId" @change="changeLineup" :disabled="inCreate || !lineups.length > 0">
-							<option value="0">{{ lineups.length > 0 ? 'Välj en startelva' : 'Hittade inga startelvor' }}</option>
-							<option v-for="lineup in lineups" :value="lineup.id" :key="lineup.id">{{ lineup.formation.name }}, skapad {{ lineup.created }}</option>
+						<select class="form-control form-control-sm" v-model="selectedLineupId" @change="changeLineup" :disabled="inCreate || !filteredLineups.length > 0">
+							<option value="0">{{ filteredLineups.length > 0 ? 'Välj en startelva' : 'Hittade inga startelvor' }}</option>
+							<option v-for="lineup in filteredLineups" :value="lineup.id" :key="lineup.id">{{ lineup.formation.name }}, skapad {{ lineup.created }}</option>
 						</select>
 					</div>
 				</template>
@@ -194,6 +194,9 @@ export default class Lineups extends Vue {
 	}
 	get fictionLineupType() {
 		return LineupType.Fiction
+	}
+	get filteredLineups() {
+		return this.lineups.filter((l: Lineup) => l.type == LineupType[this.lineupType as keyof typeof LineupType])
 	}
 
 	load() {

@@ -73,19 +73,19 @@
                         <div class="form-group row">
                             <label for="kitNumber" class="col-sm-3 col-form-label"><strong>Nr.</strong></label>
                             <div class="col-sm-9">
-                                <input id="kitNumber" type="number" class="form-control form-control-sm" v-model="crudPlayer.kitNumber" placeholder="Tröjnummer" required />
+                                <input id="kitNumber" type="number" class="form-control form-control-sm" v-model="crudPlayer.kitNumber" placeholder="Tröjnummer" />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="heightInCm" class="col-sm-3 col-form-label"><strong>Längd (cm)</strong></label>
                             <div class="col-sm-9">
-                                <input id="heightInCm" type="number" class="form-control form-control-sm" v-model="crudPlayer.heightInCentimeters" placeholder="Längd i cm" required />
+                                <input id="heightInCm" type="number" class="form-control form-control-sm" v-model="crudPlayer.heightInCentimeters" placeholder="Längd i cm" />
                             </div>
                         </div>
                          <div class="form-group row">
                             <label for="weight" class="col-sm-3 col-form-label"><strong>Vikt</strong></label>
                             <div class="col-sm-9">
-                                <input id="weight" type="number" class="form-control form-control-sm" v-model="crudPlayer.weight" placeholder="Vikt" required />
+                                <input id="weight" type="number" class="form-control form-control-sm" v-model="crudPlayer.weight" placeholder="Vikt" />
                             </div>
                         </div>
                         <div class="form-group row">
@@ -109,7 +109,7 @@
                         <div class="form-group row">
                             <label for="imageUrl" class="col-sm-3 col-form-label"><strong>Bild</strong></label>
                             <div class="col-sm-9">
-                                <input id="imageUrl" type="text" class="form-control form-control-sm" v-model="crudPlayer.imageUrl" placeholder="Länk till bild på spelaren" required />
+                                <input id="imageUrl" type="text" class="form-control form-control-sm" v-model="crudPlayer.imageUrl" placeholder="Länk till bild på spelaren" />
                             </div>
                         </div>
                         <fieldset class="form-group">
@@ -170,14 +170,14 @@
                             </div>
                         </fieldset>
                         <div class="alert alert-danger" v-if="takenKitNumber">Tröjnumret är upptaget</div>
-                        <results :items="results" class="mb-3" />
+                        <results :items="results" />
                     </div>
                     <div class="card-footer">
                         <div class="row">
                             <div class="col pr-1">
                                 <button class="btn btn-success btn-block btn-sm" :disabled="!canSave" v-on:click="onSave">Spara</button>
                             </div>
-                            <div class="col pl-1">
+                            <div class="col pl-1" v-if="player">
                                 <button class="btn btn-danger btn-block btn-sm" v-on:click="inEdit = false">Avbryt</button>
                             </div>
                         </div>

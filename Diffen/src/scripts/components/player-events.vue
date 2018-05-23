@@ -11,7 +11,9 @@
                         <div class="form-group mb-0">
                             <select class="form-control form-control-sm" v-model="selectedGameId">
                                 <option value="0">Hantera händelser i en match</option>
-                                <option v-for="game in games" :value="game.id">{{ getGameType(game.type) }} - {{ game.playedOn }}</option>
+                                <option v-for="game in games" :value="game.id" :key="game.id">
+                                    {{ game.playedOn }} ({{ getGameType(game.type) }}) - {{ game.opponent }} ({{ getArenaType(game.arenaType)}})
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -489,13 +491,25 @@ export default class PlayerEvents extends Vue {
     getGameType(type: GameType): string {
         switch (type) {
             case GameType.Cup:
-                return 'Cupen'
+                return 'Cup'
             case GameType.League:
-                return 'Allsvenskan'
+                return 'AS'
             case GameType.EuropaLeague:
-                return 'Europa League'
+                return 'EL'
             case GameType.Training:
-                return 'Träningsmatch'
+                return 'Träning'
+            default:
+                return ''
+        }
+    }
+
+    
+    getArenaType(type: ArenaType): string {
+        switch (type) {
+            case ArenaType.Home:
+                return 'Hemma'
+            case ArenaType.Away:
+                return 'Borta'
             default:
                 return ''
         }

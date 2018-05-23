@@ -96,6 +96,10 @@ export default class Polls extends Vue {
 
     $modal = (this as any).VModal
 
+    created() {
+        this.newPoll.createdByUserId = this.vm.loggedInUser.id
+    }
+
     get canCreate(): boolean {
         return this.newPoll.name && this.newPoll.selections.length > 1 ? true : false
     }

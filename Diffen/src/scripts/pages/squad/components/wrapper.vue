@@ -138,7 +138,7 @@ export default class Wrapper extends Vue {
 		}
 
 	get loggedInUserIsAdmin(): boolean {
-        return this.vm.loggedInUser.inRoles.some(role => role == 'Admin')
+        return this.vm.loggedInUser.inRoles.some(role => role == 'Admin' || role == 'GameAdmin')
 	}
 
 	update(player: CrudPlayer) {

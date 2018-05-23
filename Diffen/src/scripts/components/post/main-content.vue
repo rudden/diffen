@@ -19,7 +19,7 @@
                                     <small class="float-right text-muted">{{ post.parentPost.since }}</small>
                                     <h6>{{ post.parentPost.user.nickName }}</h6>
                                 </div>
-                                <span class="message more-readable">{{ post.parentPost.message }}</span>
+                                <span class="message more-readable" v-html="post.parentPost.message"></span>
                             </div>
                         </div>
                     </div>
