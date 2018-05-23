@@ -65,6 +65,10 @@
                                                         <input class="form-check-input" type="radio" id="away" v-model="arenaType" value="Away" />
                                                         <label class="form-check-label" for="away">Borta</label>
                                                     </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" id="neutral" v-model="arenaType" value="NeutralGround" />
+                                                        <label class="form-check-label" for="neutral">Neutral mark</label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </fieldset>
@@ -510,6 +514,8 @@ export default class PlayerEvents extends Vue {
                 return 'Hemma'
             case ArenaType.Away:
                 return 'Borta'
+            case ArenaType.NeutralGround:
+                return 'Neutral'
             default:
                 return ''
         }

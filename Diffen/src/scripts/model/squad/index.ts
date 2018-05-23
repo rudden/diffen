@@ -99,7 +99,8 @@ export enum GameEventType {
 
 export enum ArenaType {
     Home,
-    Away
+    Away,
+    NeutralGround
 }
 
 export class Title {

@@ -3,6 +3,7 @@
 	public enum ArenaType
 	{
 		Home,
-		Away
+		Away,
+		NeutralGround
 	}
 }
