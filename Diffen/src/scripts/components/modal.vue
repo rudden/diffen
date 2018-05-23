@@ -57,6 +57,7 @@ export default class Modal extends Vue {
         if (!this.hasButtonClass('btn') && !this.hasButtonClass('on-click') && !this.button.icon) {
             this.button.classes += ' on-click'
         }
+        this.attributes.maxWidth = 900
         this.attributes.height = 'auto'
         this.attributes.adaptive = true
     }
