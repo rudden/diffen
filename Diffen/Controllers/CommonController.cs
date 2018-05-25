@@ -16,6 +16,8 @@ namespace Diffen.Controllers
 		private readonly IMapper _mapper;
 		private readonly IUserRepository _userRepository;
 
+		private int _unReadMessages;
+
 		protected TModel Model;
 
 		protected CommonController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)
@@ -31,51 +33,19 @@ namespace Diffen.Controllers
 			var pageName = controller.ControllerContext.ActionDescriptor.ControllerName.ToLower();
 			if (Model == null)
 			{
+				var user = _mapper.Map<Models.User.User>(_userRepository.GetUserOnEmailAsync(User.Identity.Name).Result);
 				Model = new TModel
 				{
 					Api = _configuration["Api:Url"],
-					LoggedInUser = _mapper.Map<Models.User.User>(_userRepository.GetUserOnEmailAsync(User.Identity.Name).Result),
+					LoggedInUser = user,
 					Page = pageName
 				};
+				_unReadMessages = user.NumberOfUnReadPersonalMessages;
 			}
-			SetPageTitle(pageName);
-			base.OnActionExecuting(context);
-		}
 
-		private void SetPageTitle(string pageName)
-		{
-			string pageTitle;
-			switch (pageName)
-			{
-				case "home":
-					pageTitle = "Hem";
-					break;
-				case "forum":
-					pageTitle = "Forum";
-					break;
-				case "chronicle":
-					pageTitle = "Krönikor";
-					break;
-				case "poll":
-					pageTitle = "Omröstningar";
-					break;
-				case "region":
-					pageTitle = "Områden";
-					break;
-				case "squad":
-					pageTitle = "Trupp";
-					break;
-				case "profile":
-					pageTitle = "Profil";
-					break;
-				case "aboutdif":
-					pageTitle = "Om DIF";
-					break;
-				default:
-					pageTitle = "";
-					break;
-			}
-			ViewBag.Title = $"{(!string.IsNullOrEmpty(pageTitle) ? "| " : "")} {pageTitle}";
+			ViewBag.Title = $"{(!string.IsNullOrEmpty(Model.Page) ? $"{(_unReadMessages > 0 ? $"({_unReadMessages})" : "")} |" : "")} {Model.PageTitle}";
+
+			base.OnActionExecuting(context);
 		}
 	}
 }
