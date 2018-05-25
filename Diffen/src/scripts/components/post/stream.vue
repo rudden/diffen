@@ -4,7 +4,7 @@
 		<li class="media list-group-item p-4" v-if="selectedPageNumber > 0 && inSinglePageView">
 			Visar sida {{ selectedPageNumber }}
 		</li>
-		<post-component v-for="post in paged.data" :key="post.id" :post="post" :full-size="fullSizePost" v-show="infiniteScroll || (!infiniteScroll && !loaderPredicate)" />
+		<post-component v-for="post in paged.data" :key="post.id" :post="post" :full-size="fullSizePost" :show-un-bookmark-btn="showUnBookmarkBtn" v-show="infiniteScroll || (!infiniteScroll && !loaderPredicate)" />
 		<li class="media list-group-item p-4" v-show="loaderPredicate">
 			<loader v-bind="{ background: '#699ED0' }" />
 		</li>
@@ -70,6 +70,10 @@ import { Pagination } from 'vue-pagination-2'
 			type: Number,
 			default: 5
 		},
+		showUnBookmarkBtn: {
+			type: Boolean,
+			default: false
+		},
 		stateStoredItems: Object,
 		loaderPredicate: Boolean,
 		infiniteScroll: {
@@ -87,6 +91,7 @@ export default class PostStream extends Vue {
 
 	fullSizePost: boolean
 	pageSize: number
+	showUnBookmarkBtn: boolean
 	stateStoredItems: Paging<Post>
 	loaderPredicate: boolean
 	infiniteScroll: boolean

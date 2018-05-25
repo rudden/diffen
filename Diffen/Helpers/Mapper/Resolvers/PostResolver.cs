@@ -105,7 +105,10 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			return new Models.Forum.Thread
 			{
 				Id = source.Id,
-				Name = source.Name
+				Name = source.Name,
+				Type = source.Type,
+				StartTime = source.StartTime?.ToString("yyyy-MM-dd HH:mm"),
+				EndTime = source.EndTime?.ToString("yyyy-MM-dd HH:mm")
 			};
 		}
 
@@ -114,7 +117,10 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			return new Models.Forum.Thread
 			{
 				Id = source.ThreadId,
-				Name = source.Thread.Name
+				Name = source.Thread.Name,
+				Type = source.Thread.Type,
+				StartTime = source.Thread.StartTime?.ToString("yyyy-MM-dd HH:mm"),
+				EndTime = source.Thread.EndTime?.ToString("yyyy-MM-dd HH:mm")
 			};
 		}
 

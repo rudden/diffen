@@ -15,8 +15,11 @@ namespace Diffen.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Created = table.Column<DateTime>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Type = table.Column<int>(nullable: false),
+	                Created = table.Column<DateTime>(nullable: false),
+					StartTime = table.Column<DateTime>(nullable: true),
+	                EndTime = table.Column<DateTime>(nullable: true),
+					Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

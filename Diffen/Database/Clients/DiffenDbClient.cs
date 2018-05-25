@@ -13,6 +13,7 @@ namespace Diffen.Database.Clients
 	using Entities.Forum;
 	using Entities.Squad;
 	using Entities.Other;
+	using Helpers.Enum;
 	using Helpers.Extensions;
 
 	public class DiffenDbClient : IDiffenDbClient
@@ -356,6 +357,7 @@ namespace Diffen.Database.Clients
 			_dbContext.Threads.AddRange(threadNames.Select(name => new Thread
 			{
 				Name = name,
+				Type = ThreadType.Ongoing,
 				Created = DateTime.Now
 			}));
 			await CommitedResultIsSuccessfulAsync();

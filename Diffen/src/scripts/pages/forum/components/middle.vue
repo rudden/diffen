@@ -1,5 +1,14 @@
 <template>
     <div :class="{ 'col': !showRightSideBar || !showLeftSideBar, 'col-lg-6': showRightSideBar && showLeftSideBar }">
+        <div class="alert alert-info" role="alert" v-if="activeThread">
+            <div class="col p-0">
+                En planerad tråd med namn <strong>{{ activeThread.name }}</strong> pågår just nu!
+                <br />
+                Från <strong>{{ activeThread.startTime }}</strong> till <strong>{{ activeThread.endTime }}</strong>
+                <hr />
+                Alla inlägg som skrivs inom ramen för dessa tider kommer taggas i denna tråd.
+            </div>
+        </div>
         <post-stream :page-size="pageSize" :paging="paging" :state-stored-items="pagedPosts" :infinite-scroll="infiniteScroll" :loader-predicate="isLoadingPosts">
             <template slot="top">
                 <li class="media list-group-item p-4" style="display: block">
@@ -31,6 +40,7 @@ const ModuleAction = namespace('forum', Action)
 const ModuleMutation = namespace('forum', Mutation)
 
 import {
+    GET_ACTIVE_FIXED_THREAD,
     GET_IS_LOADING_POSTS,
     GET_PAGED_POSTS,
     GET_FILTER,
@@ -43,7 +53,7 @@ import {
     SET_SHOW_RIGHT_SIDEBAR
 } from '../../../modules/forum/types'
 
-import { Post, Filter } from '../../../model/forum'
+import { Post, Filter, Thread } from '../../../model/forum'
 import { ForumViewModel, Paging } from '../../../model/common'
 
 import NewPost from '../../../components/post/new.vue'
@@ -59,7 +69,8 @@ import { Pagination } from 'vue-pagination-2'
     }
 })
 export default class Middle extends Vue {
-  	@State(state => state.vm) vm: ForumViewModel
+    @State(state => state.vm) vm: ForumViewModel
+    @ModuleGetter(GET_ACTIVE_FIXED_THREAD) activeThread: Thread
     @ModuleGetter(GET_IS_LOADING_POSTS) isLoadingPosts: boolean
     @ModuleGetter(GET_FILTER) filter: Filter
     @ModuleGetter(GET_PAGED_POSTS) pagedPosts: Paging<Post>

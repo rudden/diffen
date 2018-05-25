@@ -76,5 +76,13 @@ export class Conversation {
 export class Thread {
     id: number
     name: string
+    type: ThreadType
+    startTime?: string
+    endTime?: string
     numberOfPosts: number
+}
+
+export enum ThreadType {
+    Ongoing,
+    Planned
 }

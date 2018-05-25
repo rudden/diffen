@@ -2,7 +2,7 @@
     <div class="card pl-2 pr-2" :class="{ 'div-disabled': isLoadingPosts }">
         <div class="card-body">
             <h6 class="mb-0">
-                <span class="badge badge-primary float-right p-2" v-if="!isLoadingPosts">
+                <span class="badge badge-dark float-right badge-pill">
                     Visar {{ pagedPosts.data.length }} {{ pagedPosts.data.length !== pagedPosts.total ? `av ${pagedPosts.total} inlägg` : ' inlägg' }}
                 </span>
                 <span style="cursor: pointer" @click="show = !show" v-tooltip.right="tooltipText">
@@ -60,12 +60,21 @@
                         </div>
                     </div>
                     <div class="list-group-item flex-column align-items-start">
-                        <strong>Trådar</strong>
-                        <hr />
-                        <div class="form-check form-check-inline" v-for="thread in threads" :key="thread.id">
-                            <input class="form-check-input" type="checkbox" :id="thread.id" :value="thread.id" v-model="filter.threadIds">
-                            <label class="form-check-label" :for="thread.id">{{ thread.name }} {{ thread.numberOfPosts > 0 ? `(${thread.numberOfPosts})` : '' }}</label>
+                        <div class="row col">
+                            <div class="form-check form-check-inline" v-for="thread in ongoingThreads" :key="thread.id">
+                                <input class="form-check-input" type="checkbox" :id="thread.id" :value="thread.id" v-model="filter.threadIds">
+                                <label class="form-check-label" :for="thread.id">{{ thread.name }} {{ thread.numberOfPosts > 0 ? `(${thread.numberOfPosts})` : '' }}</label>
+                            </div>
                         </div>
+                        <template v-if="plannedThreads.length > 0">
+                            <hr />
+                            <div class="row col">
+                                <div class="form-check form-check-inline" v-for="thread in plannedThreads" :key="thread.id">
+                                    <input class="form-check-input" type="checkbox" :id="thread.id" :value="thread.id" v-model="filter.threadIds">
+                                    <label class="form-check-label" :for="thread.id">{{ thread.name }} {{ thread.numberOfPosts > 0 ? `(${thread.numberOfPosts})` : '' }}</label>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div class="list-group-item flex-column align-items-start">
                         <div class="row">
@@ -126,7 +135,7 @@ import {
 
 import { FETCH_KVP_USERS } from '../../../modules/profile/types'
 
-import { StartingEleven, Filter, Post, Thread } from '../../../model/forum'
+import { StartingEleven, Filter, Post, Thread, ThreadType } from '../../../model/forum'
 import { PageViewModel, KeyValuePair, Paging } from '../../../model/common'
 
 import { Typeahead } from 'uiv'
@@ -210,6 +219,18 @@ export default class FilterComponent extends Vue {
     get tooltipText() {
         return !this.show ? 'Klicka här för att filtrera forumets innehåll' : 'Klicka här för att dölja filter-komponenten'
     }
+    get ongoingThreadType() {
+        return ThreadType.Ongoing
+    }
+    get plannedThreadType() {
+        return ThreadType.Planned
+    }
+    get ongoingThreads() {
+        return this.threads.filter((t: Thread) => t.type == ThreadType.Ongoing)
+    }
+    get plannedThreads() {
+        return this.threads.filter((t: Thread) => t.type == ThreadType.Planned)
+    }
     
     @Watch('selectedUser')
 		onChange() {
@@ -217,7 +238,7 @@ export default class FilterComponent extends Vue {
 				this.includedUsers.unshift(this.selectedUser)
 				this.users.splice(this.users.indexOf(this.selectedUser), 1)
 			}
-		}
+        }
 
 	apply() {
 		this.setFilter({ filter: this.current })

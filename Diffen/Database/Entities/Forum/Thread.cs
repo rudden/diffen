@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Diffen.Database.Entities.Forum
 {
+	using Helpers.Enum;
+
 	public class Thread
 	{
 		[Key]
@@ -12,6 +14,11 @@ namespace Diffen.Database.Entities.Forum
 
 		public string Name { get; set; }
 
+		public ThreadType Type { get; set; }
+
 		public DateTime Created { get; set; }
+
+		public DateTime? StartTime { get; set; }
+		public DateTime? EndTime { get; set; }
 	}
 }

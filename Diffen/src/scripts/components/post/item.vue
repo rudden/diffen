@@ -6,10 +6,13 @@
         <div class="media-body">
             <small class="float-right text-muted">{{ post.since }}</small>
             <div class="media-heading">
-                <a :href="`/profil/${post.user.id}`"><strong>{{ post.user.nickName }}</strong></a> {{ post.inThreads.length > 0 ? 'skrev i ' : '' }} 
-                <a href="#" v-for="(thread, index) in post.inThreads" v-tooltip="getThreadToolTip(thread.id)" :key="thread.id" @click="setThreadInFilter(thread.id)">
-                    {{ thread.name }}{{ post.inThreads.length > 0 && thread.id !== post.inThreads[post.inThreads.length - 1].id ? ', ' : '' }}
-                </a>
+                <a :href="`/profil/${post.user.id}`"><strong>{{ post.user.nickName }}</strong></a> 
+                <span v-if="fullSize">
+                    {{ post.inThreads.length > 0 ? 'skrev i ' : '' }}
+                    <a href="#" v-for="thread in post.inThreads" v-tooltip="getThreadToolTip(thread.id)" :key="thread.id" @click="setThreadInFilter(thread.id)">
+                        {{ `${thread.name}${post.inThreads.length > 0 && thread.id !== post.inThreads[post.inThreads.length - 1].id ? ', ' : ''}` }}
+                    </a>
+                </span>
             </div>
             <div class="media-body-text mt-2">
                 <template v-if="post.parentPost && showParent && fullSize">
@@ -63,6 +66,15 @@
                                         <hr />
                                         <new-post :parent-id="post.id" :modal-name="modalAttributes.replyPost.attributes.name" />
                                     </template>
+                                    <template v-if="activeThread">
+                                        <template slot="footer">
+                                            <div class="col">
+                                                Just nu pågår den planerade tråden <strong>{{ activeThread.name }}</strong>.
+                                                <br />
+                                                Ditt inlägg kommer automatiskt taggas i denna tråd.
+                                            </div>
+                                        </template>
+                                    </template>
                                 </modal>
                                 <a v-on:click="bookmarkPost" v-if="canBookmark" v-tooltip="'Spara'">
                                     · <span class="icon icon-bookmark"></span>
@@ -88,7 +100,7 @@
                         <a :href="`/forum/inlagg/${post.id}`" class="no-hover" v-tooltip="'Gå till'">
                             <span class="icon icon-eye"></span>
                         </a>
-                        <a v-on:click="unBookmarkPost" v-if="!canBookmark" v-tooltip="'Ta bort från sparade inlägg'">
+                        <a v-on:click="unBookmarkPost" v-if="!canBookmark && showUnBookmarkBtn" v-tooltip="'Ta bort från sparade inlägg'">
                             · <span class="icon icon-trash"></span>
                         </a>
                     </div>
@@ -111,6 +123,7 @@ const SquadModuleAction = namespace('squad', Action)
 const ProfileModuleAction = namespace('profile', Action)
 
 import {
+    GET_ACTIVE_FIXED_THREAD,
     GET_FILTER,
     GET_PAGED_POSTS,
     GET_SHOULD_RELOAD_POST_STREAM,
@@ -151,7 +164,11 @@ import FormationComponent from '../lineups/formation.vue'
         showParent: {
             type: Boolean,
             default: true
-        }
+        },
+        showUnBookmarkBtn: {
+			type: Boolean,
+			default: false
+		}
     },
     components: {
         Url, Embeds, NewPost, Modal, Voting, FormationComponent, PostMainContent
@@ -159,6 +176,7 @@ import FormationComponent from '../lineups/formation.vue'
 })
 export default class PostComponent extends Vue {
     @State(state => state.vm) vm: PageViewModel
+    @ModuleGetter(GET_ACTIVE_FIXED_THREAD) activeThread: Thread
     @ModuleGetter(GET_FILTER) filter: Filter
     @ModuleGetter(GET_PAGED_POSTS) pagedPosts: Paging<Post>
     @ModuleGetter(GET_SHOULD_RELOAD_POST_STREAM) shouldReloadPostStream: boolean
@@ -177,6 +195,7 @@ export default class PostComponent extends Vue {
     fullSize: boolean
     showActions: boolean
     showParent: boolean
+    showUnBookmarkBtn: boolean
 
     lineup: Lineup = new Lineup()
     loadingLineup: boolean = false

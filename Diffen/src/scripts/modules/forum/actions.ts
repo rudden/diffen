@@ -1,8 +1,9 @@
 import axios from 'axios'
+import moment from 'moment'
 import State from './state'
 import { Store, ActionTree, ActionContext } from 'vuex'
 
-import { Post, Filter, VoteType, UrlTip } from '../../model/forum'
+import { Post, Filter, VoteType, UrlTip, Thread, ThreadType } from '../../model/forum'
 import { Post as CrudPost, Vote as CrudVote } from '../../model/forum/crud'
 import { Result, Paging } from '../../model/common'
 import { Lineup } from '../../model/squad'
@@ -26,7 +27,8 @@ import {
     FETCH_POST,
 	SET_SELECTED_CONVERSATION,
     FETCH_THREADS,
-    SET_THREADS
+	SET_THREADS,
+	SET_ACTIVE_FIXED_THREAD
 } from './types'
 
 axios.defaults.withCredentials = true
@@ -114,7 +116,11 @@ export const Actions: ActionTree<State, any> = {
 	},
 	[FETCH_THREADS]: (store: ActionContext<State, any>): Promise<void> => {
 		return axios.get(`${store.rootState.vm.api}/posts/threads`)
-			.then((res) => store.commit(SET_THREADS, res.data)).catch((error) => console.warn(error))
+			.then((res) => {
+				store.commit(SET_THREADS, res.data)
+				let thread: Thread = res.data.filter((t: Thread) => t.type == ThreadType.Planned && moment(new Date()).isBetween(moment(<string>t.startTime), moment(<string>t.endTime)))[0]
+				store.commit(SET_ACTIVE_FIXED_THREAD, thread ? thread : undefined)
+			}).catch((error) => console.warn(error))
 	},
 }
 export default Actions

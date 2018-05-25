@@ -11,4 +11,5 @@ export default class State {
     showRightSideBar: boolean = true
     shouldReloadPostStream: boolean = false
     threads: Thread[] = []
+    activeFixedThread: Thread = new Thread()
 }

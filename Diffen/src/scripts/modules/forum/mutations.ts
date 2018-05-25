@@ -16,7 +16,8 @@ import {
     SET_SHOW_RIGHT_SIDEBAR,
     SET_SHOULD_RELOAD_POST_STREAM,
     SET_SELECTED_CONVERSATION,
-    SET_THREADS
+    SET_THREADS,
+    SET_ACTIVE_FIXED_THREAD
 } from './types'
 
 export const Mutations: MutationTree<State> = {
@@ -102,6 +103,9 @@ export const Mutations: MutationTree<State> = {
     },
     [SET_THREADS]: (state: State, threads: Thread[]) => { 
         state.threads = threads
+    },
+    [SET_ACTIVE_FIXED_THREAD]: (state: State, thread: Thread) => { 
+        state.activeFixedThread = thread
     },
 }
 

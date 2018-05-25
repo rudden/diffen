@@ -1224,6 +1224,7 @@ namespace Diffen.Database
 				}.Select(x => new Thread
 				{
 					Name = x,
+					Type = ThreadType.Ongoing,
 					Created = DateTime.Now
 				}));
 				await dbContext.SaveChangesAsync();

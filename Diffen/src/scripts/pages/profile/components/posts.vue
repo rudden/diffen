@@ -11,7 +11,7 @@
 				</post-stream>
 			</div>
 			<div class="col-sm-12 col-md col-lg" v-if="vm.loggedInUser.id == userId">
-				<post-stream :full-size-post="false" :paging="pageSavedPosts" :state-stored-items="savedPosts" :loader-predicate="isLoadingSavedPosts">
+				<post-stream :full-size-post="false" :paging="pageSavedPosts" :state-stored-items="savedPosts" :loader-predicate="isLoadingSavedPosts" :show-un-bookmark-btn="true">
 					<template slot="top">
 						<li class="media list-group-item p-4">
 							<h6 class="mb-0">Sparade inlägg</h6>
