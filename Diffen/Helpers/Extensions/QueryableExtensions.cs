@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,11 @@ namespace Diffen.Helpers.Extensions
 		public static IQueryable<Post> ExceptScissored(this IQueryable<Post> source)
 		{
 			return source.Where(x => x.Scissored == null);
+		}
+
+		public static IQueryable<Post> InThreads(this IQueryable<Post> source, IEnumerable<int> threadIds)
+		{
+			return source.Where(x => x.InThreads.Any() && x.InThreads.Select(y => y.ThreadId).Intersect(threadIds).Any());
 		}
 
 		public static IOrderedQueryable<Post> OrderByCreated(this IQueryable<Post> source)

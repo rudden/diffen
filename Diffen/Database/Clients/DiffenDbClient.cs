@@ -83,7 +83,7 @@ namespace Diffen.Database.Clients
 			}
 			if (filter.ThreadIds != null && filter.ThreadIds.Any())
 			{
-				posts = posts.Where(x => x.InThreads.Select(y => y.ThreadId).Intersect(filter.ThreadIds).Any());
+				posts = posts.InThreads(filter.ThreadIds);
 			}
 			return posts.OrderByCreated().ToListAsync();
 		}
