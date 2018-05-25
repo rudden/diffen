@@ -92,7 +92,7 @@
                                     · <span class="icon icon-eye"></span>
                                 </a>
                                 <template v-if="post.updated">
-                                    <span class="badge badge-danger">editerat</span>
+                                    · <span class="badge badge-danger">editerat</span>
                                 </template>
                                 <voting :post="post" />
                             </template>
