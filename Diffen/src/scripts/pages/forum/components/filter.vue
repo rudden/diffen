@@ -1,10 +1,10 @@
 <template>
-    <div class="card pl-2 pr-2">
+    <div class="card pl-2 pr-2" :class="{ 'div-disabled': isLoadingPosts }">
         <div class="card-body">
-            <template v-if="isLoadingPosts">
+            <!-- <template v-if="isLoadingPosts">
     			<loader v-bind="{ background: '#699ED0' }" />
             </template>
-            <template v-else>
+            <template v-else> -->
                 <h6 class="mb-0">
                     <span class="badge badge-dark float-right badge-pill">
                         Visar {{ pagedPosts.data.length }} {{ pagedPosts.data.length !== pagedPosts.total ? `av ${pagedPosts.total} inlägg` : ' inlägg' }}
@@ -112,7 +112,7 @@
                         </div>
                     </div>
                 </template>
-            </template>
+            <!-- </template> -->
         </div>
     </div>
 </template>
