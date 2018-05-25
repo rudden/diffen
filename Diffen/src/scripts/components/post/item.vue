@@ -4,9 +4,32 @@
             <img class="media-object d-flex align-self-start mr-3" :src="post.user.avatar">
         </a>
         <div class="media-body">
-            <div class="media-body-text">
-                <post-main-content :post="post" :show-parent="showParent && fullSize" />
-                <!-- show actions and conversation on condition -->
+            <small class="float-right text-muted">{{ post.since }}</small>
+            <div class="media-heading">
+                <a :href="`/profil/${post.user.id}`"><strong>{{ post.user.nickName }}</strong></a> {{ post.inThreads.length > 0 ? 'skrev i ' : '' }} 
+                <a href="#" v-for="(thread, index) in post.inThreads" v-tooltip="getThreadToolTip(thread.id)" :key="thread.id" @click="setThreadInFilter(thread.id)">
+                    {{ thread.name }}{{ post.inThreads.length > 0 && thread.id !== post.inThreads[post.inThreads.length - 1].id ? ', ' : '' }}
+                </a>
+            </div>
+            <div class="media-body-text mt-2">
+                <template v-if="post.parentPost && showParent && fullSize">
+                    <div class="card mt-3 mb-3 parent-item">
+                        <div class="card-body">
+                            <div class="media">
+                                <div class="media-body">
+                                    <div class="media-body-text">
+                                        <div class="media-heading">
+                                            <small class="float-right text-muted">{{ post.parentPost.since }}</small>
+                                            <h6>{{ post.parentPost.user.nickName }}</h6>
+                                        </div>
+                                        <span class="message more-readable" v-html="post.parentPost.message"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <p v-html="postMessage" class="more-readable"></p>
                 <template v-if="fullSize">
                     <template v-if="showFooter">
                         <div class="message-footer">
@@ -65,9 +88,9 @@
                         <a :href="`/forum/inlagg/${post.id}`" class="no-hover" v-tooltip="'Gå till'">
                             <span class="icon icon-eye"></span>
                         </a>
-                        <!-- <a v-on:click="unBookmarkPost" v-if="!canBookmark" v-tooltip="'Ta bort från sparade inlägg'">
+                        <a v-on:click="unBookmarkPost" v-if="!canBookmark" v-tooltip="'Ta bort från sparade inlägg'">
                             · <span class="icon icon-trash"></span>
-                        </a> -->
+                        </a>
                     </div>
                 </template>
             </div>
@@ -95,13 +118,14 @@ import {
     SCISSOR_POST,
     FETCH_PAGED_POSTS,
     SET_IS_LOADING_POSTS,
-    SET_SHOULD_RELOAD_POST_STREAM
+    SET_SHOULD_RELOAD_POST_STREAM,
+    SET_FILTER
 } from '../../modules/forum/types'
 import { FETCH_LINEUP } from '../../modules/squad/types'
 import { UNBOOKMARK_POST } from '../../modules/profile/types'
 
 import { Lineup } from '../../model/squad'
-import { Post, Vote, VoteType, Filter } from '../../model/forum'
+import { Post, Vote, VoteType, Filter, Thread } from '../../model/forum'
 import { PageViewModel, Paging } from '../../model/common'
 
 import NewPost from './new.vue'
@@ -143,6 +167,7 @@ export default class PostComponent extends Vue {
     @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
 	@ModuleMutation(SET_IS_LOADING_POSTS) setIsLoadingPosts: (payload: { value: boolean }) => void
 	@ModuleMutation(SET_SHOULD_RELOAD_POST_STREAM) setShouldReloadPostStream: (payload: { value: boolean }) => void
+	@ModuleMutation(SET_FILTER) setFilter: (payload: { filter: Filter }) => void
     
     @SquadModuleAction(FETCH_LINEUP) loadLineup: (payload: { id: number }) => Promise<Lineup>
 
@@ -226,6 +251,22 @@ export default class PostComponent extends Vue {
         return !this.vm.loggedInUser.savedPostsIds.includes(this.post.id)
     }
 
+    get postMessage() {
+        return this.filterMessage(this.post.message)
+    }
+
+    get parentPostMessage() {
+        return this.filterMessage(this.post.parentPost.message)
+    }
+
+    filterMessage(message: string) {
+        if (this.filter.messageWildCard && message) {
+            var pattern = new RegExp(this.filter.messageWildCard, 'gi');
+            return message.replace(pattern, '<strong><u>' + this.filter.messageWildCard + '</u></strong>')
+        }
+        return message
+    }
+
     closePostActionModal() {
         if (this.post) {
             // reload all posts when modal is closed
@@ -268,6 +309,40 @@ export default class PostComponent extends Vue {
                 })
         }
     }
+
+    getThreadToolTip(id: number) {
+        if (this.filter.threadIds) {
+            if (this.filter.threadIds.includes(id)) {
+                return 'Ta bort denna tråd ur filtret'
+            }
+            if (this.filter.threadIds.length > 0) {
+                return 'Lägg till tråd i filtret'
+            } else {
+                return 'Visa inlägg ur tråd'
+            }
+        }
+    }
+
+    setThreadInFilter(id: number) {
+        let currentFilter = this.filter
+        if (currentFilter.threadIds) {
+            if (currentFilter.threadIds.length > 0) {
+                if (!currentFilter.threadIds.includes(id)) {
+                    currentFilter.threadIds.push(id)
+                } else {
+                    let index: number = currentFilter.threadIds.indexOf(id)
+                    if (index > -1) {
+                        currentFilter.threadIds.splice(index, 1)
+                    }
+                }
+            } else {
+                currentFilter.threadIds = [id]
+            }
+        }
+        this.setFilter({ filter: currentFilter })
+        this.setShouldReloadPostStream({ value: true })
+        this.reloadPosts(1)
+    }
 }
 </script>
 
@@ -280,7 +355,7 @@ export default class PostComponent extends Vue {
 }
 .message-footer {
     padding-top: 1rem;
-    a {
+    a, .v-popover span {
         cursor: pointer;
         color: #3097D1 !important;
         .icon-thumbs-up, .icon-thumbs-down {
@@ -294,5 +369,12 @@ export default class PostComponent extends Vue {
 }
 .no-hover:hover {
     text-decoration: none;
+}
+
+.parent-item {
+    background-color: #f5f8fa;
+    .media-body-text span {
+        white-space: pre-wrap;
+    }
 }
 </style>

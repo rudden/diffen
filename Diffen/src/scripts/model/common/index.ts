@@ -11,6 +11,7 @@ export class ForumViewModel extends PageViewModel {
 	selectedPostId: number
 	selectedPageNumber: number
 	fullConversationMode: boolean
+	selectedThreadName: string
 }
 
 export class ProfileViewModel extends PageViewModel {

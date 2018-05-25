@@ -7,6 +7,9 @@
             <template v-else-if="button.badge">
                 <span class="badge" :class="button.badge">{{ button.text }}</span>
             </template>
+            <template v-else-if="button.image">
+                <img :src="button.image.src" :class="button.image.classes" :style="button.image.style" style="cursor: pointer" v-tooltip="button.text" />
+            </template>
             <template v-else>
                 {{ button.text }}
             </template>

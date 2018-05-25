@@ -332,14 +332,7 @@ export default class NewChronicle extends Vue {
 </script>
 
 <style lang="scss" scoped>
-a, .custom__remove {
+a {
     cursor: pointer;
-}
-.custom__tag {
-    font-size: large;
-    display: contents;
-    span.custom__remove {
-        margin-left: 5px;
-    }
 }
 </style>

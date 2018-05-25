@@ -80,6 +80,10 @@ namespace Diffen.Database.Clients
 			{
 				posts = posts.Where(x => filter.IncludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
 			}
+			if (filter.ThreadIds != null && filter.ThreadIds.Any())
+			{
+				posts = posts.Where(x => x.InThreads.Select(y => y.ThreadId).Intersect(filter.ThreadIds).Any());
+			}
 			return posts.OrderByCreated().ToListAsync();
 		}
 
@@ -325,6 +329,55 @@ namespace Diffen.Database.Clients
 		public async Task<bool> UserHasAlreadyVotedOnPostAsync(int postId, string userId)
 		{
 			return await _dbContext.Votes.CountAsync(x => x.PostId == postId && x.CreatedByUserId == userId) > 0;
+		}
+
+		public Task<List<Thread>> GetPostThreadsAsync()
+		{
+			return _dbContext.Threads.OrderBy(x => x.Name).ToListAsync();
+		}
+
+		public Task<int> GetNumberOfPostsOnThreadAsync(int threadId)
+		{
+			return _dbContext.ThreadsOnPosts.CountAsync(thread => thread.ThreadId.Equals(threadId));
+		}
+
+		public Task<bool> AddThreadsToPostAsync(int postId, IEnumerable<int> threadIds)
+		{
+			_dbContext.ThreadsOnPosts.AddRange(threadIds.Select(id => new PostToThread
+			{
+				PostId = postId,
+				ThreadId = id
+			}));
+			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public async Task<bool> CreatePostThreadsAndConnectToNewPostWithIdAsync(int postId, List<string> threadNames)
+		{
+			_dbContext.Threads.AddRange(threadNames.Select(name => new Thread
+			{
+				Name = name,
+				Created = DateTime.Now
+			}));
+			await CommitedResultIsSuccessfulAsync();
+
+			var newThreads = _dbContext.Threads.Where(thread => threadNames.Contains(thread.Name));
+			_dbContext.ThreadsOnPosts.AddRange(newThreads.Select(thread => new PostToThread
+			{
+				PostId = postId,
+				ThreadId = thread.Id
+			}));
+			return await CommitedResultIsSuccessfulAsync();
+		}
+
+		public async Task<bool> DeleteExistingThreadsOnPostAsync(int postId)
+		{
+			var currentThreads = _dbContext.ThreadsOnPosts.Where(top => top.PostId == postId);
+			if (!currentThreads.Any())
+			{
+				return false;
+			}
+			_dbContext.ThreadsOnPosts.RemoveRange(currentThreads);
+			return await CommitedResultIsSuccessfulAsync();
 		}
 
 		public Task<List<AppUser>> GetUsersAsync()

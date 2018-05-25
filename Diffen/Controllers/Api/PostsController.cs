@@ -129,5 +129,12 @@ namespace Diffen.Controllers.Api
 			_logger.Debug("Requesting to un-save a post with id {postId} for user with id {userId}", postId, userId);
 			return _postRepository.UnSavePostAsync(postId, userId);
 		}
+
+		[HttpGet("threads")]
+		public Task<List<Thread>> GetThreads()
+		{
+			_logger.Debug("Requesting to get all threads");
+			return _postRepository.GetThreadsAsync();
+		}
 	}
 }

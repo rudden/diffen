@@ -20,6 +20,7 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.Lineups)
 				.Include(x => x.UrlTips)
 				.Include(x => x.ParentPost).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
+				.Include(x => x.InThreads).ThenInclude(x => x.Thread)
 				.AsNoTracking();
 		}
 
@@ -31,6 +32,7 @@ namespace Diffen.Helpers.Extensions
 				.Include(x => x.Votes).ThenInclude(x => x.User).ThenInclude(x => x.NickNames)
 				.Include(x => x.Lineups)
 				.Include(x => x.UrlTips)
+				.Include(x => x.InThreads).ThenInclude(x => x.Thread)
 				.AsNoTracking();
 		}
 

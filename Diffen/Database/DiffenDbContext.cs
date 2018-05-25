@@ -18,6 +18,8 @@ namespace Diffen.Database
 		public DbSet<Vote> Votes { get; set; }
 		public DbSet<PostToLineup> LineupsOnPosts { get; set; }
 		public DbSet<Scissored> ScissoredPosts { get; set; }
+		public DbSet<Thread> Threads { get; set; }
+		public DbSet<PostToThread> ThreadsOnPosts { get; set; }
 
 		public DbSet<NickName> NickNames { get; set; }
 		public DbSet<Invite> Invites { get; set; }

@@ -115,6 +115,7 @@ interface IGuessResult {
     numberOfCorrectOpponentGoalGuesses: number
     numberOfCorrectResultGuesses: number
     numberOfCorrectAmountOfGoalsGuesses: number
+    numberOfCorrectGameOutcomeGuesses: number
 }
 
 import Modal from '../../../components/modal.vue'
@@ -228,6 +229,7 @@ export default class GameGuessResultLeage extends Vue {
             numberOfCorrectDifGoalGuesses: guessResults.map((result: IGuessResult) => result.numberOfCorrectDifGoalGuesses).reduce((acc: number, val: number) => { return acc + val }),
             numberOfCorrectOpponentGoalGuesses: guessResults.map((result: IGuessResult) => result.numberOfCorrectOpponentGoalGuesses).reduce((acc: number, val: number) => { return acc + val }),
             numberOfCorrectAmountOfGoalsGuesses: guessResults.map((result: IGuessResult) => result.numberOfCorrectAmountOfGoalsGuesses).reduce((acc: number, val: number) => { return acc + val }),
+            numberOfCorrectGameOutcomeGuesses: guessResults.map((result: IGuessResult) => result.numberOfCorrectGameOutcomeGuesses).reduce((acc: number, val: number) => { return acc + val }),
         }
     }
 
@@ -240,6 +242,7 @@ export default class GameGuessResultLeage extends Vue {
         let numberOfCorrectOpponentGoalGuesses: number = 0
         let numberOfCorrectResultGuesses: number = 0
         let numberOfCorrectAmountOfGoalsGuesses: number = 0
+        let numberOfCorrectGameOutcomeGuesses: number = 0
 
         let numberOfGoalsScoredByOpponent: number = guess.game.numberOfGoalsScoredByOpponent
         let guessForNumberOfGoalsScoredByOpponent: number = guess.numberOfGoalsScoredByOpponent
@@ -253,31 +256,54 @@ export default class GameGuessResultLeage extends Vue {
         ) {
             numberOfCorrectResultGuesses++
         } else {
-            if (numberOfGoalsScoredByDif == guessForNumberOfGoalsScoredByDif)
+            if (this.is1x2(guess.game.arenaType, numberOfGoalsScoredByDif, guessForNumberOfGoalsScoredByDif, numberOfGoalsScoredByOpponent, guessForNumberOfGoalsScoredByOpponent)) {
+                numberOfCorrectGameOutcomeGuesses++
+            }
+            if (numberOfGoalsScoredByDif == guessForNumberOfGoalsScoredByDif) {
                 numberOfCorrectDifGoalGuesses++
+            }
         
-            if (numberOfGoalsScoredByOpponent == guessForNumberOfGoalsScoredByOpponent)
+            if (numberOfGoalsScoredByOpponent == guessForNumberOfGoalsScoredByOpponent) {
                 numberOfCorrectOpponentGoalGuesses++
+            }
 
             let amountOfGoalsScoredGuess: number = guessForNumberOfGoalsScoredByDif + guessForNumberOfGoalsScoredByOpponent
             let amountOfGoalsScoredOutcome: number = numberOfGoalsScoredByDif + numberOfGoalsScoredByOpponent
-            if (amountOfGoalsScoredGuess == amountOfGoalsScoredOutcome)
+            if (amountOfGoalsScoredGuess == amountOfGoalsScoredOutcome) {
                 numberOfCorrectAmountOfGoalsGuesses++
+            }
         }
         return <IGuessResult> {
             numberOfCorrectResultGuesses: numberOfCorrectResultGuesses,
             numberOfCorrectDifGoalGuesses: numberOfCorrectDifGoalGuesses,
             numberOfCorrectOpponentGoalGuesses: numberOfCorrectOpponentGoalGuesses,
-            numberOfCorrectAmountOfGoalsGuesses: numberOfCorrectAmountOfGoalsGuesses
+            numberOfCorrectAmountOfGoalsGuesses: numberOfCorrectAmountOfGoalsGuesses,
+            numberOfCorrectGameOutcomeGuesses: numberOfCorrectGameOutcomeGuesses
         }
+    }
+
+    is1x2(arenaType: ArenaType, difGoals: number, difGoalsGuess: number, opponentGoals: number, opponentGoalsGuess: number) {
+        if (
+            // home win
+            (arenaType == ArenaType.Home && difGoalsGuess > opponentGoalsGuess && difGoals > opponentGoals) ||
+            // home loss
+            (arenaType == ArenaType.Home && difGoalsGuess < opponentGoalsGuess && difGoals < opponentGoals) ||
+            // away win
+            (arenaType == ArenaType.Away && difGoalsGuess > opponentGoalsGuess && difGoals > opponentGoals) ||
+            (arenaType == ArenaType.Away && difGoalsGuess < opponentGoalsGuess && difGoals < opponentGoals) ||
+            // tied
+            difGoals == opponentGoals
+        ) return true
+        return false
     }
 
     getPoints(result: IGuessResult): number {
         var points: number = 0
         points += result.numberOfCorrectDifGoalGuesses
         points += result.numberOfCorrectOpponentGoalGuesses
-        points += (result.numberOfCorrectAmountOfGoalsGuesses) * 2
-        points += (result.numberOfCorrectResultGuesses) * 3
+        points += result.numberOfCorrectAmountOfGoalsGuesses
+        points += result.numberOfCorrectGameOutcomeGuesses * 2
+        points += result.numberOfCorrectResultGuesses * 4
         return points
     }
 

@@ -79,7 +79,7 @@ export default class Middle extends Vue {
 
     created() {
         this.pageSize = this.vm.loggedInUser.filter ? this.vm.loggedInUser.filter.postsPerPage : 20
-        this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers }})
+        this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers, threadIds: [] }})
     }
 
     paging(page: number): Promise<Paging<Post>> {

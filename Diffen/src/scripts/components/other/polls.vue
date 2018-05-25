@@ -6,24 +6,29 @@
                 <h6 class="mb-0">Omröstningar</h6>
                 <hr />
                 <template v-if="!loading">
-                    <ul class="list-unstyled list-spaced mb-0">
-                        <li class="ellipsis" v-for="poll in filtered" :key="poll.id">
-                            <template v-if="openInModal">
-                                <div class="media-heading">
-                                    <modal v-bind="{ attributes: { name: `poll-${poll.id}` }, header: poll.name, button: { classes: 'small on-click', text: poll.name }, onClose: () => isCopied = false }">
-                                        <template slot="body">
-                                            <poll-component :slug="poll.slug" :nested-in-modal="true" />
-                                        </template>
-                                        <template slot="footer">
-                                            <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">
-                                                {{ isCopied ? `Kopierade ${pollUrl}/${poll.slug}` : 'Kopiera länk till omröstningen' }}
-                                            </button>
-                                        </template>
-                                    </modal>
-                                </div>
-                            </template>
-                        </li>
-                    </ul>
+                    <template v-if="filtered.length > 0">
+                        <ul class="list-unstyled list-spaced mb-0">
+                            <li class="ellipsis" v-for="poll in filtered" :key="poll.id">
+                                <template v-if="openInModal">
+                                    <div class="media-heading">
+                                        <modal v-bind="{ attributes: { name: `poll-${poll.id}` }, header: poll.name, button: { classes: 'small on-click', text: poll.name }, onClose: () => isCopied = false }">
+                                            <template slot="body">
+                                                <poll-component :slug="poll.slug" :nested-in-modal="true" />
+                                            </template>
+                                            <template slot="footer">
+                                                <button class="btn btn-block btn-sm btn-primary" v-clipboard="`${pollUrl}/${poll.slug}`" v-on:click="isCopied = true" :disabled="isCopied">
+                                                    {{ isCopied ? `Kopierade ${pollUrl}/${poll.slug}` : 'Kopiera länk till omröstningen' }}
+                                                </button>
+                                            </template>
+                                        </modal>
+                                    </div>
+                                </template>
+                            </li>
+                        </ul>
+                    </template>
+                    <template v-else>
+                        <div class="alert alert-warning mb-0">Hittade inga omröstningar</div>
+                    </template>
                 </template>
                 <template v-else>
                     <loader v-bind="{ background: '#699ED0' }" />

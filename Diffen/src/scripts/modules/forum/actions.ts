@@ -24,7 +24,9 @@ import {
 	FETCH_URLTIP_TOPLIST,
 	FETCH_CONVERSATION_ON_POST,
     FETCH_POST,
-	SET_SELECTED_CONVERSATION
+	SET_SELECTED_CONVERSATION,
+    FETCH_THREADS,
+    SET_THREADS
 } from './types'
 
 axios.defaults.withCredentials = true
@@ -109,6 +111,10 @@ export const Actions: ActionTree<State, any> = {
 	[FETCH_URLTIP_TOPLIST]: (store: ActionContext<State, any>): Promise<void> => {
 		return axios.get(`${store.rootState.vm.api}/posts/url/toplist`)
 			.then((res) => store.commit(SET_URLTIP_TOPLIST, res.data)).catch((error) => console.warn(error))
+	},
+	[FETCH_THREADS]: (store: ActionContext<State, any>): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/posts/threads`)
+			.then((res) => store.commit(SET_THREADS, res.data)).catch((error) => console.warn(error))
 	},
 }
 export default Actions

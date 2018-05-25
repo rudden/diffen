@@ -9,7 +9,7 @@ export const Getters: GetterTree<State, any>  = {
     [GET_CHRONICLE]: (state: State) => state.chronicle,
     [GET_CHRONICLES]: (state: State) => state.chronicles,
     [GET_CHRONICLE_CATEGORIES]: (state: State) => state.chronicleCategories,
-    [GET_REGIONS]: (state: State) => state.regions,
+    [GET_REGIONS]: (state: State) => state.regions
 }
 
 export default Getters

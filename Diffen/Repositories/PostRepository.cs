@@ -82,7 +82,7 @@ namespace Diffen.Repositories
 
 			if (await isCreated)
 			{
-				await ComplementPostWithPotentialUrlTipAndLineupAsync(newPost.Id, post, results);
+				await ComplementPostWithPotentialUrlTipThreadsAndLineupAsync(newPost.Id, post, results);
 			}
 
 			return results;
@@ -98,7 +98,7 @@ namespace Diffen.Repositories
 
 			if (await isUpdated)
 			{
-				await ComplementPostWithPotentialUrlTipAndLineupAsync(updatePost.Id, post, results);
+				await ComplementPostWithPotentialUrlTipThreadsAndLineupAsync(updatePost.Id, post, results);
 			}
 
 			return results;
@@ -166,7 +166,18 @@ namespace Diffen.Repositories
 			return await _dbClient.CreateVoteAsync(newVote);
 		}
 
-		private async Task ComplementPostWithPotentialUrlTipAndLineupAsync(int postId, Models.Forum.CRUD.Post post, List<Result> results)
+		public async Task<List<Thread>> GetThreadsAsync()
+		{
+			var threads = await _dbClient.GetPostThreadsAsync();
+			var mappedThreads = _mapper.Map<List<Thread>>(threads);
+			foreach (var thread in mappedThreads)
+			{
+				thread.NumberOfPosts = await _dbClient.GetNumberOfPostsOnThreadAsync(thread.Id);
+			}
+			return mappedThreads;
+		}
+
+		private async Task ComplementPostWithPotentialUrlTipThreadsAndLineupAsync(int postId, Models.Forum.CRUD.Post post, List<Result> results)
 		{
 			if (!string.IsNullOrEmpty(post.UrlTipHref))
 			{
@@ -192,6 +203,16 @@ namespace Diffen.Repositories
 				{
 					await _dbClient.DeleteUrlTipAsync(postId);
 				}
+			}
+
+			await _dbClient.DeleteExistingThreadsOnPostAsync(postId);
+			if (post.ThreadIds.Any())
+			{
+				await _dbClient.AddThreadsToPostAsync(postId, post.ThreadIds);
+			}
+			if (post.NewThreadNames != null && post.NewThreadNames.Any())
+			{
+				await _dbClient.CreatePostThreadsAndConnectToNewPostWithIdAsync(postId, post.NewThreadNames.ToList());
 			}
 
 			if (post.LineupId > 0)

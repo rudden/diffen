@@ -17,7 +17,9 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Database.Entities.Forum.Vote, Models.Forum.Vote>, 
 		ITypeConverter<Models.Forum.CRUD.Post, Database.Entities.Forum.Post>, 
 		ITypeConverter<Models.Forum.CRUD.Vote, Database.Entities.Forum.Vote>,
-		ITypeConverter<Database.Entities.Forum.UrlTip, string>
+		ITypeConverter<Database.Entities.Forum.UrlTip, string>,
+		ITypeConverter<Database.Entities.Forum.Thread, Models.Forum.Thread>,
+		ITypeConverter<Database.Entities.Forum.PostToThread, Models.Forum.Thread>
 	{
 		private readonly string _loggedInUserId;
 
@@ -46,6 +48,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Votes = context.Mapper.Map<IEnumerable<Models.Forum.Vote>>(source.Votes),
 				ParentPost = source.ParentPost != null ? context.Mapper.Map<Models.Forum.ParentPost>(source.ParentPost) : null,
 				LineupId = source.Lineups.Current()?.LineupId,
+				InThreads = source.InThreads != null ? context.Mapper.Map<IEnumerable<Models.Forum.Thread>>(source.InThreads) : null,
 				Since = source.Created.GetSinceStamp(),
 				Updated = source.Updated.GetSinceStamp(),
 				IsScissored = source.Scissored != null,
@@ -94,6 +97,24 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				PostId = source.PostId,
 				CreatedByUserId = source.CreatedByUserId,
 				Created = DateTime.Now
+			};
+		}
+
+		public Models.Forum.Thread Convert(Database.Entities.Forum.Thread source, Models.Forum.Thread destination, ResolutionContext context)
+		{
+			return new Models.Forum.Thread
+			{
+				Id = source.Id,
+				Name = source.Name
+			};
+		}
+
+		public Models.Forum.Thread Convert(Database.Entities.Forum.PostToThread source, Models.Forum.Thread destination, ResolutionContext context)
+		{
+			return new Models.Forum.Thread
+			{
+				Id = source.ThreadId,
+				Name = source.Thread.Name
 			};
 		}
 

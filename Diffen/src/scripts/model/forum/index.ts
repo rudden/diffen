@@ -9,6 +9,7 @@ export class Post {
     votes: Vote[]
     parentPost: ParentPost
     lineupId?: number
+    inThreads: Thread[]
 
     since: string
     updated: string
@@ -18,8 +19,6 @@ export class Post {
 
     inEdit: boolean
     inReply: boolean
-    inScissor: boolean
-    disabled: boolean
 }
 
 export class User {
@@ -57,7 +56,8 @@ export class Filter {
     messageWildCard?: string
     startingEleven?: StartingEleven = StartingEleven.All
 	includedUsers?: KeyValuePair[]
-	excludedUsers?: KeyValuePair[]
+    excludedUsers?: KeyValuePair[]
+    threadIds?: number[] = []
 }
 
 export class UrlTip {
@@ -71,4 +71,10 @@ export class Conversation {
     post: Post
     children: Conversation[]
     all?: Post[]
+}
+
+export class Thread {
+    id: number
+    name: string
+    numberOfPosts: number
 }

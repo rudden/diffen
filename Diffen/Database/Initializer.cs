@@ -63,6 +63,7 @@ namespace Diffen.Database
 			await SeedChroniclesAsync(dbContext, userManager);
 			await SeedGamesAsync(dbContext);
 			await SeedTitlesAsync(dbContext);
+			await SeedThreadsAsync(dbContext);
 		}
 
 		private static async Task<string[]> GetRandomNickNamesFromFillTextApiAsync()
@@ -1208,6 +1209,22 @@ namespace Diffen.Database
 					Type = title.Type,
 					Year = title.Year,
 					Description = title.Description
+				}));
+				await dbContext.SaveChangesAsync();
+			}
+		}
+
+		private static async Task SeedThreadsAsync(DiffenDbContext dbContext)
+		{
+			if (!dbContext.Threads.Any())
+			{
+				await dbContext.Threads.AddRangeAsync(new[]
+				{
+					"sillyseason", "taktiker", "ekonomi", "framtiden", "nostalgi", "antagonism", "ungdomslagen"
+				}.Select(x => new Thread
+				{
+					Name = x,
+					Created = DateTime.Now
 				}));
 				await dbContext.SaveChangesAsync();
 			}

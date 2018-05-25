@@ -2,7 +2,7 @@
     <div class="card pl-2 pr-2" :class="{ 'div-disabled': isLoadingPosts }">
         <div class="card-body">
             <h6 class="mb-0">
-                <span class="badge badge-dark float-right" v-if="!isLoadingPosts">
+                <span class="badge badge-primary float-right p-2" v-if="!isLoadingPosts">
                     Visar {{ pagedPosts.data.length }} {{ pagedPosts.data.length !== pagedPosts.total ? `av ${pagedPosts.total} inlägg` : ' inlägg' }}
                 </span>
                 <span style="cursor: pointer" @click="show = !show" v-tooltip.right="tooltipText">
@@ -60,6 +60,14 @@
                         </div>
                     </div>
                     <div class="list-group-item flex-column align-items-start">
+                        <strong>Trådar</strong>
+                        <hr />
+                        <div class="form-check form-check-inline" v-for="thread in threads" :key="thread.id">
+                            <input class="form-check-input" type="checkbox" :id="thread.id" :value="thread.id" v-model="filter.threadIds">
+                            <label class="form-check-label" :for="thread.id">{{ thread.name }} {{ thread.numberOfPosts > 0 ? `(${thread.numberOfPosts})` : '' }}</label>
+                        </div>
+                    </div>
+                    <div class="list-group-item flex-column align-items-start">
                         <div class="row">
                             <div class="col pr-1">
                                 <date-picker v-model="filter.fromDate" :config="fromDPConfig" placeholder="från" :class="{ 'form-control-sm': true }" />
@@ -107,6 +115,7 @@ const ModuleMutation = namespace('forum', Mutation)
 const ProfileModuleAction = namespace('profile', Action)
 
 import { 
+    GET_THREADS,
     GET_PAGED_POSTS,
     GET_IS_LOADING_POSTS,
     GET_FILTER,
@@ -117,7 +126,7 @@ import {
 
 import { FETCH_KVP_USERS } from '../../../modules/profile/types'
 
-import { StartingEleven, Filter, Post } from '../../../model/forum'
+import { StartingEleven, Filter, Post, Thread } from '../../../model/forum'
 import { PageViewModel, KeyValuePair, Paging } from '../../../model/common'
 
 import { Typeahead } from 'uiv'
@@ -132,7 +141,8 @@ export default class FilterComponent extends Vue {
     @State(state => state.vm) vm: PageViewModel
     @ModuleGetter(GET_PAGED_POSTS) pagedPosts: Paging<Post>
 	@ModuleGetter(GET_IS_LOADING_POSTS) isLoadingPosts: boolean
-	@ModuleGetter(GET_FILTER) filter: Filter
+    @ModuleGetter(GET_FILTER) filter: Filter
+	@ModuleGetter(GET_THREADS) threads: Thread[]
     @ModuleAction(FETCH_PAGED_POSTS) loadPaged: (payload: { pageNumber: number, pageSize: number, filter: Filter }) => Promise<void>
 	@ModuleMutation(SET_IS_LOADING_POSTS) setIsLoadingPosts: (payload: { value: boolean }) => void
 	@ModuleMutation(SET_FILTER) setFilter: (payload: { filter: Filter }) => void
@@ -187,7 +197,8 @@ export default class FilterComponent extends Vue {
             messageWildCard: this.filter.messageWildCard,
 			startingEleven: StartingEleven[this.startingEleven as keyof typeof StartingEleven],
 			includedUsers: this.includedUsers,
-			excludedUsers: this.excludedUsers
+            excludedUsers: this.excludedUsers,
+            threadIds: this.filter.threadIds
 		}
     }
     get showDatePickerTip() {
@@ -216,8 +227,8 @@ export default class FilterComponent extends Vue {
     reset() {
         this.includedUsers = []
         this.startingEleven = StartingEleven[StartingEleven.All]
-        
-        this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers } })
+
+        this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers, threadIds: [] } })
         this.loadPosts()
         this.fetchUsers()
     }
@@ -226,7 +237,7 @@ export default class FilterComponent extends Vue {
         this.includedUsers = []
         this.startingEleven = StartingEleven[StartingEleven.All]
         
-        this.setFilter({ filter: {} })
+        this.setFilter({ filter: { threadIds: [] } })
         this.loadPosts()
         this.fetchUsers()
     }
@@ -244,6 +255,16 @@ export default class FilterComponent extends Vue {
     
     fetchUsers() {
         this.loadUsers().then((users: KeyValuePair[]) => this.users = users)
+    }
+
+    getThreadNames() {
+        if (this.filter.threadIds) {
+            let threadNamesArray = this.threads.filter((t: Thread) => this.filter.threadIds ? this.filter.threadIds.includes(t.id) : false)
+            if (threadNamesArray) {
+                return threadNamesArray.map((t: Thread) => t.name).join(', ')
+            }
+        }
+        return ''
     }
 }
 </script>

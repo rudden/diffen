@@ -1,5 +1,5 @@
 import { Paging, KeyValuePair } from '../../model/common'
-import { Post, Filter, UrlTip, Conversation } from '../../model/forum'
+import { Post, Filter, UrlTip, Conversation, Thread } from '../../model/forum'
 
 export default class State {
     pagedPosts: Paging<Post> = new Paging<Post>()
@@ -10,4 +10,5 @@ export default class State {
     showLeftSideBar: boolean = true
     showRightSideBar: boolean = true
     shouldReloadPostStream: boolean = false
+    threads: Thread[] = []
 }

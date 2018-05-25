@@ -11,6 +11,7 @@ namespace Diffen.Models.Forum
 		public StartingEleven StartingEleven { get; set; }
 		public IEnumerable<KeyValuePair<string, string>> IncludedUsers { get; set; }
 		public IEnumerable<KeyValuePair<string, string>> ExcludedUsers { get; set; }
+		public IEnumerable<int> ThreadIds { get; set; }
 	}
 
 	public enum StartingEleven

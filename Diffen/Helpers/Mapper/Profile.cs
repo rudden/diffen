@@ -42,6 +42,8 @@
 			CreateMap<Database.Entities.Squad.Title, Models.Squad.Title>().ConvertUsing<SquadResolver>();
 			CreateMap<Models.Squad.CRUD.GameResultGuess, Database.Entities.Squad.GameResultGuess>().ConvertUsing<SquadResolver>();
 			CreateMap<Database.Entities.Squad.GameResultGuess, Models.Squad.GameResultGuess>().ConvertUsing<SquadResolver>();
+			CreateMap<Database.Entities.Forum.Thread, Models.Forum.Thread>().ConvertUsing<PostResolver>();
+			CreateMap<Database.Entities.Forum.PostToThread, Models.Forum.Thread>().ConvertUsing<PostResolver>();
 		}
 	}
 }

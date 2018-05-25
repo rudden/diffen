@@ -8,6 +8,8 @@ export class Post {
     parentPostId?: number
     urlTipHref?: string
     lineupId: number = 0
+    threadIds: number[] = []
+    newThreadNames?: string[] = []
 }
 
 export class Vote {

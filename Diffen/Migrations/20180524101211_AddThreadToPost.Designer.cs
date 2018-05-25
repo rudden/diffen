@@ -12,9 +12,10 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    partial class DiffenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180524101211_AddThreadToPost")]
+    partial class AddThreadToPost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,7 +81,7 @@ namespace Diffen.Migrations
 
                     b.HasIndex("ThreadId");
 
-                    b.ToTable("ThreadsOnPosts");
+                    b.ToTable("PostToThread");
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Forum.Scissored", b =>
@@ -105,7 +106,7 @@ namespace Diffen.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("DateTime");
 
                     b.Property<string>("Name");
 

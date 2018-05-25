@@ -31,5 +31,6 @@ namespace Diffen.Database.Entities.Forum
 		public ICollection<UrlTip> UrlTips { get; set; }
 		public ICollection<PostToLineup> Lineups { get; set; }
 		public Scissored Scissored { get; set; }
+		public ICollection<PostToThread> InThreads { get; set; }
 	}
 }

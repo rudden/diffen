@@ -46,13 +46,16 @@
 				<div class="mt-3">
 					<formation-component :formation="selectedLineup.formation" :players="selectedLineup.players" />
 					<results :items="results" class="pt-3" />
+					<template v-if="buttonAction">
+						<button class="btn btn-success btn-sm btn-block mt-3" :disabled="!canCreate" v-on:click="buttonAction">{{ buttonText }}</button>
+					</template>
 				</div>
 			</template>
 			<template v-if="inCreate && selectedFormationId > 0">
 				<div class="row mt-3">
 					<div class="col">
 						<formation-component :formation="selectedFormation" />
-						<button class="btn btn-success btn-sm btn-block mt-3" :disabled="!canCreate" v-on:click="submit" v-if="typeOfLineup == fictionLineupType">Skapa</button>
+						<button class="btn btn-success btn-sm btn-block mt-3" :disabled="!canCreate" v-on:click="submit">{{ buttonText }}</button>
 					</div>
 				</div>
 			</template>
@@ -107,6 +110,11 @@ import FormationComponent from './formation.vue'
 			type: String,
 			default: 'Fiction'
 		},
+		buttonText: {
+			type: String,
+			default: 'Skapa'
+		},
+		buttonAction: Function,
 		preSelectedLineupId: {
 			type: Number,
 			default: 0
@@ -137,6 +145,8 @@ export default class Lineups extends Vue {
 
 	header: string
 	lineupType: string
+	buttonText: string
+	buttonAction: () => void
 	preSelectedLineupId: number
 
 	selectedLineupId: number = 0
@@ -203,7 +213,7 @@ export default class Lineups extends Vue {
 		this.loading = true
 		this.loadLineups({ userId: this.userId })
 			.then(() => {
-				this.noLineupsFound = this.lineups.length == 0
+				this.noLineupsFound = this.filteredLineups.length == 0
 				this.loading = false
 			})
 	}
@@ -248,21 +258,25 @@ export default class Lineups extends Vue {
 	}
 
 	submit() {
-		if (this.canCreate) {
-			this.loading = true
-			this.create({ lineup: { formationId: this.selectedFormationId, players: this.newLineup.players, createdByUserId: this.vm.loggedInUser.id, type: LineupType.Fiction } })
-				.then((res: Result[]) => {
-					this.loadLineups({ userId: this.userId })
-						.then(() => {
-							this.setInCreate(false)
-								.then(() => {
-									this.selectedLineupId = this.lineups[this.lineups.length - 1].id
-									this.changeLineup()
-									this.loading = false
-									this.results = res
-								})
-						})
-				})
+		if (this.buttonAction) {
+			this.buttonAction()
+		} else {
+			if (this.canCreate) {
+				this.loading = true
+				this.create({ lineup: { formationId: this.selectedFormationId, players: this.newLineup.players, createdByUserId: this.vm.loggedInUser.id, type: LineupType.Fiction } })
+					.then((res: Result[]) => {
+						this.loadLineups({ userId: this.userId })
+							.then(() => {
+								this.setInCreate(false)
+									.then(() => {
+										this.selectedLineupId = this.lineups[this.lineups.length - 1].id
+										this.changeLineup()
+										this.loading = false
+										this.results = res
+									})
+							})
+					})
+			}
 		}
 	}
 }
