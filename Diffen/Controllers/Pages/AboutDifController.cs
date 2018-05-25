@@ -10,7 +10,7 @@ namespace Diffen.Controllers.Pages
 	using Repositories.Contracts;
 
 	[Route("om-dif")]
-	public class AboutDifController : CommonController<PageViewModel>
+	public class AboutDifController : CommonController<AboutDifPageViewModel>
 	{
 		public AboutDifController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)
 			: base(configuration, mapper, userRepository)

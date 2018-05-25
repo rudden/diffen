@@ -188,7 +188,7 @@ export default class NewPost extends Vue {
                 this.newPost.lineupId = 0
             }
             if (this.post.inThreads) {
-                this.selectedThreads = this.post.inThreads
+                this.selectedThreads = this.threads.filter((t: Thread) => this.post.inThreads.map((t2: Thread) => t2.id).includes(t.id))
             }
         }
         if (this.parentId == 0) {
@@ -259,7 +259,7 @@ export default class NewPost extends Vue {
     setCrudPostThreads() {
         this.newPost.threadIds = this.selectedThreads.filter((t: Thread) => t.id > 0).map((t: Thread) => t.id)
         this.newPost.newThreadNames = this.newThreads.length > 0 ? this.newThreads.map((t: Thread) => t.name.toLowerCase()) : undefined
-        // this.newPost.newThreadNames = this.newThreads.filter((nt: Thread) => this.selectedThreads.map((st: Thread) => st.name.toLowerCase()).includes(nt.name)).map((ft: Thread) => ft.name.toLowerCase())
+        this.newPost.newThreadNames = this.newThreads.filter((nt: Thread) => this.selectedThreads.map((st: Thread) => st.name.toLowerCase()).includes(nt.name)).map((ft: Thread) => ft.name.toLowerCase())
     }
 
     submit() {

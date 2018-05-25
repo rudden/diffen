@@ -33,6 +33,7 @@
                     </div>
                 </template>
                 <p v-html="postMessage" class="more-readable"></p>
+                <embeds :href="post.urlTipHref" />
                 <template v-if="fullSize">
                     <template v-if="showFooter">
                         <div class="message-footer">
@@ -90,6 +91,9 @@
                                 <a :href="`/forum/inlagg/${post.id}`" class="no-hover" v-tooltip="'Gå till'">
                                     · <span class="icon icon-eye"></span>
                                 </a>
+                                <template v-if="post.updated">
+                                    <span class="badge badge-danger">editerat</span>
+                                </template>
                                 <voting :post="post" />
                             </template>
                         </div>
