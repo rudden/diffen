@@ -3,7 +3,7 @@
 		<navbar />
 		<div class="container pt-4 pb-5">
 			<div class="row">
-				<div class="col-lg-8 col-md-8 col-sm-12">
+				<div class="col">
 					<ul class="list-group media-list media-list-stream">
 						<li class="list-group-item p-4">
 							<modal v-bind="modalAttributes.newPlayer" v-if="loggedInUserIsAdmin">
@@ -15,18 +15,25 @@
 						</li>
 						<li class="list-group-item media">
 							<template v-if="!loading">
-								<table-component :data="filteredPlayers" sort-by="lastName" sort-order="desc" @rowClick="rowClick">
-									<table-column label="Förnamn" show="firstName"></table-column>
-									<table-column label="Efternamn" show="lastName"></table-column>
-									<table-column label="Attribut" :filterable="false" :sortable="false">
+								<table-component :data="filteredPlayers" sort-by="lastName" sort-order="asc" @rowClick="rowClick">
+									<table-column label="Efternamn" :hidden="true" show="lastName"></table-column>
+									<table-column label="Namn" filter-on="fullName" sort-by="lastName" data-type="string">
 										<template slot-scope="row">
-											<span class="badge badge-primary ml-1" v-if="row.isCaptain">kapten</span>
-											<span class="badge badge-info ml-1" v-if="row.isViceCaptain">vice kapten</span>
-											<span class="badge badge-danger ml-1" v-if="row.isHereOnLoan">inlånad</span>
+											{{ row.fullName }}
 											<span class="badge badge-warning ml-1" v-if="row.isOutOnLoan">utlånad</span>
 											<span class="badge badge-danger ml-1" v-if="row.isSold">såld</span>
 										</template>
 									</table-column>
+									<table-column label="Matcher" show="data.numberOfGames" data-type="numeric"></table-column>
+									<table-column label="Starter" show="data.numberOfGamesFromStart" data-type="numeric"></table-column>
+									<table-column label="Utbytt" show="data.numberOfGamesSubstituteOut" data-type="numeric"></table-column>
+									<table-column label="Inbytt" show="data.numberOfGamesSubstituteIn" data-type="numeric"></table-column>
+									<table-column label="Minuter" show="data.numberOfMinutesPlayed" data-type="numeric"></table-column>
+									<table-column label="Mål" show="data.numberOfGoals" data-type="numeric"></table-column>
+									<table-column label="Assist" show="data.numberOfAssists" data-type="numeric"></table-column>
+									<table-column label="Gula" show="data.numberOfYellowCards" data-type="numeric"></table-column>
+									<table-column label="Röda" show="data.numberOfRedCards" data-type="numeric"></table-column>
+									<table-column label="Poäng" show="data.numberOfPoints" data-type="numeric"></table-column>
 									<template slot="tfoot">
 										<tr>
 											<td colspan="3" style="border-top: 0">
@@ -51,9 +58,6 @@
 						</li>
 					</ul>
 				</div>
-				<div class="col-lg-4 col-md-4 col-sm-12">
-					<player-events />
-				</div>
 			</div>
 			<div class="row mt-3">
 				<div class="col">
@@ -73,7 +77,7 @@ const ModuleGetter = namespace('squad', Getter)
 const ModuleAction = namespace('squad', Action)
 
 import { PageViewModel, Result, ResultType } from '../../../model/common'
-import { Player, Position } from '../../../model/squad'
+import { Player, Position, PlayerEvent, PlayerTableData } from '../../../model/squad'
 import { Player as CrudPlayer } from '../../../model/squad/crud'
 
 import {
@@ -88,6 +92,12 @@ import GameResultGuessLeague from './game-result-guess-league.vue'
 import PlayerComponent from './player.vue'
 import Modal from '../../../components/modal.vue'
 import PlayerEvents from '../../../components/player-events.vue'
+
+interface IPlayerTableData {
+	id: number
+	fullName: string
+	data: PlayerTableData
+}
 
 @Component({
 	components: {

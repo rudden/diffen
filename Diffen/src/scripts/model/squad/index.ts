@@ -36,6 +36,20 @@ export class Player {
     availablePositions: Position[]
     inNumberOFStartingElevens: number
     events: PlayerEventOnPlayer[]
+    data: PlayerTableData
+}
+
+export class PlayerTableData {
+	numberOfGames: number
+	numberOfGamesFromStart: number
+	numberOfGamesSubstituteOut: number
+	numberOfGamesSubstituteIn: number
+	numberOfMinutesPlayed: number
+	numberOfGoals: number
+	numberOfAssists: number
+	numberOfYellowCards: number
+	numberOfRedCards: number
+	numberOfPoints: number
 }
 
 export class Formation {
