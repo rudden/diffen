@@ -193,6 +193,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import moment from 'moment'
 import { Component } from 'vue-property-decorator'
 import { Getter, Action, State, namespace } from 'vuex-class'
 
@@ -271,7 +272,7 @@ export default class PlayerComponent extends Vue {
     }
 
     get age() {
-        return this.player.birthDay ? new Date().getFullYear() - new Date(this.player.birthDay).getFullYear() : 0
+        return this.player.birthDay ? moment().diff(moment(this.player.birthDay), 'years') : 0
     }
     get testimonial() {
         return this.player.imageUrl ? this.player.imageUrl : '/gorilla.jpg'
