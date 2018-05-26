@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using AutoMapper;
+using Diffen.Database.Clients.Contracts;
 
 namespace Diffen.Helpers.Mapper.Resolvers
 {
@@ -26,6 +27,13 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Models.Squad.CRUD.GameResultGuess, Database.Entities.Squad.GameResultGuess>,
 		ITypeConverter<Database.Entities.Squad.GameResultGuess, Models.Squad.GameResultGuess>
 	{
+		private readonly IDiffenDbClient _dbClient;
+
+		public SquadResolver(IDiffenDbClient dbClient)
+		{
+			_dbClient = dbClient;
+		}
+
 		public Models.Squad.Player Convert(Database.Entities.Squad.Player source, Models.Squad.Player destination, ResolutionContext context)
 		{
 			return new Models.Squad.Player
@@ -57,54 +65,63 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			};
 		}
 
-		private static Models.Squad.PlayerTableData GetPlayerTableData(Database.Entities.Squad.Player player)
+		private Models.Squad.PlayerTableData GetPlayerTableData(Database.Entities.Squad.Player player)
 		{
-			if (player.PlayerEvents == null || !player.PlayerEvents.Any())
-			{
-				return null;
-			}
-
 			var data = new Models.Squad.PlayerTableData();
 
-			var games = player.PlayerEvents.Select(x => x.Game).Where(y => y.OnDate < DateTime.Now.AddHours(4)).Distinct().ToList();
-			var gamesFromStart = games.Where(x => x.Lineup != null && x.Lineup.Players.Select(y => y.PlayerId).Contains(player.Id)).ToList();
-
-			var gamesFromStartSubstitutedOut = gamesFromStart.Where(x => x.PlayerEvents.Any(y => y.Type == GameEventType.SubstituteOut)).ToList();
-			var gamesFromStartNotSubstitutedOut = gamesFromStart.Where(x => x.PlayerEvents.All(y => y.Type != GameEventType.SubstituteOut)).ToList();
-			var gamesSubstitutedIn = games.Where(x => x.PlayerEvents.Any(y => y.Type == GameEventType.SubstituteIn)).ToList();
-
-			if (gamesFromStartNotSubstitutedOut.Any())
+			var startedButNoEvents = _dbClient.GetGamesWherePlayerStartedButNoEventsAsync(player.Id).Result;
+			if (startedButNoEvents.Any())
 			{
-				gamesFromStartNotSubstitutedOut.ForEach(game =>
+				startedButNoEvents.ForEach(game =>
 				{
+					data.NumberOfGames++;
+					data.NumberOfGamesFromStart++;
 					data.NumberOfMinutesPlayed += 90;
 				});
 			}
+
+			if (player.PlayerEvents == null || !player.PlayerEvents.Any())
+			{
+				return data;
+			}
+
+			var games = player.PlayerEvents.Select(x => x.Game).Where(y => y.OnDate < DateTime.Now.AddHours(4)).Distinct().ToList();
+			var gamesFromStart = games.Where(x => x.Lineup != null &&  x.Lineup.Players.Select(y => y.PlayerId).Contains(player.Id)).ToList();
+
+			var gamesFromStartSubstitutedOut = gamesFromStart.Where(x => x.PlayerEvents.Any(y => y.Type == GameEventType.SubstituteOut && y.PlayerId == player.Id)).ToList();
+			var gamesFromStartNotSubstitutedOut = gamesFromStart.Where(x => !x.PlayerEvents.Any(y => y.Type == GameEventType.SubstituteOut && y.PlayerId == player.Id)).ToList();
+			var gamesSubstitutedIn = games.Where(x => x.PlayerEvents.Any(y => y.Type == GameEventType.SubstituteIn && y.PlayerId == player.Id)).ToList();
+
+			if (gamesFromStartNotSubstitutedOut.Any())
+			{
+				data.NumberOfMinutesPlayed += 90 * gamesFromStartNotSubstitutedOut.Count;
+			}
+
 			if (gamesFromStartSubstitutedOut.Any())
 			{
-				gamesFromStartSubstitutedOut.ForEach(game =>
+				foreach (var game in gamesFromStartSubstitutedOut)
 				{
 					var playerEvent = game.PlayerEvents.FirstOrDefault(e => e.Type == GameEventType.SubstituteOut && e.PlayerId == player.Id);
 					if (playerEvent != null)
 					{
 						data.NumberOfMinutesPlayed += playerEvent.InMinuteOfGame;
 					}
-				});
+				}
 			}
 			if (gamesSubstitutedIn.Any())
 			{
-				gamesSubstitutedIn.ForEach(game =>
+				foreach (var game in gamesSubstitutedIn)
 				{
-					var playerEvent = game.PlayerEvents.FirstOrDefault(e => e.Type == GameEventType.SubstituteOut && e.PlayerId == player.Id);
+					var playerEvent = game.PlayerEvents.FirstOrDefault(e => e.Type == GameEventType.SubstituteIn && e.PlayerId == player.Id);
 					if (playerEvent != null)
 					{
 						data.NumberOfMinutesPlayed += 90 - playerEvent.InMinuteOfGame;
 					}
-				});
+				}
 			}
 
-			data.NumberOfGames = games.Count;
-			data.NumberOfGamesFromStart = gamesFromStart.Count;
+			data.NumberOfGames += games.Count;
+			data.NumberOfGamesFromStart += gamesFromStart.Count;
 			data.NumberOfGamesSubstituteIn = player.PlayerEvents.Count(x => x.Type == GameEventType.SubstituteIn);
 			data.NumberOfGamesSubstituteOut = player.PlayerEvents.Count(x => x.Type == GameEventType.SubstituteOut);
 			data.NumberOfGoals = player.PlayerEvents.Count(x => x.Type == GameEventType.Goal);

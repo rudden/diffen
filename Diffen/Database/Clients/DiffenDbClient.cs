@@ -623,6 +623,11 @@ namespace Diffen.Database.Clients
 			return _dbContext.Lineups.IncludeAll().Where(l => l.CreatedByUserId == userId).ToListAsync();
 		}
 
+		public Task<List<Game>> GetGamesWherePlayerStartedButNoEventsAsync(int playerId)
+		{
+			return _dbContext.Games.IncludeAll().Where(x => x.Lineup != null && x.Lineup.Players.Select(y => y.PlayerId).Contains(playerId) && x.PlayerEvents.All(y => y.PlayerId != playerId)).ToListAsync();
+		}
+
 		public Task<List<Player>> GetPlayersAsync()
 		{
 			return _dbContext.Players.IncludeAll().Where(x => !x.IsSold).OrderBy(x => x.LastName).ToListAsync();

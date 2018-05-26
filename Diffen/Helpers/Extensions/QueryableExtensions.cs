@@ -77,7 +77,7 @@ namespace Diffen.Helpers.Extensions
 			return source
 				.Include(x => x.AvailablePositions).ThenInclude(x => x.Position)
 				.Include(x => x.InLineups)
-				.Include(x => x.PlayerEvents).ThenInclude(x => x.Game)
+				.Include(x => x.PlayerEvents).ThenInclude(x => x.Game).ThenInclude(x => x.Lineup).ThenInclude(x => x.Players)
 				.AsNoTracking();
 		}
 

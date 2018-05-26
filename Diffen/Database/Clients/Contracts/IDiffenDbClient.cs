@@ -86,6 +86,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<Lineup> GetLineupOnIdAsync(int lineupId);
 		Task<Lineup> GetLineupOnPostIdAsync(int postId);
 		Task<List<Lineup>> GetLineupsCreatedByUserIdAsync(string userId);
+		Task<List<Game>> GetGamesWherePlayerStartedButNoEventsAsync(int playerId);
 		Task<List<Player>> GetPlayersAsync();
 		Task<Player> GetPlayerOnIdAsync(int playerId);
 		Task<List<Position>> GetPositionsAsync();
