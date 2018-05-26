@@ -75,8 +75,11 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <legend class="col-sm-3 col-form-label pt-0"><strong>Datum</strong></legend>
-                                                <div class="col-sm-9">
+                                                <div class="col-sm-4 pr-0">
                                                     <v-datepicker v-model="selectedDate" :format="'yyyy-MM-dd'" :bootstrap-styling="true" :input-class="'form-control-sm'" :monday-first="true" :placeholder="'Välj datum'" />
+                                                </div>
+                                                <div class="col-sm-4 pl-0">
+                                                    <v-timepicker v-model="startTime" class="form-control-sm" />
                                                 </div>
                                             </div>
                                         </div>
@@ -244,6 +247,9 @@ export default class PlayerEvents extends Vue {
     opponentTeamName: string = ''
     numberOfGoalsScoredByOpponent: number = 0
     preDefinedLineup?: Lineup = new Lineup()
+
+    startTime: string = ''
+    endTime: string = ''
 
     modalAttributes: any = {
 		newEvent: {

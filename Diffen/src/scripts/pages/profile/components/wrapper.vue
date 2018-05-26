@@ -38,10 +38,11 @@ import Invites from './invites.vue'
 import FilterComponent from './filter.vue'
 import Posts from './posts.vue'
 import UserComponent from './user.vue'
+import Admin from './admin.vue'
 
 @Component({
 	components: {
-		Lineups, Pm, Invites, FilterComponent, Posts, UserComponent
+		Lineups, Pm, Invites, FilterComponent, Posts, UserComponent, Admin
 	}
 })
 export default class Wrapper extends Vue {
@@ -118,6 +119,13 @@ export default class Wrapper extends Vue {
 				text: 'Inlägg',
 				component: Posts,
 				available: true,
+				active: false
+			},
+			{
+				id: 6,
+				text: 'Admin',
+				component: Admin,
+				available: this.user.inRoles.some(role => role == 'Admin' || role == 'GameAdmin'),
 				active: false
 			}
 		]

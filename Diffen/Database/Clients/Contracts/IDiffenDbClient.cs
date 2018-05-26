@@ -45,6 +45,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<List<Thread>> GetPostThreadsAsync();
 		Task<int> GetNumberOfPostsOnThreadAsync(int threadId);
 		Task<bool> AddThreadsToPostAsync(int postId, IEnumerable<int> threadIds);
+		Task<bool> CreateThreadAsync(Thread thread);
 		Task<bool> CreatePostThreadsAndConnectToNewPostWithIdAsync(int postId, List<string> threadNames);
 		Task<bool> DeleteExistingThreadsOnPostAsync(int postId);
 

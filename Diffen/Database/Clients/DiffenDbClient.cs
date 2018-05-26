@@ -352,6 +352,12 @@ namespace Diffen.Database.Clients
 			return CommitedResultIsSuccessfulAsync();
 		}
 
+		public Task<bool> CreateThreadAsync(Thread thread)
+		{
+			_dbContext.Threads.AddRange(thread);
+			return CommitedResultIsSuccessfulAsync();
+		}
+
 		public async Task<bool> CreatePostThreadsAndConnectToNewPostWithIdAsync(int postId, List<string> threadNames)
 		{
 			_dbContext.Threads.AddRange(threadNames.Select(name => new Thread

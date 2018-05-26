@@ -46,7 +46,7 @@
 		"vue-style-loader": "^4.1.0",
 		"vue-pagination-2": "^1.3.1",
 		"vue-tweet-embed": "^2.1.1",
-		"vue-bootstrap-datetimepicker": "^4.1.3",
+		"vue-bootstrap-datetimepicker": "beta",
 		"vue-loading-spinner": "^1.0.11",
 		"vue-clipboards": "^1.2.4",
 		"vue-js-modal": "^1.3.13",

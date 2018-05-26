@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 
 using AutoMapper;
+using Diffen.Helpers.Enum;
 using Diffen.Helpers.Extensions;
 using Serilog;
 
@@ -130,6 +131,15 @@ namespace Diffen.Repositories
 			{
 				return false;
 			}
+			await _dbClient.CreateThreadAsync(new Database.Entities.Forum.Thread
+			{
+				Name =
+					$"{game.Opponent.ToLower().Replace(" ", "-")}-{(game.ArenaType == ArenaType.Away ? "away" : "home")}-{game.PlayedDate.ToString("yy-MM-dd").Replace("-", "")}",
+				Type = ThreadType.Planned,
+				StartTime = game.PlayedDate.AddMinutes(-15),
+				EndTime = game.PlayedDate.AddHours(2).AddMinutes(15),
+				Created = DateTime.Now
+			});
 			await ComplementGameWithPotentialLineupAndEventsAsync(newGame.Id, game);
 			return true;
 		}
@@ -165,29 +175,22 @@ namespace Diffen.Repositories
 
 		private async Task ComplementGameWithPotentialLineupAndEventsAsync(int gameId, Models.Squad.CRUD.Game game, Database.Entities.Squad.Game existingGame = null)
 		{
-			try
-			{
-				if (game.Lineup != null) {
-					if (existingGame != null && existingGame.Lineup == null)
-					{
-						var lineup = _mapper.Map<Database.Entities.Squad.Lineup>(game.Lineup);
-						await _dbClient.CreateLineupAsync(lineup);
-						await _dbClient.UpdateGameWithLineupAsync(gameId, lineup.Id);
-					}
-				}
-				if (game.Events.Any()) {
-					await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
-					{
-						PlayerId = x.PlayerId,
-						Type = x.Type,
-						GameId = gameId,
-						InMinuteOfGame = x.InMinute
-					}).ToList());
+			if (game.Lineup != null) {
+				if (existingGame != null && existingGame.Lineup == null)
+				{
+					var lineup = _mapper.Map<Database.Entities.Squad.Lineup>(game.Lineup);
+					await _dbClient.CreateLineupAsync(lineup);
+					await _dbClient.UpdateGameWithLineupAsync(gameId, lineup.Id);
 				}
 			}
-			catch (Exception e)
-			{
-				_logger.Warning(e, "An unexpected error occured when complementing game");
+			if (game.Events.Any()) {
+				await _dbClient.CreatePlayerEventsAsync(game.Events.Select(x => new Database.Entities.Squad.PlayerEvent
+				{
+					PlayerId = x.PlayerId,
+					Type = x.Type,
+					GameId = gameId,
+					InMinuteOfGame = x.InMinute
+				}).ToList());
 			}
 	}
 

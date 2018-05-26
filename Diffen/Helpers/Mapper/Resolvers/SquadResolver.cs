@@ -59,7 +59,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 
 		private static Models.Squad.PlayerTableData GetPlayerTableData(Database.Entities.Squad.Player player)
 		{
-			if (!player.PlayerEvents.Any())
+			if (player.PlayerEvents == null || !player.PlayerEvents.Any())
 			{
 				return null;
 			}
@@ -114,48 +114,6 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			data.NumberOfPoints = data.NumberOfGoals + data.NumberOfAssists;
 
 			return data;
-		}
-
-		private int GetTotalMinutesPlayed(int playerId, ICollection<Database.Entities.Squad.PlayerEvent> events)
-		{
-			var games = events.Select(x => x.Game).Distinct().ToList();
-			var gamesFromStart = games.Where(x => x.Lineup.Players.Select(y => y.PlayerId).Contains(playerId)).ToList();
-
-			var gamesFromStartSubstitutedOut = gamesFromStart.Where(x => x.PlayerEvents.Any(y => y.Type == GameEventType.SubstituteOut)).ToList();
-			var gamesFromStartNotSubstitutedOut = gamesFromStart.Where(x => x.PlayerEvents.All(y => y.Type != GameEventType.SubstituteOut)).ToList();
-			var gamesSubstitutedIn = games.Where(x => x.PlayerEvents.Any(y => y.Type == GameEventType.SubstituteIn)).ToList();
-
-			var minutes = 0;
-			if (gamesFromStartNotSubstitutedOut.Any())
-			{
-				gamesFromStartNotSubstitutedOut.ForEach(game =>
-				{
-					minutes += 90;
-				});
-			}
-			if (gamesFromStartSubstitutedOut.Any())
-			{
-				gamesFromStartSubstitutedOut.ForEach(game =>
-				{
-					var playerEvent = game.PlayerEvents.FirstOrDefault(e => e.Type == GameEventType.SubstituteOut && e.PlayerId == playerId);
-					if (playerEvent != null)
-					{
-						minutes += playerEvent.InMinuteOfGame;
-					}
-				});
-			}
-			if (gamesSubstitutedIn.Any())
-			{
-				gamesSubstitutedIn.ForEach(game =>
-				{
-					var playerEvent = game.PlayerEvents.FirstOrDefault(e => e.Type == GameEventType.SubstituteOut && e.PlayerId == playerId);
-					if (playerEvent != null)
-					{
-						minutes += 90 - playerEvent.InMinuteOfGame;
-					}
-				});
-			}
-			return minutes;
 		}
 
 		public Models.Squad.Lineup Convert(Database.Entities.Squad.Lineup source, Models.Squad.Lineup destination, ResolutionContext context)
@@ -255,7 +213,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Opponent = source.OpponentTeamName,
 				NumberOfGoalsScoredByOpponent = source.NumberOfGoalsScoredByOpponent,
 				Lineup = source.Lineup != null ? context.Mapper.Map<Models.Squad.Lineup>(source.Lineup) : null,
-				PlayedOn = source.OnDate.ToString("yyyy-MM-dd"),
+				PlayedOn = source.OnDate.ToString("yyyy-MM-dd HH:mm"),
 				PlayerEvents = context.Mapper.Map<IEnumerable<Models.Squad.PlayerEvent>>(source.PlayerEvents)
 			};
 		}
