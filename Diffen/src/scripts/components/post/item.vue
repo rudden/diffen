@@ -50,13 +50,18 @@
                                 </template>
                             </modal>
                             <template v-if="showActions">
-                                <span v-if="(post.lineupId || post.urlTipHref) && createdByLoggedInUser"> · </span>
+                                <span v-if="(post.lineupId || post.urlTipHref) && (createdByLoggedInUser || (!createdByLoggedInUser && loggedInUserIsAdmin))"> · </span>
                                 <modal v-bind="modalAttributes.editPost" v-if="createdByLoggedInUser">
                                     <template slot="body">
                                         <new-post :post="post" :modal-name="modalAttributes.editPost.attributes.name" v-bind="{ parentId: post.parentPost ? post.parentPost.id : null }" />
                                     </template>
                                 </modal>
-                                <span v-if="post.lineupId || post.urlTipHref || createdByLoggedInUser"> · </span>
+                                <modal v-bind="modalAttributes.threadsAdjuster" v-else-if="!createdByLoggedInUser && loggedInUserIsAdmin">
+                                    <template slot="body">
+                                        <threads-adjuster :post="post" />
+                                    </template>
+                                </modal>
+                                <span v-if="post.lineupId || post.urlTipHref || createdByLoggedInUser || (!createdByLoggedInUser && loggedInUserIsAdmin)"> · </span>
                                 <modal v-bind="modalAttributes.replyPost">
                                     <template slot="body">
                                         <div class="media-body">
@@ -151,6 +156,7 @@ import Embeds from './embeds.vue'
 import Modal from '../modal.vue'
 import Voting from './voting.vue'
 import PostMainContent from './main-content.vue'
+import ThreadsAdjuster from './threads-adjuster.vue'
 
 import FormationComponent from '../lineups/formation.vue'
 
@@ -175,7 +181,7 @@ import FormationComponent from '../lineups/formation.vue'
 		}
     },
     components: {
-        Url, Embeds, NewPost, Modal, Voting, FormationComponent, PostMainContent
+        Url, Embeds, NewPost, Modal, Voting, FormationComponent, PostMainContent, ThreadsAdjuster
     }
 })
 export default class PostComponent extends Vue {
@@ -252,6 +258,19 @@ export default class PostComponent extends Vue {
             },
             onOpen: () => this.post.inReply = true,
             // onClose: this.closePostActionModal
+        },
+        threadsAdjuster: {
+            attributes: {
+                name: `adjust-threads-${this.post.id}`,
+                resizable: true,
+                scrollable: true
+            },
+            header: 'Justera trådar på inlägget',
+            button: {
+                icon: 'icon icon-edit',
+                text: 'Justera trådar'
+            },
+            onClose: this.reloadCurrentPage
         }
     }
 
@@ -294,7 +313,7 @@ export default class PostComponent extends Vue {
         if (this.post) {
             // reload all posts when modal is closed
             if (this.post.inEdit) {
-                this.reloadPosts(this.pagedPosts.currentPage)
+                this.reloadCurrentPage()
                 this.post.inEdit = false
             }
             if (this.post.inReply) {
@@ -302,6 +321,10 @@ export default class PostComponent extends Vue {
                 this.post.inReply = false
             }
         }
+    }
+
+    reloadCurrentPage() {
+        this.reloadPosts(this.pagedPosts.currentPage, true)
     }
 
     getLineup() {
@@ -322,8 +345,8 @@ export default class PostComponent extends Vue {
         this.scissor({ postId: this.post.id }).then(() => this.$forceUpdate())
     }
 
-    reloadPosts(pageNumber: number) {
-        if (this.shouldReloadPostStream) {
+    reloadPosts(pageNumber: number, override?: boolean) {
+        if (this.shouldReloadPostStream || override) {
             this.setIsLoadingPosts({ value: true })
             this.loadPaged({ pageNumber: pageNumber, pageSize: this.vm.loggedInUser.filter.postsPerPage, filter: this.filter })
                 .then(() => {

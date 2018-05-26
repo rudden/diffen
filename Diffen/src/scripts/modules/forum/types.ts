@@ -24,6 +24,7 @@ export const FETCH_LINEUP_ON_POST = 'forum/FETCH_LINEUP_ON_POST'
 export const UPDATE_URLTIP_CLICKS = 'forum/UPDATE_URLTIP_CLICKS'
 export const FETCH_URLTIP_TOPLIST = 'forum/FETCH_URLTIP_TOPLIST'
 export const FETCH_THREADS = 'forum/FETCH_THREADS'
+export const UPDATE_THREADS_ON_POST = 'forum/UPDATE_THREADS_ON_POST'
 
 // mutations
 export const SET_PAGED_POSTS = 'forum/SET_PAGED_POSTS'

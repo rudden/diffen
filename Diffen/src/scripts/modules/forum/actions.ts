@@ -28,7 +28,8 @@ import {
 	SET_SELECTED_CONVERSATION,
     FETCH_THREADS,
 	SET_THREADS,
-	SET_ACTIVE_FIXED_THREAD
+	SET_ACTIVE_FIXED_THREAD,
+    UPDATE_THREADS_ON_POST
 } from './types'
 
 axios.defaults.withCredentials = true
@@ -121,6 +122,12 @@ export const Actions: ActionTree<State, any> = {
 				let thread: Thread = res.data.filter((t: Thread) => t.type == ThreadType.Planned && moment(new Date()).isBetween(moment(<string>t.startTime), moment(<string>t.endTime)))[0]
 				store.commit(SET_ACTIVE_FIXED_THREAD, thread ? thread : undefined)
 			}).catch((error) => console.warn(error))
+	},
+	[UPDATE_THREADS_ON_POST]: (store: ActionContext<State, any>, payload: { postId: number, threadIds: number[] }): Promise<boolean> => {
+		return new Promise<boolean>((resolve, reject) => {
+			return axios.post(`${store.rootState.vm.api}/posts/${payload.postId}/threads`, payload.threadIds)
+				.then((res) => resolve(res.data)).catch((error) => reject())
+		})
 	},
 }
 export default Actions
