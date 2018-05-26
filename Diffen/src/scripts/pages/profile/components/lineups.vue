@@ -1,6 +1,11 @@
 <template>
 	<div class="container container__profile mt-3 mb-5">
-		<lineup-component />
+		<div class="card">
+			<div class="card-header">Startelvor</div>
+			<div class="card-body">
+				<lineup-component />
+			</div>
+		</div>
 	</div>
 </template>
 

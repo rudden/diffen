@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
@@ -135,6 +135,14 @@ namespace Diffen.Controllers.Api
 		{
 			_logger.Debug("Requesting to get all threads");
 			return _postRepository.GetThreadsAsync();
+		}
+
+		[Authorize(Policy = "IsManager")]
+		[HttpPost("{postId}/threads")]
+		public Task<bool> UpdateTreads(int postId, [FromBody] int[] threadIds)
+		{
+			_logger.Debug("Requesting to update the threads on a post with id {postId}", postId);
+			return _postRepository.UpdateThreadsOnPostAsync(postId, threadIds.ToList());
 		}
 	}
 }

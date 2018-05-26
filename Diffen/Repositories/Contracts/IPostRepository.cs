@@ -27,5 +27,6 @@ namespace Diffen.Repositories.Contracts
 		Task<List<Vote>> GetVotesOnPostIdAsync(int postId);
 		Task<bool> CreateVoteAsync(Models.Forum.CRUD.Vote vote);
 		Task<List<Thread>> GetThreadsAsync();
+		Task<bool> UpdateThreadsOnPostAsync(int postId, List<int> threadIds);
 	}
 }

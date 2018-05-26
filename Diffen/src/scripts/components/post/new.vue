@@ -51,17 +51,11 @@
             </template>
         </template>
         <template v-if="showLineupSelection">
-            <div class="col mt-3 pl-0 pr-0" v-if="lineups.length > 0 || noLineupsFound">
-                <select class="form-control" v-model="newPost.lineupId" :disabled="!lineups.length > 0" @change="changeLineup">
-                    <option value="0">{{ lineups.length > 0 ? 'Välj en startelva' : 'Hittade inga startelvor' }}</option>
-                    <option v-for="lineup in lineups" :value="lineup.id" :key="lineup.id">{{ lineup.formation.name }}, skapad {{ lineup.created }}</option>
-                </select>
-            </div>
-            <template v-if="newPost.lineupId > 0">
-                <div class="mt-3">
-                    <formation-component :formation="selectedLineup.formation" :players="selectedLineup.players" />
+            <div class="row mt-3" v-show="showLineupSelection">
+                <div class="col">
+                    <lineups :type-of-lineup="'Fiction'" :show-create-button="false" v-bind="{ preSelectedLineupId: newPost.lineupId }" />
                 </div>
-            </template>
+            </div>
         </template>
         <results :items="results" class="pt-3" />
     </div>
@@ -81,12 +75,12 @@ const SquadModuleAction = namespace('squad', Action)
 const SquadModuleMutation = namespace('squad', Mutation)
 
 import { GET_ACTIVE_FIXED_THREAD, GET_PAGED_POSTS, GET_FILTER, GET_THREADS, CREATE_POST, UPDATE_POST, FETCH_PAGED_POSTS, FETCH_THREADS, SET_IS_LOADING_POSTS, SET_SHOULD_RELOAD_POST_STREAM } from '../../modules/forum/types'
-import { GET_LINEUPS, GET_SELECTED_LINEUP, FETCH_LINEUPS_ON_USER, SET_SELECTED_LINEUP } from '../../modules/squad/types'
+import { GET_LINEUPS, GET_SELECTED_LINEUP, FETCH_LINEUPS_ON_USER, SET_SELECTED_LINEUP, GET_NEW_LINEUP } from '../../modules/squad/types'
 
 import { Post, Filter, Thread, ThreadType } from '../../model/forum'
 import { Post as CrudPost } from '../../model/forum/crud'
 import { PageViewModel, Result, ResultType, Paging } from '../../model/common'
-import { Lineup, PlayerToLineup } from '../../model/squad'
+import { Lineup, PlayerToLineup, LineupType } from '../../model/squad'
 import { Lineup as CrudLineup } from '../../model/squad/crud'
 
 import Modal from '../modal.vue'
@@ -126,6 +120,7 @@ export default class NewPost extends Vue {
 	@ModuleMutation(SET_SHOULD_RELOAD_POST_STREAM) setShouldReloadPostStream: (payload: { value: boolean }) => void
 
 	@SquadModuleGetter(GET_LINEUPS) lineups: Lineup[]
+    @SquadModuleGetter(GET_NEW_LINEUP) newLineup: CrudLineup
     @SquadModuleGetter(GET_SELECTED_LINEUP) selectedLineup: Lineup
 	@SquadModuleAction(FETCH_LINEUPS_ON_USER) loadLineups: (payload: { userId: string }) => Promise<void>
 	@SquadModuleMutation(SET_SELECTED_LINEUP) setSelectedLineup: (lineup: Lineup) => void
@@ -233,10 +228,6 @@ export default class NewPost extends Vue {
         return this.post && this.post.inThreads.filter((t: Thread) => t.type == ThreadType.Planned).length > 0 ? true : false
     }
 
-    disabledThreadSelection(name: string) {
-        return this.selectedThreads.length == 2 && !this.selectedThreads.map((t: Thread) => t.name.toLowerCase()).includes(name.toLowerCase()) ? true : false
-    }
-
     @Watch('results')
         onChange() {
             this.setShouldReloadPostStream({ value: true })
@@ -247,6 +238,10 @@ export default class NewPost extends Vue {
         if (this.lineups.length <= 0) {
             this.loadLineups({ userId: this.vm.loggedInUser.id }).then(() => this.noLineupsFound = this.lineups.length == 0)
         }
+    }
+
+    disabledThreadSelection(name: string) {
+        return this.selectedThreads.length == 2 && !this.selectedThreads.map((t: Thread) => t.name.toLowerCase()).includes(name.toLowerCase()) ? true : false
     }
     
     changeLineup() {
@@ -276,6 +271,15 @@ export default class NewPost extends Vue {
                 }
             } else {
                 this.setCrudPostThreads()
+            }
+        }
+        if (this.selectedLineup.id) {
+            this.newPost.lineupId = this.selectedLineup.id
+        } else {
+            if (this.newLineup.players.length == 11) {
+                this.newPost.lineup = this.newLineup
+                this.newPost.lineup.createdByUserId = this.vm.loggedInUser.id
+                this.newPost.lineup.type = LineupType.Fiction
             }
         }
         new Promise<Result[]>((resolve, reject) => {

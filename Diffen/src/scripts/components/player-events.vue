@@ -89,7 +89,13 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <lineups :header="'Startelvan'" :lineup-type="'Real'" :pre-selected-lineup-id="preSelectedLineupId" />
+                                            <hr />
+                                            <strong>Startelvan</strong>
+                                            <div class="card mt-2" :class="{ 'br br__none': preDefinedLineup }">
+                                                <div class="card-body" :class="{ 'p-0': preDefinedLineup }">
+                                                    <lineups :lineup-type="'Real'" :pre-defined-lineup="preDefinedLineup" :show-create-button="false" />
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <hr />
@@ -143,7 +149,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import { Getter, Action, Mutation, State, namespace } from 'vuex-class'
 
 import { PageViewModel } from '../model/common'
-import { Game, GameType, ArenaType, PlayerEvent, GameEventType, Player, PlayerToLineup } from '../model/squad'
+import { Game, GameType, ArenaType, PlayerEvent, GameEventType, Player, PlayerToLineup, Lineup, LineupType } from '../model/squad'
 import { Game as CrudGame, PlayerEvent as CrudPlayerEvent, Lineup as CrudLineup } from '../model/squad/crud'
 
 const ModuleGetter = namespace('squad', Getter)
@@ -237,7 +243,7 @@ export default class PlayerEvents extends Vue {
     selectedGameId: number = 0
     opponentTeamName: string = ''
     numberOfGoalsScoredByOpponent: number = 0
-    preSelectedLineupId: number = 0
+    preDefinedLineup?: Lineup = new Lineup()
 
     modalAttributes: any = {
 		newEvent: {
@@ -356,7 +362,7 @@ export default class PlayerEvents extends Vue {
             this.selectedDate = new Date(selectedGame.playedOn)
             this.opponentTeamName = selectedGame.opponent
             this.arenaType = ArenaType[selectedGame.arenaType]
-            this.preSelectedLineupId = this.crudGame.lineup ? <number>this.crudGame.lineup.id : 0
+            this.preDefinedLineup = this.crudGame.lineup ? selectedGame.lineup : undefined
             this.numberOfGoalsScoredByOpponent = this.crudGame.numberOfGoalsScoredByOpponent
 
             this.$modal.show(this.modalAttributes.newEvent.attributes.name)
@@ -471,16 +477,15 @@ export default class PlayerEvents extends Vue {
                     return e
                 })
             }
+            game.lineup = this.crudGame.lineup ? this.crudGame.lineup : this.newLineup.formationId > 0 && this.newLineup.players.length == 11 ? this.newLineup : undefined
+            if (game.lineup) {
+                game.lineup.createdByUserId = this.vm.loggedInUser.id
+                game.lineup.type = LineupType.Real
+            }
             if (this.crudGame.id && this.crudGame.id > 0) {
                 game.id = this.crudGame.id
-                game.lineup = this.crudGame.lineup ? this.crudGame.lineup : this.newLineup.formationId > 0 && this.newLineup.players.length == 11 ? this.newLineup : undefined
-                if (game.lineup) {
-                    game.lineup.createdByUserId = this.vm.loggedInUser.id
-                }
                 this.updateGame({ game: game }).then(() => resolve())
             } else {
-                game.lineup = this.newLineup
-                game.lineup.createdByUserId = this.vm.loggedInUser.id
                 this.createGame({ game: game }).then(() => resolve())
             }
         }).then(() => {

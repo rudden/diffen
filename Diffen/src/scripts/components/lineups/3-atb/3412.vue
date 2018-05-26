@@ -10,8 +10,8 @@
 		</div>
 		<!-- midfield -->
 		<div class="formation-section-wrapper-normal">
-			<player-card :player="hyb.player" :position="hyb.position" class="float-left" style="margin-top: -1rem"  />
-			<player-card :player="vyb.player" :position="vyb.position" class="float-right" style="margin-top: -1rem"  />
+			<player-card :player="vyb.player" :position="vyb.position" class="float-left" style="margin-top: -1rem"  />
+			<player-card :player="hyb.player" :position="hyb.position" class="float-right" style="margin-top: -1rem"  />
 		</div>
 		<div class="formation-section-wrapper">
 			<player-card :player="vcdm.player" :position="vcdm.position" />

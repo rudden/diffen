@@ -2,6 +2,8 @@
 
 namespace Diffen.Models.Forum.CRUD
 {
+	using Squad.CRUD;
+
 	public class Post
 	{
 		public int Id { get; set; }
@@ -10,6 +12,7 @@ namespace Diffen.Models.Forum.CRUD
 		public int? ParentPostId { get; set; }
 		public string UrlTipHref { get; set; }
 		public int LineupId { get; set; }
+		public Lineup Lineup { get; set; }
 		public IEnumerable<int> ThreadIds { get; set; }
 		public IEnumerable<string> NewThreadNames { get; set; }
 	}

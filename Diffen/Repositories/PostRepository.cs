@@ -8,11 +8,11 @@ using AutoMapper;
 namespace Diffen.Repositories
 {
 	using Contracts;
-	using Models;
-	using Models.Forum;
+	using Database.Clients.Contracts;
 	using Helpers;
 	using Helpers.Extensions;
-	using Database.Clients.Contracts;
+	using Models;
+	using Models.Forum;
 
 	public class PostRepository : IPostRepository
 	{
@@ -177,6 +177,16 @@ namespace Diffen.Repositories
 			return mappedThreads;
 		}
 
+		public async Task<bool> UpdateThreadsOnPostAsync(int postId, List<int> threadIds)
+		{
+			var result = await _dbClient.DeleteExistingThreadsOnPostAsync(postId);
+			if (threadIds.Any())
+			{
+				result = await _dbClient.AddThreadsToPostAsync(postId, threadIds);
+			}
+			return result;
+		}
+
 		private async Task ComplementPostWithPotentialUrlTipThreadsAndLineupAsync(int postId, Models.Forum.CRUD.Post post, List<Result> results)
 		{
 			if (!string.IsNullOrEmpty(post.UrlTipHref))
@@ -215,23 +225,45 @@ namespace Diffen.Repositories
 				await _dbClient.CreatePostThreadsAndConnectToNewPostWithIdAsync(postId, post.NewThreadNames.ToList());
 			}
 
-			if (post.LineupId > 0)
-			{
-				var postToLineup = new Database.Entities.Forum.PostToLineup
-				{
-					PostId = postId,
-					LineupId = post.LineupId,
-					Created = DateTime.Now
-				};
-				results.Update(await _dbClient.ConnectLineupToPostAsync(postToLineup), ResultMessages.CreateLineupToPost);
-			}
-			else
+			if (post.Lineup != null)
 			{
 				if (await _dbClient.PostHasALineupConnectedToItAsync(postId))
 				{
 					await _dbClient.DeleteLineupConnectionToPostAsync(postId);
 				}
+				var newLineup = _mapper.Map<Database.Entities.Squad.Lineup>(post.Lineup);
+				var result = await _dbClient.CreateLineupAsync(newLineup);
+				results.Update(result, ResultMessages.CreateLineup);
+				if (result)
+				{
+					await ConnectLineupToPostAsync(postId, newLineup.Id, results);
+				}
 			}
+			else
+			{
+				if (post.LineupId > 0)
+				{
+					await ConnectLineupToPostAsync(postId, post.LineupId, results);
+				}
+				else
+				{
+					if (await _dbClient.PostHasALineupConnectedToItAsync(postId))
+					{
+						await _dbClient.DeleteLineupConnectionToPostAsync(postId);
+					}
+				}
+			}
+		}
+
+		private async Task ConnectLineupToPostAsync(int postId, int lineupId, List<Result> results)
+		{
+			var postToLineup = new Database.Entities.Forum.PostToLineup
+			{
+				PostId = postId,
+				LineupId = lineupId,
+				Created = DateTime.Now
+			};
+			results.Update(await _dbClient.ConnectLineupToPostAsync(postToLineup), ResultMessages.CreateLineupToPost);
 		}
 	}
 }

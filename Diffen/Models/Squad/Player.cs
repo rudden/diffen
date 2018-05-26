@@ -29,6 +29,8 @@ namespace Diffen.Models.Squad
 
 		public int InNumberOfStartingElevens { get; set; }
 
+		public PlayerTableData Data { get; set; }
+
 		public string Name => $"{FirstName[0]}. {LastName.ToUpper()}";
 
 		public string FullName => $"{FirstName.FirstUpperCase()} {LastName.FirstUpperCase()}";
