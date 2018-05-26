@@ -11,7 +11,7 @@
             </li>
             <li class="list-group-item media">
                 <template v-if="!loading">
-                    <table-component :data="table" sort-by="id" sort-order="desc" :show-filter="false" @rowClick="rowClick">
+                    <table-component :data="table" sort-by="id" sort-order="asc" :show-filter="false" @rowClick="rowClick">
                         <table-column label="#" show="id" data-type="numeric"></table-column>
                         <table-column label="Användare" show="user.nickName" :sortable="false"></table-column>
                         <table-column label="Poäng" show="points" data-type="numeric"></table-column>
@@ -23,9 +23,11 @@
                                     <modal v-bind="modalAttributes.info">
                                         <template slot="body">
                                             <ul class="list-unstyled list-spaced mb-0">
-                                                <li><strong>1 poäng</strong> - Rätt antal mål för DIF eller motståndare</li>
-                                                <li><strong>2 poäng</strong> - Rätt antal totala mål</li>
-                                                <li><strong>3 poäng</strong> - Rätt resultat</li>
+                                                <li><strong>4 poäng</strong> - Rätt resultat</li>
+                                                <li><strong>2 poäng</strong> - Rätt tippning (1X2)</li>
+                                                <li><strong>1 poäng</strong> - Rätt antal DIF mål (endast chans på detta om man inte redan prickat helt rätt resultat)</li>
+                                                <li><strong>1 poäng</strong> - Rätt antal moståndarmål (endast chans på detta om man inte redan prickat helt rätt resultat)</li>
+                                                <li><strong>1 poäng</strong> - Rätt antal totala mål i matchen (endast chans på detta om man inte redan prickat helt rätt resultat)</li>
                                             </ul>
                                         </template>
                                     </modal>
