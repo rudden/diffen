@@ -320,6 +320,7 @@ export default class PlayerEventsAdmin extends Vue {
         this.selectedDate = undefined
         this.opponentTeamName = ''
         this.arenaType = ''
+        this.preDefinedLineup = undefined
     }
 
     fetchGames() {

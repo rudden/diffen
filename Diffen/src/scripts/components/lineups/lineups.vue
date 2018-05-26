@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<template v-if="!loading">
-			<div class="row">
+			<div class="row" v-if="!hasPredefinedLineup">
 				<template v-if="!inCreate">
 					<div class="col-11 pr-0">
 						<select class="form-control form-control-sm" v-model="selectedLineupId" @change="changeLineup" :disabled="!filteredLineups.length > 0">
@@ -188,6 +188,9 @@ export default class Lineups extends Vue {
 	}
 	get filteredLineups() {
 		return this.lineups.filter((l: Lineup) => l.type == this.typeOfLineup)
+	}
+	get hasPredefinedLineup() {
+		return this.preDefinedLineup && this.preDefinedLineup.id ? true : false
 	}
 
 	load() {
