@@ -10,8 +10,24 @@ export class Lineup {
 
 export class PlayerToLineup {
     id: number
-    player: Player
+    player: PlayerToLineupPlayer
     position: Position
+}
+
+export class PlayerToLineupPlayer {
+    id: number
+    fullName: string
+    shortName: string
+    attributes: PlayerAttributes
+    availablePositions: Position[]
+}
+
+export class PlayerAttributes {
+    isCaptain: boolean
+    isViceCaptain: boolean
+    isOutOnLoan: boolean
+    isHereOnLoan: boolean
+    isSold: boolean
 }
 
 export class Player {
@@ -21,11 +37,7 @@ export class Player {
     lastName: string
     fullName: string
     kitNumber: number
-    isCaptain: boolean
-    isViceCaptain: boolean
-    isOutOnLoan: boolean
-    isHereOnLoan: boolean
-    isSold: boolean
+    attributes: PlayerAttributes
     birthDay: string
     heightInCentimeters: number
     weight: number
@@ -70,6 +82,7 @@ export class Game {
     lineup: Lineup
     opponent: string
     numberOfGoalsScoredByOpponent: number
+    numberOfAddonMinutes: number
     playedOn: string
     playerEvents: PlayerEvent[]
 }

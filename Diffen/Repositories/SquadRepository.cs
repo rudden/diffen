@@ -131,13 +131,14 @@ namespace Diffen.Repositories
 			{
 				return false;
 			}
+			var playedDateDateTime = Convert.ToDateTime(game.PlayedDate);
 			await _dbClient.CreateThreadAsync(new Database.Entities.Forum.Thread
 			{
 				Name =
-					$"{game.Opponent.ToLower().Replace(" ", "-")}-{(game.ArenaType == ArenaType.Away ? "away" : "home")}-{game.PlayedDate.ToString("yy-MM-dd").Replace("-", "")}",
+					$"{game.Opponent.ToLower().Replace(" ", "-")}-{(game.ArenaType == ArenaType.Away ? "away" : "home")}-{playedDateDateTime.ToString("yy-MM-dd").Replace("-", "")}",
 				Type = ThreadType.Planned,
-				StartTime = game.PlayedDate.AddMinutes(-15),
-				EndTime = game.PlayedDate.AddHours(2).AddMinutes(15),
+				StartTime = playedDateDateTime.AddMinutes(-15),
+				EndTime = playedDateDateTime.AddHours(2).AddMinutes(15),
 				Created = DateTime.Now
 			});
 			await ComplementGameWithPotentialLineupAndEventsAsync(newGame.Id, game);
@@ -157,7 +158,8 @@ namespace Diffen.Repositories
 					!existingGame.Type.Equals(updateGame.Type) ||
 					!existingGame.ArenaType.Equals(updateGame.ArenaType) ||
 					!existingGame.OpponentTeamName.Equals(updateGame.OpponentTeamName) ||
-					!existingGame.NumberOfGoalsScoredByOpponent.Equals(updateGame.NumberOfGoalsScoredByOpponent))
+					!existingGame.NumberOfGoalsScoredByOpponent.Equals(updateGame.NumberOfGoalsScoredByOpponent) ||
+					!existingGame.NumberOfAddonMinutes.Equals(updateGame.NumberOfAddonMinutes))
 				{
 					result = await _dbClient.UpdateGameAsync(updateGame);
 				}

@@ -15,30 +15,29 @@
 						</li>
 						<li class="list-group-item media">
 							<template v-if="!loading">
-								<table-component :data="filteredPlayers" sort-by="lastName" sort-order="asc" @rowClick="rowClick">
+								<table-component :data="filteredPlayers" sort-by="data.numberOfPoints" sort-order="desc" @rowClick="rowClick">
 									<table-column label="Efternamn" :hidden="true" show="lastName"></table-column>
 									<table-column label="Namn" filter-on="fullName" sort-by="lastName" data-type="string">
 										<template slot-scope="row">
 											{{ row.fullName }}
-											<span class="badge badge-warning ml-1" v-if="row.isOutOnLoan">utlånad</span>
-											<span class="badge badge-danger ml-1" v-if="row.isSold">såld</span>
+											<span class="badge badge-warning ml-1" v-if="row.attributes.isOutOnLoan">utlånad</span>
+											<span class="badge badge-danger ml-1" v-if="row.attributes.isSold">såld</span>
 										</template>
 									</table-column>
-									<table-column label="Matcher" show="data.numberOfGames" data-type="numeric"></table-column>
-									<table-column label="Starter" show="data.numberOfGamesFromStart" data-type="numeric"></table-column>
-									<table-column label="Utbytt" show="data.numberOfGamesSubstituteOut" data-type="numeric"></table-column>
-									<table-column label="Inbytt" show="data.numberOfGamesSubstituteIn" data-type="numeric"></table-column>
-									<table-column label="Minuter" show="data.numberOfMinutesPlayed" data-type="numeric"></table-column>
-									<table-column label="Mål" show="data.numberOfGoals" data-type="numeric"></table-column>
-									<table-column label="Assist" show="data.numberOfAssists" data-type="numeric"></table-column>
-									<table-column label="Gula" show="data.numberOfYellowCards" data-type="numeric"></table-column>
-									<table-column label="Röda" show="data.numberOfRedCards" data-type="numeric"></table-column>
-									<table-column label="Poäng" show="data.numberOfPoints" data-type="numeric"></table-column>
+									<table-column label="Matcher" show="data.numberOfGames" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Starter" show="data.numberOfGamesFromStart" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Utbytt" show="data.numberOfGamesSubstituteOut" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Inbytt" show="data.numberOfGamesSubstituteIn" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Minuter" show="data.numberOfMinutesPlayed" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Gula" show="data.numberOfYellowCards" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Röda" show="data.numberOfRedCards" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Mål" show="data.numberOfGoals" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Assist" show="data.numberOfAssists" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Poäng" show="data.numberOfPoints" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
 									<template slot="tfoot">
 										<tr>
-											<td colspan="3" style="border-top: 0">
-												<hr />
-												<div class="form-check form-check-inline">
+											<td colspan="11" style="border: none">
+												<div class="form-check form-check-inline m-2">
 													<input class="form-check-input" type="checkbox" id="includePlayersOutOnLoan" v-model="includePlayersOutOnLoan">
 													<label class="form-check-label" for="includePlayersOutOnLoan">Inkludera utlånade spelare</label>
 												</div>
@@ -137,14 +136,14 @@ export default class Wrapper extends Vue {
 	mounted() {
 		Promise.all([this.loadPlayers(), this.loadPositions()])
 			.then(() => {
-				this.filteredPlayers = this.players.filter((player: Player) => !player.isOutOnLoan)
+				this.filteredPlayers = this.players.filter((player: Player) => !player.attributes.isOutOnLoan)
 				this.loading = false
 			})
 	}
 
 	@Watch('includePlayersOutOnLoan')
 		onChange() {
-			this.filteredPlayers = this.includePlayersOutOnLoan ? this.players : this.players.filter((player: Player) => !player.isOutOnLoan)
+			this.filteredPlayers = this.includePlayersOutOnLoan ? this.players : this.players.filter((player: Player) => !player.attributes.isOutOnLoan)
 		}
 
 	get loggedInUserIsAdmin(): boolean {

@@ -1,15 +1,16 @@
 <template>
 	<div class="m-1">
-		<template v-if="player.name">
+		<template v-if="player.shortName">
 			<div class="card mb-3">
 				<div class="card-body">
 					<h6 class="card-title">
-						{{ player.name }}
+						{{ player.shortName }}
 						<span class="ml-2" v-if="hasAttribute">
-							<span class="badge badge-primary" v-if="player.isCaptain">kapten</span>
-							<span class="badge badge-danger" v-else-if="player.isHereOnLoan">inlånad</span>
-							<span class="badge badge-warning" v-else-if="player.isOutOnLoan">utlånad</span>
-							<span class="badge badge-danger" v-else-if="player.isSold">såld</span>
+							<span class="badge badge-primary" v-if="attributes.isCaptain">kapten</span>
+							<span class="badge badge-info" v-if="attributes.isCaptain">vice kapten</span>
+							<span class="badge badge-danger" v-else-if="attributes.isHereOnLoan">inlånad</span>
+							<span class="badge badge-warning" v-else-if="attributes.isOutOnLoan">utlånad</span>
+							<span class="badge badge-danger" v-else-if="attributes.isSold">såld</span>
 						</span>
 					</h6>
 				</div>
@@ -51,7 +52,7 @@ const ModuleMutation = namespace('squad', Mutation)
 
 import { GET_PLAYERS, GET_NEW_LINEUP, SET_PLAYER_TO_LINEUP } from '../../modules/squad/types'
 
-import { Player, Position } from '../../model/squad'
+import { Player, Position, PlayerToLineupPlayer, PlayerAttributes } from '../../model/squad'
 import { KeyValuePair } from '../../model/common'
 
 import { Typeahead } from 'uiv'
@@ -71,13 +72,16 @@ export default class PlayerCard extends Vue {
 	@ModuleGetter(GET_NEW_LINEUP) newLineup: CrudLineup
 	@ModuleMutation(SET_PLAYER_TO_LINEUP) setPlayerToLineup: (payload: { playerId: number, positionId: number }) => void
     
-	player: Player
+	player: PlayerToLineupPlayer
 	position: Position
 
 	selected: any = ''
 
 	get hasAttribute() {
-		return this.player.isCaptain || this.player.isHereOnLoan || this.player.isOutOnLoan || this.player.isSold
+		return this.attributes.isCaptain || this.attributes.isHereOnLoan || this.attributes.isOutOnLoan || this.attributes.isSold || this.attributes.isViceCaptain
+	}
+	get attributes() {
+		return this.player.attributes
 	}
 	get availablePlayers() {
 		let players = this.players.filter((player: Player) => player.availablePositions.map((position: Position) => position.id).includes(this.position.id))

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 
 using AutoMapper;
-using Diffen.Database.Clients.Contracts;
 
 namespace Diffen.Helpers.Mapper.Resolvers
 {
@@ -11,6 +10,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 	using Models;
 	using Business;
 	using Extensions;
+	using Database.Clients.Contracts;
 
 	public class SquadResolver : 
 		ITypeConverter<Database.Entities.Squad.Player, Models.Squad.Player>, 
@@ -25,7 +25,8 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Models.Squad.CRUD.Game, Database.Entities.Squad.Game>,
 		ITypeConverter<Database.Entities.Squad.Title, Models.Squad.Title>,
 		ITypeConverter<Models.Squad.CRUD.GameResultGuess, Database.Entities.Squad.GameResultGuess>,
-		ITypeConverter<Database.Entities.Squad.GameResultGuess, Models.Squad.GameResultGuess>
+		ITypeConverter<Database.Entities.Squad.GameResultGuess, Models.Squad.GameResultGuess>,
+		ITypeConverter<Database.Entities.Squad.Player, Models.Squad.PlayerAttributes>
 	{
 		private readonly IDiffenDbClient _dbClient;
 
@@ -42,11 +43,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				FirstName = source.FirstName,
 				LastName = source.LastName,
 				KitNumber = source.KitNumber,
-				IsOutOnLoan = source.IsOutOnLoan,
-				IsHereOnLoan = source.IsHereOnLoan,
-				IsCaptain = source.IsCaptain,
-				IsViceCaptain = source.IsViceCaptain,
-				IsSold = source.IsSold,
+				Attributes = context.Mapper.Map<Models.Squad.PlayerAttributes>(source),
 				BirthDay = source.BirthDay.Year > 0001 ? source.BirthDay.ToString("yyyy-MM-dd") : null,
 				HeightInCentimeters = source.HeightInCentimeters,
 				Weight = source.Weight,
@@ -62,6 +59,19 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				InNumberOfStartingElevens = source.InLineups.Count,
 				Events = context.Mapper.Map<IEnumerable<Models.Squad.PlayerEventOnPlayer>>(source.PlayerEvents),
 				Data = GetPlayerTableData(source)
+			};
+		}
+
+		public Models.Squad.PlayerAttributes Convert(Database.Entities.Squad.Player source,
+			Models.Squad.PlayerAttributes destination, ResolutionContext context)
+		{
+			return new Models.Squad.PlayerAttributes
+			{
+				IsCaptain = source.IsCaptain,
+				IsViceCaptain = source.IsViceCaptain,
+				IsHereOnLoan = source.IsHereOnLoan,
+				IsOutOnLoan = source.IsOutOnLoan,
+				IsSold = source.IsSold
 			};
 		}
 
@@ -115,7 +125,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					var playerEvent = game.PlayerEvents.FirstOrDefault(e => e.Type == GameEventType.SubstituteIn && e.PlayerId == player.Id);
 					if (playerEvent != null)
 					{
-						data.NumberOfMinutesPlayed += 90 - playerEvent.InMinuteOfGame;
+						data.NumberOfMinutesPlayed += 90 + game.NumberOfAddonMinutes - playerEvent.InMinuteOfGame;
 					}
 				}
 			}
@@ -155,7 +165,18 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			return new Models.Squad.PlayerToLineup
 			{
 				Id = source.Id,
-				Player = context.Mapper.Map<Models.Squad.Player>(source.Player),
+				Player = new Models.Squad.PlayerToLineupPlayer
+				{
+					Id = source.PlayerId,
+					FullName = $"{source.Player.FirstName} {source.Player.LastName}",
+					ShortName = $"{source.Player.FirstName[0]}. {source.Player.LastName.ToUpper()}",
+					Attributes = context.Mapper.Map<Models.Squad.PlayerAttributes>(source.Player),
+					AvailablePositions = source.Player.AvailablePositions.Select(x => new Models.Squad.Position
+					{
+						Id = x.Position.Id,
+						Name = x.Position.Name
+					})
+				},
 				Position = new Models.Squad.Position
 				{
 					Id = source.Position.Id,
@@ -204,12 +225,12 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Id = source.Id,
 				FirstName = source.FirstName,
 				LastName = source.LastName,
-				IsCaptain = source.IsCaptain,
-				IsOutOnLoan = source.IsOutOnLoan,
-				IsHereOnLoan = source.IsHereOnLoan,
-				IsViceCaptain = source.IsViceCaptain,
+				IsCaptain = source.Attributes.IsCaptain,
+				IsOutOnLoan = source.Attributes.IsOutOnLoan,
+				IsHereOnLoan = source.Attributes.IsHereOnLoan,
+				IsViceCaptain = source.Attributes.IsViceCaptain,
+				IsSold = source.Attributes.IsSold,
 				KitNumber = source.KitNumber,
-				IsSold = source.IsSold,
 				BirthDay = source.BirthDay,
 				HeightInCentimeters = source.HeightInCentimeters,
 				Weight = source.Weight,
@@ -229,6 +250,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				ArenaType = source.ArenaType,
 				Opponent = source.OpponentTeamName,
 				NumberOfGoalsScoredByOpponent = source.NumberOfGoalsScoredByOpponent,
+				NumberOfAddonMinutes = source.NumberOfAddonMinutes,
 				Lineup = source.Lineup != null ? context.Mapper.Map<Models.Squad.Lineup>(source.Lineup) : null,
 				PlayedOn = source.OnDate.ToString("yyyy-MM-dd HH:mm"),
 				PlayerEvents = context.Mapper.Map<IEnumerable<Models.Squad.PlayerEvent>>(source.PlayerEvents)
@@ -270,7 +292,8 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				ArenaType = source.ArenaType,
 				OpponentTeamName = source.Opponent,
 				NumberOfGoalsScoredByOpponent = source.NumberOfGoalsScoredByOpponent,
-				OnDate = source.PlayedDate
+				NumberOfAddonMinutes = source.NumberOfAddonMinutes,
+				OnDate = System.Convert.ToDateTime(source.PlayedDate)
 			};
 		}
 

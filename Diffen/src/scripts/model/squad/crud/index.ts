@@ -1,4 +1,4 @@
-import { GameType, GameEventType, LineupType, ArenaType, PreferredFoot } from ".."
+import { GameType, GameEventType, LineupType, ArenaType, PreferredFoot, PlayerAttributes } from ".."
 
 export class Lineup {
     id?: number
@@ -19,11 +19,7 @@ export class Player {
     firstName: string = ''
     lastName: string = ''
     kitNumber: number = 0
-    isSold: boolean
-    isCaptain: boolean
-    isViceCaptain: boolean
-    isHereOnLoan: boolean
-    isOutOnLoan: boolean
+    attributes: PlayerAttributes
     availablePositionsIds: number[] = []
     birthDay?: Date = new Date()
     heightInCentimeters: number
@@ -41,7 +37,8 @@ export class Game {
     lineup?: Lineup
     opponent: string
     numberOfGoalsScoredByOpponent: number
-    playedDate?: Date
+    numberOfAddonMinutes: number
+    playedDate: string
     events: PlayerEvent[] = []
 }
 

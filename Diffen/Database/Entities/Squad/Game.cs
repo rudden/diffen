@@ -17,6 +17,7 @@ namespace Diffen.Database.Entities.Squad
 		public ArenaType ArenaType { get; set; }
 		public string OpponentTeamName { get; set; }
 		public int NumberOfGoalsScoredByOpponent { get; set; }
+		public int NumberOfAddonMinutes { get; set; }
 
 		[ForeignKey("LineupId")]
 		public virtual Lineup Lineup { get; set; }

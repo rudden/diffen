@@ -3,7 +3,7 @@
 		<template v-if="!loading">
 			<div class="row" v-if="!hasPredefinedLineup">
 				<template v-if="!inCreate">
-					<div class="col-11 pr-0">
+					<div class="col-8 pr-0">
 						<select class="form-control form-control-sm" v-model="selectedLineupId" @change="changeLineup" :disabled="!filteredLineups.length > 0">
 							<option value="0">{{ !filteredLineups.length > 0 ? 'Hittade inga startelvor' : 'Välj en startelva' }}</option>
 							<option v-for="lineup in filteredLineups" :value="lineup.id" :key="lineup.id">{{ lineup.formation.name }}, skapad {{ lineup.created }}</option>
@@ -11,15 +11,17 @@
 					</div>
 				</template>
 				<template v-if="inCreate">
-					<div class="col-11 pr-0">
+					<div class="col-8 pr-0">
 						<select class="form-control form-control-sm" v-model="selectedFormationId" @change="changeFormation">
 							<option value="0" selected>Välj en formation</option>
 							<option v-for="formation in formations" :value="formation.id" :key="formation.id">{{ formation.name }}</option>
 						</select>
 					</div>
 				</template>
-				<div class="pl-0 col-1" v-if="userIsLoggedInUser">
-					<span class="icon float-right" :class="{ 'icon-plus': !inCreate, 'icon-minus': inCreate }" v-on:click="setInCreate(!inCreate)" style="cursor: pointer" v-tooltip="`${!inCreate ? 'Skapa ny startelva' : 'Välj befintlig startelva'}`"></span>
+				<div class="col-4" v-if="userIsLoggedInUser">
+					<button class="btn btn-sm btn-block" :class="{ 'btn-success': !inCreate, 'btn-primary': inCreate }" v-on:click="setInCreate(!inCreate)">
+						{{ !inCreate ? 'Skapa ny' : 'Välj befintlig' }}
+					</button>
 				</div>
 			</div>
 			<template v-if="selectedLineupId > 0">

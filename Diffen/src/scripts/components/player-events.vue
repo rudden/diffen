@@ -5,131 +5,6 @@
                 <h6>{{ header }}</h6>
                 <hr />
             </template>
-            <template v-if="loggedInUserIsGameAdmin && !isSmall">
-                <div class="row">
-                    <div class="col-10 pr-0">
-                        <div class="form-group mb-0">
-                            <select class="form-control form-control-sm" v-model="selectedGameId">
-                                <option value="0">Hantera händelser i en match</option>
-                                <option v-for="game in games" :value="game.id" :key="game.id">
-                                    {{ game.playedOn }} ({{ getGameType(game.type) }}) - {{ game.opponent }} ({{ getArenaType(game.arenaType)}})
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-2 mt-1">
-                        <modal v-bind="modalAttributes.newEvent">
-                            <template slot="body">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <legend class="col-sm-3 col-form-label pt-0"><strong>Motståndare</strong></legend>
-                                                <div class="col-sm-9">
-                                                    <input type="text" class="form-control form-control-sm" v-model="opponentTeamName" placeholder="Namnet på motståndarlaget">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <fieldset class="form-group">
-                                            <div class="row">
-                                                <legend class="col-sm-3 col-form-label pt-0"><strong>Typ av match</strong></legend>
-                                                <div class="col-sm-9">
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" id="cup" v-model="gameType" value="Cup" />
-                                                        <label class="form-check-label" for="cup">Cup</label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" id="league" v-model="gameType" value="League" />
-                                                        <label class="form-check-label" for="league">Allsvenskan</label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" id="training" v-model="gameType" value="Training" />
-                                                        <label class="form-check-label" for="training">Träningsmatch</label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" id="europaLeague" v-model="gameType" value="EuropaLeague" />
-                                                        <label class="form-check-label" for="europaLeague">Europa League</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                        <fieldset class="form-group">
-                                            <div class="row">
-                                                <legend class="col-sm-3 col-form-label pt-0"><strong>Plats</strong></legend>
-                                                <div class="col-sm-9">
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" id="home" v-model="arenaType" value="Home" />
-                                                        <label class="form-check-label" for="home">Hemma</label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" id="away" v-model="arenaType" value="Away" />
-                                                        <label class="form-check-label" for="away">Borta</label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" id="neutral" v-model="arenaType" value="NeutralGround" />
-                                                        <label class="form-check-label" for="neutral">Neutral mark</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <legend class="col-sm-3 col-form-label pt-0"><strong>Datum</strong></legend>
-                                                <div class="col-sm-4 pr-0">
-                                                    <v-datepicker v-model="selectedDate" :format="'yyyy-MM-dd'" :bootstrap-styling="true" :input-class="'form-control-sm'" :monday-first="true" :placeholder="'Välj datum'" />
-                                                </div>
-                                                <div class="col-sm-4 pl-0">
-                                                    <v-timepicker v-model="startTime" class="form-control-sm" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <legend class="col-sm-3 col-form-label pt-0"><strong>Moståndarmål</strong></legend>
-                                                <div class="col-sm-9">
-                                                    <input type="number" class="form-control form-control-sm" v-model="numberOfGoalsScoredByOpponent" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <hr />
-                                            <strong>Startelvan</strong>
-                                            <div class="card mt-2" :class="{ 'br br__none': preDefinedLineup }">
-                                                <div class="card-body" :class="{ 'p-0': preDefinedLineup }">
-                                                    <lineups :lineup-type="'Real'" :pre-defined-lineup="preDefinedLineup" :show-create-button="false" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <hr />
-                                            <span class="icon icon-plus float-right" style="cursor: pointer" v-on:click="newEvent" v-tooltip="'Ny händelse'"></span>
-                                            <h6>Händelser</h6>
-                                        </div>
-                                        <div class="form-group mb-0">
-                                            <ul class="list-group">
-                                                <li class="list-group-item" v-for="(item, index) in gameEvents" :key="index">
-                                                    <div class="row">
-                                                        <div class="col-11 pr-0">
-                                                            <component :is="item.component" v-bind="{ event: item.event }" :key="item.event.guid" />
-                                                        </div>
-                                                        <div class="col-1 pl-0">
-                                                            <span v-on:click="removeEvent(item.event.guid)" class="float-right remove-event" v-tooltip="'Ta bort händelse'">&times;</span>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                            <template slot="footer">
-                                <button class="btn btn-success btn-block btn-sm" :disabled="!canSave" v-on:click="save">Spara</button>
-                            </template>
-                        </modal>
-                    </div>
-                </div>
-                <hr />
-            </template>
             <ul class="list-unstyled list-spaced mb-0" v-if="!loading">
                 <events-list :header="'Skytteliga'" :items="goals" :type-name="'gjorda mål'" :is-small="isSmall" />
                 <hr />
@@ -241,54 +116,10 @@ export default class PlayerEvents extends Vue {
     gameType: string = ''
     arenaType: string = ''
 
-    selectedDate?: Date = new Date()
-
-    selectedGameId: number = 0
-    opponentTeamName: string = ''
-    numberOfGoalsScoredByOpponent: number = 0
-    preDefinedLineup?: Lineup = new Lineup()
-
-    startTime: string = ''
-    endTime: string = ''
-
-    modalAttributes: any = {
-		newEvent: {
-			attributes: {
-				name: 'new-event',
-				scrollable: true
-			},
-			header: 'Match',
-			button: {
-				icon: 'icon icon-plus float-right',
-				text: 'Skapa ny match med händelser'
-            },
-            onClose: () => this.reset()
-		}
-    }
-    
-    dpConfig: any = { 
-		format: 'YYYY-MM-DD', 
-		useCurrent: false, 
-		locale: 'sv', 
-		icons: { 
-			next: 'icon icon-arrow-right',
-			previous: 'icon icon-arrow-left' 
-        },
-        widgetPositioning: {
-            vertical: 'top',
-            horizontal: 'left'
-        }
-    }
-
     $modal = (this as any).VModal
 
     mounted() {
-        this.selectedDate = undefined
         this.fetchGames()
-    }
-
-    get loggedInUserIsGameAdmin(): boolean {
-        return this.vm.loggedInUser.inRoles.some(role => role == 'Admin' || role == 'GameAdmin')
     }
 
     get goals() {
@@ -309,15 +140,6 @@ export default class PlayerEvents extends Vue {
     get substitutesOut() {
         return this.listify(GameEventType.SubstituteOut)
     }
-    get canSave() {
-        return this.selectedDate 
-            && this.opponentTeamName
-            && this.gameType 
-            && this.arenaType
-            && (this.newLineup.formationId > 0 && this.newLineup.players.length < 11 ? false : true)
-            && this.crudGame.events.filter((e: CrudPlayerEvent) => e.playerId == 0).length <= 0
-            && this.crudGame.events.filter((e: CrudPlayerEvent) => e.inMinute == 0).length <= 0
-    }
     get gameEvents() {
         return this.crudGame.events.map((e: CrudPlayerEvent) => {
             return <IGameEvent> {
@@ -325,62 +147,6 @@ export default class PlayerEvents extends Vue {
                 component: FormComponent
             }
         })
-    }
-
-    @Watch('selectedGameId')
-        changeGame() {
-            let selectedGame: Game = this.games.filter((g: Game) => g.id == this.selectedGameId)[0]
-            if (!selectedGame)
-                return
-
-            this.setCrudGame({
-                id: selectedGame.id,
-                type: selectedGame.type,
-                arenaType: selectedGame.arenaType,
-                lineup: selectedGame.lineup ? {
-                    id: selectedGame.lineup.id,
-                    formationId: selectedGame.lineup.formation.id,
-                    players: selectedGame.lineup.players.map((ptl: PlayerToLineup) => {
-                        return {
-                            playerId: ptl.player.id,
-                            positionId: ptl.position.id
-                        }
-                    }),
-                    createdByUserId: '',
-                    type: selectedGame.lineup.type
-                } : undefined,
-                opponent: selectedGame.opponent,
-                numberOfGoalsScoredByOpponent: selectedGame.numberOfGoalsScoredByOpponent,
-                playedDate: new Date(selectedGame.playedOn),
-                events: selectedGame.playerEvents.map((e: PlayerEvent) => {
-                    return <CrudPlayerEvent> {
-                        id: e.id,
-                        playerId: e.player.id,
-                        type: e.eventType,
-                        inMinute: e.inMinute,
-
-                        guid: (this as any).$helpers.guid()
-                    }
-                })
-            })
-
-            this.gameType = GameType[selectedGame.type]
-            this.selectedDate = new Date(selectedGame.playedOn)
-            this.opponentTeamName = selectedGame.opponent
-            this.arenaType = ArenaType[selectedGame.arenaType]
-            this.preDefinedLineup = this.crudGame.lineup ? selectedGame.lineup : undefined
-            this.numberOfGoalsScoredByOpponent = this.crudGame.numberOfGoalsScoredByOpponent
-
-            this.$modal.show(this.modalAttributes.newEvent.attributes.name)
-        }
-
-    reset() {
-        this.setCrudGame(new CrudGame())
-        this.gameType = ''
-        this.selectedGameId = 0
-        this.selectedDate = undefined
-        this.opponentTeamName = ''
-        this.arenaType = ''
     }
 
     fetchGames() {
@@ -468,77 +234,5 @@ export default class PlayerEvents extends Vue {
     removeEvent(guid: string) {
         this.deleteGameEvent(this.crudGame.events.filter((e: CrudPlayerEvent) => e.guid == guid)[0])
     }
-
-    save() {
-        return new Promise<void>((resolve, reject) => {
-            let game: CrudGame = {
-                type: GameType[this.gameType as keyof typeof GameType],
-                arenaType: ArenaType[this.arenaType as keyof typeof ArenaType],
-                playedDate: this.selectedDate,
-                opponent: this.opponentTeamName,
-                numberOfGoalsScoredByOpponent: this.numberOfGoalsScoredByOpponent,
-                lineup: undefined,
-                events: this.crudGame.events.map((e: CrudPlayerEvent) => {
-                    delete e.guid
-                    return e
-                })
-            }
-            game.lineup = this.crudGame.lineup ? this.crudGame.lineup : this.newLineup.formationId > 0 && this.newLineup.players.length == 11 ? this.newLineup : undefined
-            if (game.lineup) {
-                game.lineup.createdByUserId = this.vm.loggedInUser.id
-                game.lineup.type = LineupType.Real
-            }
-            if (this.crudGame.id && this.crudGame.id > 0) {
-                game.id = this.crudGame.id
-                this.updateGame({ game: game }).then(() => resolve())
-            } else {
-                this.createGame({ game: game }).then(() => resolve())
-            }
-        }).then(() => {
-            this.$modal.hide(this.modalAttributes.newEvent.attributes.name)
-            this.fetchGames()
-            
-            this.gameType = ''
-            this.selectedDate = undefined
-        })
-    }
-
-    getGameType(type: GameType): string {
-        switch (type) {
-            case GameType.Cup:
-                return 'Cup'
-            case GameType.League:
-                return 'AS'
-            case GameType.EuropaLeague:
-                return 'EL'
-            case GameType.Training:
-                return 'Träning'
-            default:
-                return ''
-        }
-    }
-
-    
-    getArenaType(type: ArenaType): string {
-        switch (type) {
-            case ArenaType.Home:
-                return 'Hemma'
-            case ArenaType.Away:
-                return 'Borta'
-            case ArenaType.NeutralGround:
-                return 'Neutral'
-            default:
-                return ''
-        }
-    }
 }
 </script>
-
-<style lang="scss" scoped>
-span.remove-event {
-    cursor: pointer;
-    color: black;
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-</style>

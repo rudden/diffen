@@ -9,11 +9,11 @@
                         <span class="text-inherit">
                             {{ player.fullName }}
                             <template v-if="hasAnyAttribute">
-                                <span class="badge badge-primary ml-1" v-if="player.isCaptain">kapten</span>
-                                <span class="badge badge-info ml-1" v-if="player.isViceCaptain">vice kapten</span>
-                                <span class="badge badge-danger ml-1" v-if="player.isHereOnLoan">inlånad</span>
-                                <span class="badge badge-warning ml-1" v-if="player.isOutOnLoan">utlånad</span>
-                                <span class="badge badge-danger ml-1" v-if="player.isSold">såld</span>
+                                <span class="badge badge-primary ml-1" v-if="player.attributes.isCaptain">kapten</span>
+                                <span class="badge badge-info ml-1" v-if="player.attributes.isViceCaptain">vice kapten</span>
+                                <span class="badge badge-danger ml-1" v-if="player.attributes.isHereOnLoan">inlånad</span>
+                                <span class="badge badge-warning ml-1" v-if="player.attributes.isOutOnLoan">utlånad</span>
+                                <span class="badge badge-danger ml-1" v-if="player.attributes.isSold">såld</span>
                             </template>
                         </span>
                     </h6>
@@ -117,23 +117,23 @@
                                 <legend class="col-sm-3 col-form-label pt-0"><strong>Attribut</strong></legend>
                                 <div class="col-sm-9">
                                     <div class="form-check form-check-inline">
-                                        <input type="checkbox" class="form-check-input" id="isCaptain" v-model="crudPlayer.isCaptain" />
+                                        <input type="checkbox" class="form-check-input" id="isCaptain" v-model="crudPlayer.attributes.isCaptain" />
                                         <label class="form-check-label" for="isCaptain">Kapten</label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input type="checkbox" class="form-check-input" id="isViceCaptain" v-model="crudPlayer.isViceCaptain" />
+                                        <input type="checkbox" class="form-check-input" id="isViceCaptain" v-model="crudPlayer.attributes.isViceCaptain" />
                                         <label class="form-check-label" for="isViceCaptain">Vice kapten</label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input type="checkbox" class="form-check-input" id="isOutOnLoan" v-model="crudPlayer.isOutOnLoan" />
+                                        <input type="checkbox" class="form-check-input" id="isOutOnLoan" v-model="crudPlayer.attributes.isOutOnLoan" />
                                         <label class="form-check-label" for="isOutOnLoan">Utlånad</label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input type="checkbox" class="form-check-input" id="isHereOnLoan" v-model="crudPlayer.isHereOnLoan" />
+                                        <input type="checkbox" class="form-check-input" id="isHereOnLoan" v-model="crudPlayer.attributes.isHereOnLoan" />
                                         <label class="form-check-label" for="isHereOnLoan">Inlånad</label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input type="checkbox" class="form-check-input" id="isSold" v-model="crudPlayer.isSold" />
+                                        <input type="checkbox" class="form-check-input" id="isSold" v-model="crudPlayer.attributes.isSold" />
                                         <label class="form-check-label" for="isSold">Såld</label>
                                     </div>
                                 </div>
@@ -288,7 +288,7 @@ export default class PlayerComponent extends Vue {
         }
     }
     get hasAnyAttribute() {
-        return this.player && (this.player.isCaptain || this.player.isViceCaptain || this.player.isSold || this.player.isOutOnLoan || this.player.isHereOnLoan)
+        return this.player && (this.player.attributes.isCaptain || this.player.attributes.isViceCaptain || this.player.attributes.isSold || this.player.attributes.isOutOnLoan || this.player.attributes.isHereOnLoan)
     }
 
     get loggedInUserIsAdmin(): boolean {
@@ -359,11 +359,7 @@ export default class PlayerComponent extends Vue {
 				firstName: player.firstName,
 				lastName: player.lastName,
 				kitNumber: player.kitNumber,
-				isSold: player.isSold,
-                isCaptain: player.isCaptain,
-				isViceCaptain: player.isViceCaptain,
-				isHereOnLoan: player.isHereOnLoan,
-                isOutOnLoan: player.isOutOnLoan,
+				attributes: player.attributes,
                 birthDay: player.birthDay ? new Date(player.birthDay) : undefined,
                 heightInCentimeters: player.heightInCentimeters,
                 weight: player.weight,

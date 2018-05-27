@@ -1,123 +1,135 @@
 <template>
     <div class="row">
-        <div class="col-11 pr-0">
-            <div class="form-group mb-0">
-                <select class="form-control form-control-sm" v-model="selectedGameId">
-                    <option value="0">Hantera händelser i en match</option>
-                    <option v-for="game in games" :value="game.id" :key="game.id">
-                        {{ game.playedOn }} ({{ getGameType(game.type) }}) - {{ game.opponent }} ({{ getArenaType(game.arenaType)}})
-                    </option>
-                </select>
+        <template v-if="!loading">
+            <div class="col-11 pr-0">
+                <div class="form-group mb-0">
+                    <select class="form-control form-control-sm" v-model="selectedGameId">
+                        <option value="0">Hantera händelser i en match</option>
+                        <option v-for="game in games" :value="game.id" :key="game.id">
+                            {{ game.playedOn }} ({{ getGameType(game.type) }}) - {{ game.opponent }} ({{ getArenaType(game.arenaType)}})
+                        </option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="col-1 mt-1">
-            <modal v-bind="modalAttributes.newEvent">
-                <template slot="body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <div class="row">
-                                    <legend class="col-sm-3 col-form-label pt-0"><strong>Motståndare</strong></legend>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control form-control-sm" v-model="opponentTeamName" placeholder="Namnet på motståndarlaget">
-                                    </div>
-                                </div>
-                            </div>
-                            <fieldset class="form-group">
-                                <div class="row">
-                                    <legend class="col-sm-3 col-form-label pt-0"><strong>Typ av match</strong></legend>
-                                    <div class="col-sm-9">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" id="cup" v-model="gameType" value="Cup" />
-                                            <label class="form-check-label" for="cup">Cup</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" id="league" v-model="gameType" value="League" />
-                                            <label class="form-check-label" for="league">Allsvenskan</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" id="training" v-model="gameType" value="Training" />
-                                            <label class="form-check-label" for="training">Träningsmatch</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" id="europaLeague" v-model="gameType" value="EuropaLeague" />
-                                            <label class="form-check-label" for="europaLeague">Europa League</label>
+            <div class="col-1 mt-1">
+                <modal v-bind="modalAttributes.newEvent">
+                    <template slot="body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <legend class="col-sm-3 col-form-label pt-0"><strong>Motståndare</strong></legend>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control form-control-sm" v-model="opponentTeamName" placeholder="Namnet på motståndarlaget">
                                         </div>
                                     </div>
                                 </div>
-                            </fieldset>
-                            <fieldset class="form-group">
-                                <div class="row">
-                                    <legend class="col-sm-3 col-form-label pt-0"><strong>Plats</strong></legend>
-                                    <div class="col-sm-9">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" id="home" v-model="arenaType" value="Home" />
-                                            <label class="form-check-label" for="home">Hemma</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" id="away" v-model="arenaType" value="Away" />
-                                            <label class="form-check-label" for="away">Borta</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" id="neutral" v-model="arenaType" value="NeutralGround" />
-                                            <label class="form-check-label" for="neutral">Neutral mark</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </fieldset>
-                            <div class="form-group">
-                                <div class="row">
-                                    <legend class="col-sm-3 col-form-label pt-0"><strong>Datum</strong></legend>
-                                    <div class="col-9">
-                                        <!-- <v-datepicker v-model="selectedDate" :format="'yyyy-MM-dd'" :bootstrap-styling="true" :input-class="'form-control-sm'" :monday-first="true" :placeholder="'Välj datum'" /> -->
-                                        <date-picker v-model="selectedDate" :config="dpConfig" placeholder="Avspark" :class="{ 'form-control-sm': true }" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <legend class="col-sm-3 col-form-label pt-0"><strong>Moståndarmål</strong></legend>
-                                    <div class="col-sm-9">
-                                        <input type="number" class="form-control form-control-sm" v-model="numberOfGoalsScoredByOpponent" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <hr />
-                                <strong>Startelvan</strong>
-                                <div class="card mt-2" :class="{ 'br br__none': preDefinedLineup }">
-                                    <div class="card-body" :class="{ 'p-0': preDefinedLineup }">
-                                        <lineups :lineup-type="'Real'" :pre-defined-lineup="preDefinedLineup" :show-create-button="false" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <hr />
-                                <span class="icon icon-plus float-right" style="cursor: pointer" v-on:click="newEvent" v-tooltip="'Ny händelse'"></span>
-                                <h6>Händelser</h6>
-                            </div>
-                            <div class="form-group mb-0">
-                                <ul class="list-group">
-                                    <li class="list-group-item" v-for="(item, index) in gameEvents" :key="index">
-                                        <div class="row">
-                                            <div class="col-11 pr-0">
-                                                <component :is="item.component" v-bind="{ event: item.event }" :key="item.event.guid" />
+                                <fieldset class="form-group">
+                                    <div class="row">
+                                        <legend class="col-sm-3 col-form-label pt-0"><strong>Typ av match</strong></legend>
+                                        <div class="col-sm-9">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="cup" v-model="gameType" value="Cup" />
+                                                <label class="form-check-label" for="cup">Cup</label>
                                             </div>
-                                            <div class="col-1 pl-0">
-                                                <span v-on:click="removeEvent(item.event.guid)" class="float-right remove-event" v-tooltip="'Ta bort händelse'">&times;</span>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="league" v-model="gameType" value="League" />
+                                                <label class="form-check-label" for="league">Allsvenskan</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="training" v-model="gameType" value="Training" />
+                                                <label class="form-check-label" for="training">Träningsmatch</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="europaLeague" v-model="gameType" value="EuropaLeague" />
+                                                <label class="form-check-label" for="europaLeague">Europa League</label>
                                             </div>
                                         </div>
-                                    </li>
-                                </ul>
+                                    </div>
+                                </fieldset>
+                                <fieldset class="form-group">
+                                    <div class="row">
+                                        <legend class="col-sm-3 col-form-label pt-0"><strong>Plats</strong></legend>
+                                        <div class="col-sm-9">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="home" v-model="arenaType" value="Home" />
+                                                <label class="form-check-label" for="home">Hemma</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="away" v-model="arenaType" value="Away" />
+                                                <label class="form-check-label" for="away">Borta</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="neutral" v-model="arenaType" value="NeutralGround" />
+                                                <label class="form-check-label" for="neutral">Neutral mark</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <legend class="col-sm-3 col-form-label pt-0"><strong>Datum</strong></legend>
+                                        <div class="col-9">
+                                            <date-picker v-model="selectedDate" :config="dpConfig" placeholder="Avspark" :class="{ 'form-control-sm': true }" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <legend class="col-sm-3 col-form-label pt-0"><strong>Moståndarmål</strong></legend>
+                                        <div class="col-sm-9">
+                                            <input type="number" class="form-control form-control-sm" v-model="numberOfGoalsScoredByOpponent" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <legend class="col-sm-3 col-form-label pt-0"><strong>Tilläggstid</strong></legend>
+                                        <div class="col-sm-9">
+                                            <input type="number" class="form-control form-control-sm" v-model="numberOfAddonMinutes" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <hr />
+                                    <strong>Startelvan</strong>
+                                    <div class="card mt-2" :class="{ 'br br__none': preDefinedLineup }">
+                                        <div class="card-body" :class="{ 'p-0': preDefinedLineup }">
+                                            <lineups :lineup-type="'Real'" :pre-defined-lineup="preDefinedLineup" :show-create-button="false" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <hr />
+                                    <span class="icon icon-plus float-right" style="cursor: pointer" v-on:click="newEvent" v-tooltip="'Ny händelse'"></span>
+                                    <h6>Händelser</h6>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <ul class="list-group">
+                                        <li class="list-group-item" v-for="(item, index) in gameEvents" :key="index">
+                                            <div class="row">
+                                                <div class="col-11 pr-0">
+                                                    <component :is="item.component" v-bind="{ event: item.event }" :key="item.event.guid" />
+                                                </div>
+                                                <div class="col-1 pl-0">
+                                                    <span v-on:click="removeEvent(item.event.guid)" class="float-right remove-event" v-tooltip="'Ta bort händelse'">&times;</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </template>
-                <template slot="footer">
-                    <button class="btn btn-success btn-block btn-sm" :disabled="!canSave" v-on:click="save">Spara</button>
-                </template>
-            </modal>
-        </div>
+                    </template>
+                    <template slot="footer">
+                        <button class="btn btn-success btn-block btn-sm" :disabled="!canSave" v-on:click="save">Spara</button>
+                    </template>
+                </modal>
+            </div>
+        </template>
+        <template v-else>
+            <loader v-bind="{ background: '#699ED0' }" />
+        </template>
     </div>
 </template>
 
@@ -202,6 +214,7 @@ export default class PlayerEventsAdmin extends Vue {
     selectedGameId: number = 0
     opponentTeamName: string = ''
     numberOfGoalsScoredByOpponent: number = 0
+    numberOfAddonMinutes: number = 0
     preDefinedLineup?: Lineup = new Lineup()
 
     modalAttributes: any = {
@@ -290,7 +303,8 @@ export default class PlayerEventsAdmin extends Vue {
                 } : undefined,
                 opponent: selectedGame.opponent,
                 numberOfGoalsScoredByOpponent: selectedGame.numberOfGoalsScoredByOpponent,
-                playedDate: new Date(selectedGame.playedOn),
+                numberOfAddonMinutes: selectedGame.numberOfAddonMinutes,
+                playedDate: selectedGame.playedOn,
                 events: selectedGame.playerEvents.map((e: PlayerEvent) => {
                     return <CrudPlayerEvent> {
                         id: e.id,
@@ -309,6 +323,7 @@ export default class PlayerEventsAdmin extends Vue {
             this.arenaType = ArenaType[selectedGame.arenaType]
             this.preDefinedLineup = this.crudGame.lineup ? selectedGame.lineup : undefined
             this.numberOfGoalsScoredByOpponent = this.crudGame.numberOfGoalsScoredByOpponent
+            this.numberOfAddonMinutes = this.crudGame.numberOfAddonMinutes
 
             this.$modal.show(this.modalAttributes.newEvent.attributes.name)
         }
@@ -341,9 +356,10 @@ export default class PlayerEventsAdmin extends Vue {
             let game: CrudGame = {
                 type: GameType[this.gameType as keyof typeof GameType],
                 arenaType: ArenaType[this.arenaType as keyof typeof ArenaType],
-                playedDate: this.selectedDate,
+                playedDate: this.selectedDate ? this.selectedDate.toLocaleString() : new Date().toLocaleString(),
                 opponent: this.opponentTeamName,
                 numberOfGoalsScoredByOpponent: this.numberOfGoalsScoredByOpponent,
+                numberOfAddonMinutes: this.numberOfAddonMinutes,
                 lineup: undefined,
                 events: this.crudGame.events.map((e: CrudPlayerEvent) => {
                     delete e.guid
@@ -357,6 +373,7 @@ export default class PlayerEventsAdmin extends Vue {
             }
             if (this.crudGame.id && this.crudGame.id > 0) {
                 game.id = this.crudGame.id
+                console.log('update game:', game)
                 this.updateGame({ game: game }).then(() => resolve())
             } else {
                 this.createGame({ game: game }).then(() => resolve())

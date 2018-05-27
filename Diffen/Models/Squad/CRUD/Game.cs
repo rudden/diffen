@@ -12,8 +12,9 @@ namespace Diffen.Models.Squad.CRUD
 		public ArenaType ArenaType { get; set; }
 		public Lineup Lineup { get; set; }
 		public string Opponent { get; set; }
-		public DateTime PlayedDate { get; set; }
+		public string PlayedDate { get; set; }
 		public int NumberOfGoalsScoredByOpponent { get; set; }
+		public int NumberOfAddonMinutes { get; set; }
 		public IEnumerable<PlayerEvent> Events { get; set; }
 	}
 

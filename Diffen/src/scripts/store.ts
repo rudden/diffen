@@ -62,7 +62,7 @@ Vue.use((<any>window).VueCharts)
 import TableComponent from 'vue-table-component'
 
 Vue.use(TableComponent, {
-    tableClass: 'table table-hover table-sm mb-0',
+    tableClass: 'table table-bordered table-hover table-responsive-lg table-sm mb-0',
     theadClass: 'thead-dark',
     tbodyClass: '',
     filterPlaceholder: 'Sök',

@@ -937,10 +937,14 @@ namespace Diffen.Database.Clients
 			return CommitedResultIsSuccessfulAsync();
 		}
 
-		public Task<bool> UpdateGameAsync(Game game)
+		public async Task<bool> UpdateGameAsync(Game game)
 		{
 			_dbContext.Games.Update(game);
-			return CommitedResultIsSuccessfulAsync();
+			_dbContext.Entry(game).State = EntityState.Modified;
+			_dbContext.Entry(game).Property(x => x.LineupId).IsModified = false;
+			var result = await CommitedResultIsSuccessfulAsync();
+			_dbContext.Entry(game).State = EntityState.Detached;
+			return result;
 		}
 
 		public async Task<bool> UpdateGameWithLineupAsync(int gameId, int lineupId)

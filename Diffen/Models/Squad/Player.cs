@@ -16,6 +16,7 @@ namespace Diffen.Models.Squad
 		public bool IsOutOnLoan { get; set; }
 		public bool IsHereOnLoan { get; set; }
 		public bool IsSold { get; set; }
+		public PlayerAttributes Attributes { get; set; }
 		public IEnumerable<Position> AvailablePositions { get; set; }
 		public IEnumerable<PlayerEventOnPlayer> Events { get; set; }
 

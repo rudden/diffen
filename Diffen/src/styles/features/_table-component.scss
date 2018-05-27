@@ -29,3 +29,7 @@
 .table-component__th--sort-asc:after {
     content: '↑';
 }
+
+.table .thead-dark th {
+    text-transform: uppercase;
+}
