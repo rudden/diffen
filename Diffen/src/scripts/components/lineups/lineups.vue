@@ -18,7 +18,7 @@
 						</select>
 					</div>
 				</template>
-				<div class="col-4" v-if="userIsLoggedInUser">
+				<div class="col-4 mt-0" v-if="userIsLoggedInUser">
 					<button class="btn btn-sm btn-block" :class="{ 'btn-success': !inCreate, 'btn-primary': inCreate }" v-on:click="setInCreate(!inCreate)">
 						{{ !inCreate ? 'Skapa ny' : 'Välj befintlig' }}
 					</button>

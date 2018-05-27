@@ -51,11 +51,7 @@
             </template>
         </template>
         <template v-if="showLineupSelection">
-            <div class="row mt-3" v-show="showLineupSelection">
-                <div class="col">
-                    <lineups :type-of-lineup="'Fiction'" :show-create-button="false" v-bind="{ preSelectedLineupId: newPost.lineupId }" />
-                </div>
-            </div>
+            <lineups :type-of-lineup="'Fiction'" :show-create-button="false" v-bind="{ preSelectedLineupId: newPost.lineupId }" class="mt-3" />
         </template>
         <results :items="results" class="pt-3" />
     </div>
