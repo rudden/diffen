@@ -7,7 +7,7 @@
 						{{ player.shortName }}
 						<span class="ml-2" v-if="hasAttribute">
 							<span class="badge badge-primary" v-if="attributes.isCaptain">kapten</span>
-							<span class="badge badge-info" v-if="attributes.isCaptain">vice kapten</span>
+							<span class="badge badge-info" v-else-if="attributes.isViceCaptain">vice kapten</span>
 							<span class="badge badge-danger" v-else-if="attributes.isHereOnLoan">inlånad</span>
 							<span class="badge badge-warning" v-else-if="attributes.isOutOnLoan">utlånad</span>
 							<span class="badge badge-danger" v-else-if="attributes.isSold">såld</span>
