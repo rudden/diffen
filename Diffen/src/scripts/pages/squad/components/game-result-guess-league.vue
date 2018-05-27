@@ -19,7 +19,6 @@
                         <template slot="tfoot">
                             <tr>
                                 <td colspan="4" style="border-top: 0">
-                                    <hr />
                                     <modal v-bind="modalAttributes.info">
                                         <template slot="body">
                                             <ul class="list-unstyled list-spaced mb-0">
