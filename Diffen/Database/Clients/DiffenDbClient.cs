@@ -923,7 +923,7 @@ namespace Diffen.Database.Clients
 
 		public Task<Game> GetUpcomingGameAsync()
 		{
-			return _dbContext.Games.IncludeAll().Where(x => x.OnDate > DateTime.Now).OrderByDescending(x => x.OnDate).FirstOrDefaultAsync();
+			return _dbContext.Games.IncludeAll().Where(x => x.OnDate > DateTime.Now).OrderBy(x => x.OnDate).FirstOrDefaultAsync();
 		}
 
 		public Task<List<PlayerEvent>> GetPlayerEventsAsync()
