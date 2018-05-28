@@ -92,10 +92,6 @@ import moment from 'moment'
         parentId: {
             type: Number,
             default: 0
-        },
-        modalName: {
-            type: String,
-            default: undefined
         }
     },
     components: {
@@ -123,7 +119,6 @@ export default class NewPost extends Vue {
     
     post: Post
     parentId: number
-    modalName: string
 
     loading: boolean = true
     noLineupsFound: boolean = false
@@ -136,26 +131,6 @@ export default class NewPost extends Vue {
 
     showLineupSelection: boolean = false
     showThreadSelection: boolean = false
-
-    $modal = (this as any).VModal
-
-    modalAttributes: any = {
-        lineups: {
-            attributes: {
-                name: 'post-lu',
-                clickToClose: false
-            },
-            header: 'Lägg till startelva',
-            button: {
-                image: {
-                    classes: 'rounded ml-2',
-                    src: '/field-bw.png',
-                    style: 'height: 33px'
-                },
-                text: 'Lägg till startelva'
-            }
-        }
-    }
 
     created() {
         this.$nextTick(() => {
@@ -254,9 +229,6 @@ export default class NewPost extends Vue {
     }
 
     submit() {
-        if (this.inEditMode || this.inReplyMode && this.modalName) {
-            this.$modal.hide(this.modalName)
-        }
         this.setIsLoadingPosts({ value: true })
         if (!this.inEditMode && this.activeThread) {
             this.newPost.threadIds = [this.activeThread.id]

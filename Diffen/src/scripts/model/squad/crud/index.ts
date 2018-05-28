@@ -25,9 +25,9 @@ export class Player {
     heightInCentimeters: number
     weight: number
     preferredFoot: PreferredFoot
-    about: string
+    about: string = ''
     contractUntil?: Date = new Date()
-    imageUrl: string
+    imageUrl: string = ''
 }
 
 export class Game {

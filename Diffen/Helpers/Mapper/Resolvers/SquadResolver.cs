@@ -106,7 +106,6 @@ namespace Diffen.Helpers.Mapper.Resolvers
 			{
 				data.NumberOfMinutesPlayed += 90 * gamesFromStartNotSubstitutedOut.Count;
 			}
-
 			if (gamesFromStartSubstitutedOut.Any())
 			{
 				foreach (var game in gamesFromStartSubstitutedOut)

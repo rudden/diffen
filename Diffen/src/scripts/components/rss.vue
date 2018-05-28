@@ -30,8 +30,6 @@ import { Component } from 'vue-property-decorator'
 
 import Parser from 'rss-parser'
 
-import axios from 'axios'
-
 interface RssItem {
     id: number
     title: string
