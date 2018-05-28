@@ -19,7 +19,7 @@ export class Player {
     firstName: string = ''
     lastName: string = ''
     kitNumber: number = 0
-    attributes: PlayerAttributes
+    attributes: PlayerAttributes = new PlayerAttributes()
     availablePositionsIds: number[] = []
     birthDay?: Date = new Date()
     heightInCentimeters: number

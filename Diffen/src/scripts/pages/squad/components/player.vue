@@ -244,11 +244,10 @@ export default class PlayerComponent extends Vue {
     private darkBlue: string = '#0568AF'
     private lightBlue: string = '#699ED0'
     
-    mounted() {
+    created() {
+        this.setPlayer(this.player)
         if (!this.player) {
             this.inEdit = true
-        } else {
-            this.setPlayer(this.player)
         }
     }
 
