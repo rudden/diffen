@@ -234,7 +234,7 @@ export default class FilterComponent extends Vue {
         return this.threads.filter((t: Thread) => t.type == ThreadType.Ongoing)
     }
     get plannedThreads() {
-        return this.threads.filter((t: Thread) => t.type == ThreadType.Planned && t.startTime && new Date(t.startTime) <= new Date())
+        return this.threads.filter((t: Thread) => t.type == ThreadType.Planned)
     }
     
     @Watch('selectedUser')

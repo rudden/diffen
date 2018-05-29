@@ -35,7 +35,9 @@
                             <div class="col">
                                 <div class="form-check form-check-inline" v-for="thread in allThreads" :key="thread.name">
                                     <input class="form-check-input" type="checkbox" :id="thread.name" :value="thread" v-model="selectedThreads" :disabled="disabledThreadSelection(thread.name)">
-                                    <label class="form-check-label" :for="thread.name">{{ thread.name }}</label>
+                                    <label class="form-check-label" :for="thread.name">
+                                        {{ thread.name }} {{ thread.numberOfPosts > 0 ? `(${thread.numberOfPosts})` : '' }}
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -192,6 +194,7 @@ export default class NewPost extends Vue {
         return this.selectedThreads.length == 2 ? true : false
     }
     get allThreads() {
+        this.threads.sort((a: Thread, b: Thread) => { return b.numberOfPosts - a.numberOfPosts })
         return this.threads.filter((t: Thread) => t.type == ThreadType.Ongoing).concat(this.newThreads)
     }
     get threadsBtnText() {
