@@ -22,7 +22,7 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> ScissorPostAsync(int postId);
 		Task<bool> SavePostAsync(int postId, string userId);
 		Task<bool> UnSavePostAsync(int postId, string userId);
-		Task<List<UrlTip>> GetLastMonthsMostClickedUrlTipsAsync();
+		Task<List<UrlTip>> GetUrlTipsTopListAsync();
 		Task<bool> UpdateUrlTipClickCountAsync(string subject, int id);
 		Task<List<Vote>> GetVotesOnPostIdAsync(int postId);
 		Task<bool> CreateVoteAsync(Models.Forum.CRUD.Vote vote);

@@ -111,7 +111,7 @@ namespace Diffen.Controllers.Api
 		public Task<List<UrlTip>> UrlTipClickCountTopList()
 		{
 			_logger.Debug("Requesting to get last months most clicked urltips");
-			return _postRepository.GetLastMonthsMostClickedUrlTipsAsync();
+			return _postRepository.GetUrlTipsTopListAsync();
 		}
 
 		[VerifyInputToLoggedInUserId("userId")]

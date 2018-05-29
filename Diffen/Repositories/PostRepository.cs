@@ -131,10 +131,10 @@ namespace Diffen.Repositories
 			return await _dbClient.DeleteSavedPostForUserAsync(savedPost);
 		}
 
-		public async Task<List<UrlTip>> GetLastMonthsMostClickedUrlTipsAsync()
+		public async Task<List<UrlTip>> GetUrlTipsTopListAsync()
 		{
 			var urlTips = await _dbClient.GetUrlTipsAsync();
-			var topList = urlTips.Where(x => x.Created.Date.Day == DateTime.Now.Day)
+			var topList = urlTips.Where(x => x.Created >= DateTime.Now.AddDays(-1))
 				.Select(x => new UrlTip
 				{
 					Id = x.Id,

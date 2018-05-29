@@ -334,7 +334,7 @@ namespace Diffen.Database.Clients
 
 		public Task<List<Thread>> GetPostThreadsAsync()
 		{
-			return _dbContext.Threads.OrderBy(x => x.Name).ToListAsync();
+			return _dbContext.Threads.Where(x => x.StartTime == null || DateTime.Now >= x.StartTime).OrderBy(x => x.Name).ToListAsync();
 		}
 
 		public Task<int> GetNumberOfPostsOnThreadAsync(int threadId)
@@ -923,7 +923,7 @@ namespace Diffen.Database.Clients
 
 		public Task<Game> GetUpcomingGameAsync()
 		{
-			return _dbContext.Games.IncludeAll().Where(x => x.OnDate > DateTime.Now).OrderBy(x => x.OnDate).FirstOrDefaultAsync();
+			return _dbContext.Games.IncludeAll().Where(x => x.OnDate > DateTime.Now && x.Type == GameType.League).OrderBy(x => x.OnDate).FirstOrDefaultAsync();
 		}
 
 		public Task<List<PlayerEvent>> GetPlayerEventsAsync()
