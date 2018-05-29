@@ -44,6 +44,7 @@ interface PlayerItem {
 interface Event {
     player: PlayerItem
     playedOn: string
+    inMinute: number
     gameType: GameType
     eventType: GameEventType
 }
@@ -166,6 +167,7 @@ export default class PlayerEvents extends Vue {
                             fullName: playerEvent.player.fullName,
                         },
                         playedOn: game.playedOn,
+                        inMinute: playerEvent.inMinute,
                         gameType: game.type,
                         eventType: playerEvent.eventType
                     })
@@ -184,34 +186,13 @@ export default class PlayerEvents extends Vue {
 
             let allEvents: Event[] = events.filter((e2: Event) => e2.player.id == e.player.id)
 
-            let cupGames = allEvents.filter((e: Event) => e.gameType == GameType.Cup)
-            let leagueGames = allEvents.filter((e: Event) => e.gameType == GameType.League)
-            let europeLeagueGames = allEvents.filter((e: Event) => e.gameType == GameType.EuropaLeague)
-            let trainingGames = allEvents.filter((e: Event) => e.gameType == GameType.Training)
-
             items.push({
                 player: e.player,
                 events: [
-                    {
-                        type: GameType.Cup,
-                        dates: cupGames.map((e: Event) => e.playedOn),
-                        amount: cupGames.length
-                    },
-                    {
-                        type: GameType.League,
-                        dates: leagueGames.map((e: Event) => e.playedOn),
-                        amount: leagueGames.length
-                    },
-                    {
-                        type: GameType.EuropaLeague,
-                        dates: europeLeagueGames.map((e: Event) => e.playedOn),
-                        amount: europeLeagueGames.length
-                    },
-                    {
-                        type: GameType.Training,
-                        dates: trainingGames.map((e: Event) => e.playedOn),
-                        amount: trainingGames.length
-                    }
+                    this.getListifiedItems(allEvents, GameType.Cup),
+                    this.getListifiedItems(allEvents, GameType.League),
+                    this.getListifiedItems(allEvents, GameType.EuropaLeague),
+                    this.getListifiedItems(allEvents, GameType.Training)
                 ],
                 total: allEvents.length
             })
@@ -225,6 +206,15 @@ export default class PlayerEvents extends Vue {
             return b.total - a.total
         })
         return items
+    }
+
+    getListifiedItems(events: Event[], gameType: GameType) {
+        let games = events.filter((event: Event) => event.gameType == gameType)
+        return <IPlayerEvent> {
+            type: GameType.Cup,
+            dates: games.map((e: Event) => `${e.playedOn.substring(0, 10)} (${e.inMinute}')`),
+            amount: games.length
+        }
     }
 
     newEvent(e: any) {
