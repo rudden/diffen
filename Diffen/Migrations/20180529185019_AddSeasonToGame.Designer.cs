@@ -12,9 +12,10 @@ using System;
 namespace Diffen.Migrations
 {
     [DbContext(typeof(DiffenDbContext))]
-    partial class DiffenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180529185019_AddSeasonToGame")]
+    partial class AddSeasonToGame
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -345,7 +346,7 @@ namespace Diffen.Migrations
 
                     b.Property<string>("OpponentTeamName");
 
-                    b.Property<int?>("SeasonId");
+                    b.Property<int>("SeasonId");
 
                     b.Property<int>("Type");
 
@@ -978,7 +979,8 @@ namespace Diffen.Migrations
 
                     b.HasOne("Diffen.Database.Entities.Squad.Season", "Season")
                         .WithMany("Games")
-                        .HasForeignKey("SeasonId");
+                        .HasForeignKey("SeasonId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Diffen.Database.Entities.Squad.GameResultGuess", b =>

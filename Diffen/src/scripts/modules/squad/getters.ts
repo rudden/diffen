@@ -9,7 +9,8 @@ import {
     GET_POSITIONS,
     GET_SELECTED_LINEUP,
     GET_GAMES,
-    GET_CRUD_GAME
+    GET_CRUD_GAME,
+    GET_SEASONS
 } from './types'
 
 export const Getters: GetterTree<State, any>  = {
@@ -20,7 +21,8 @@ export const Getters: GetterTree<State, any>  = {
     [GET_POSITIONS]: (state: State) => state.positions,
     [GET_SELECTED_LINEUP]: (state: State) => state.selectedLineup,
     [GET_GAMES]: (state: State) => state.games,
-    [GET_CRUD_GAME]: (state: State) => state.crudGame
+    [GET_CRUD_GAME]: (state: State) => state.crudGame,
+    [GET_SEASONS]: (state: State) => state.seasons
 }
 
 export default Getters

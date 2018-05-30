@@ -77,7 +77,8 @@ namespace Diffen.Helpers.Extensions
 			return source
 				.Include(x => x.AvailablePositions).ThenInclude(x => x.Position)
 				.Include(x => x.InLineups)
-				.Include(x => x.PlayerEvents).ThenInclude(x => x.Game).ThenInclude(x => x.Lineup).ThenInclude(x => x.Players)
+				.Include(x => x.PlayerEvents).ThenInclude(x => x.Game).ThenInclude(x => x.Lineup).ThenInclude(x => x.Players).ThenInclude(x => x.Position)
+				.Include(x => x.PlayerEvents).ThenInclude(x => x.Game).ThenInclude(x => x.Lineup).ThenInclude(x => x.Formation)
 				.AsNoTracking();
 		}
 
@@ -150,6 +151,17 @@ namespace Diffen.Helpers.Extensions
 			return source
 				.Include(x => x.Game).ThenInclude(x => x.PlayerEvents).ThenInclude(x => x.Player)
 				.Include(x => x.GuessedByUser).ThenInclude(x => x.NickNames);
+		}
+
+		public static IQueryable<Season> IncludeAll(this DbSet<Season> source)
+		{
+			return source
+				.Include(x => x.Games).ThenInclude(x => x.PlayerEvents).ThenInclude(x => x.Player)
+				.ThenInclude(x => x.AvailablePositions).ThenInclude(x => x.Position)
+				.Include(x => x.Games).ThenInclude(x => x.Lineup).ThenInclude(x => x.Formation)
+				.Include(x => x.Games).ThenInclude(x => x.Lineup).ThenInclude(x => x.Players).ThenInclude(x => x.Player)
+				.ThenInclude(x => x.AvailablePositions)
+				.Include(x => x.Games).ThenInclude(x => x.Lineup).ThenInclude(x => x.Players).ThenInclude(x => x.Position);
 		}
 	}
 }

@@ -38,6 +38,7 @@ namespace Diffen.Database
 		public DbSet<PlayerEvent> PlayerEvents { get; set; }
 		public DbSet<Title> Titles { get; set; }
 		public DbSet<GameResultGuess> GameResultGuesses { get; set; }
+		public DbSet<Season> Seasons { get; set; }
 
 		public DbSet<Poll> Polls { get; set; }
 		public DbSet<PollSelection> PollSelections { get; set; }

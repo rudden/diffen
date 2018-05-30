@@ -110,6 +110,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<List<GameResultGuess>> GetGameResultGuessesForGameWithIdAsync(int gameId);
 		Task<List<GameResultGuess>> GetGameResultGuessesForUserWithIdAsync(string userId);
 		Task<bool> CreateGameResultGuessAsync(GameResultGuess guess);
+		Task<List<Season>> GetSeasonsAsync();
 
 		// Poll Related Requests
 		Task<List<Poll>> GetPollsAsync();

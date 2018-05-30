@@ -7,6 +7,7 @@ export const GET_NEW_LINEUP = 'squad/GET_NEW_LINEUP'
 export const GET_SELECTED_LINEUP = 'squad/GET_SELECTED_LINEUP'
 export const GET_GAMES = 'squad/GET_GAMES'
 export const GET_CRUD_GAME = 'squad/GET_CRUD_GAME'
+export const GET_SEASONS = 'squad/GET_SEASONS'
 
 // actions
 export const FETCH_KVP_USERS = 'squad/FETCH_KVP_USERS'
@@ -26,6 +27,7 @@ export const FETCH_TITLES = 'squad/FETCH_TITLES'
 export const GUESS_GAME_RESULT = 'squad/GUESS_GAME_RESULT'
 export const FETCH_UPCOMING_GAME = 'squad/FETCH_UPCOMING_GAME'
 export const FETCH_FINISHED_GAME_RESULT_GUESSES = 'squad/FETCH_FINISHED_GAME_RESULT_GUESSES'
+export const FETCH_SEASONS = 'squad/FETCH_SEASONS'
 
 // mutations
 export const SET_LINEUPS = 'squad/SET_LINEUPS'
@@ -41,3 +43,4 @@ export const SET_GAME_EVENT = 'squad/SET_GAME_EVENT'
 export const SET_GAME_EVENTS = 'squad/SET_GAME_EVENTS'
 export const CHANGE_GAME_EVENT = 'squad/CHANGE_GAME_EVENT'
 export const DELETE_GAME_EVENT = 'squad/DELETE_GAME_EVENT'
+export const SET_SEASONS = 'squad/SET_SEASONS'

@@ -29,7 +29,9 @@ import {
     FETCH_TITLES,
 	FETCH_UPCOMING_GAME,
     GUESS_GAME_RESULT,
-    FETCH_FINISHED_GAME_RESULT_GUESSES
+	FETCH_FINISHED_GAME_RESULT_GUESSES,
+	FETCH_SEASONS,
+	SET_SEASONS
 } from './types'
 
 axios.defaults.withCredentials = true
@@ -138,6 +140,10 @@ export const Actions: ActionTree<State, any> = {
 					resolve(res.data)
 				}).catch((error) => console.warn(error))
 		})
+	},
+	[FETCH_SEASONS]: (store: ActionContext<State, any>): Promise<void> => {
+		return axios.get(`${store.rootState.vm.api}/squads/seasons`)
+			.then((res) => store.commit(SET_SEASONS, res.data)).catch((error) => console.warn(error))
 	},
 }
 export default Actions

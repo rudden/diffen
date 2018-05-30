@@ -5,16 +5,16 @@ using System.Collections.Generic;
 
 using Microsoft.Extensions.Caching.Memory;
 
-using AutoMapper;
-using Diffen.Helpers.Enum;
-using Diffen.Helpers.Extensions;
 using Serilog;
+using AutoMapper;
 
 namespace Diffen.Repositories
 {
 	using Contracts;
 	using Models;
 	using Models.Squad;
+	using Helpers.Enum;
+	using Helpers.Extensions;
 	using Database.Clients.Contracts;
 
 	public class SquadRepository : ISquadRepository
@@ -159,7 +159,8 @@ namespace Diffen.Repositories
 					!existingGame.ArenaType.Equals(updateGame.ArenaType) ||
 					!existingGame.OpponentTeamName.Equals(updateGame.OpponentTeamName) ||
 					!existingGame.NumberOfGoalsScoredByOpponent.Equals(updateGame.NumberOfGoalsScoredByOpponent) ||
-					!existingGame.NumberOfAddonMinutes.Equals(updateGame.NumberOfAddonMinutes))
+					!existingGame.NumberOfAddonMinutes.Equals(updateGame.NumberOfAddonMinutes) ||
+					!existingGame.TablePlacementAfterGame.Equals(updateGame.TablePlacementAfterGame))
 				{
 					result = await _dbClient.UpdateGameAsync(updateGame);
 				}
@@ -223,6 +224,16 @@ namespace Diffen.Repositories
 					Guesses = _mapper.Map<List<GameResultGuess>>(guesses.Where(x => x.GuessedByUserId.Equals(user.Id) && x.Game.OnDate < DateTime.Now))
 				})
 				.ToList();
+		}
+
+		public async Task<List<Season>> GetSeasons()
+		{
+			var seasons = await _dbClient.GetSeasonsAsync();
+			foreach (var season in seasons)
+			{
+				season.Games = season.Games.OrderBy(game => game.OnDate).ToList();
+			}
+			return _mapper.Map<List<Season>>(seasons);
 		}
 	}
 }

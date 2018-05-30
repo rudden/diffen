@@ -45,7 +45,7 @@
 			CreateMap<Database.Entities.Forum.Thread, Models.Forum.Thread>().ConvertUsing<PostResolver>();
 			CreateMap<Database.Entities.Forum.PostToThread, Models.Forum.Thread>().ConvertUsing<PostResolver>();
 			CreateMap<Database.Entities.Squad.Player, Models.Squad.PlayerAttributes>().ConvertUsing<SquadResolver>();
-
+			CreateMap<Database.Entities.Squad.Season, Models.Squad.Season>().ConvertUsing<SquadResolver>();
 		}
 	}
 }

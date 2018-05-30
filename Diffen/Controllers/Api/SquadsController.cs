@@ -143,5 +143,12 @@ namespace Diffen.Controllers.Api
 			_logger.Debug("Requesting all titles");
 			return _squadRepository.GetTitlesAsync();
 		}
+
+		[HttpGet("seasons")]
+		public Task<List<Season>> GetSeasons()
+		{
+			_logger.Debug("Requesting all seasons including games");
+			return _squadRepository.GetSeasons();
+		}
 	}
 }

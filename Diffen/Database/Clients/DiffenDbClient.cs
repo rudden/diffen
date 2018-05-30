@@ -933,6 +933,7 @@ namespace Diffen.Database.Clients
 
 		public Task<bool> CreateGameAsync(Game game)
 		{
+			game.SeasonId = _dbContext.Seasons.FirstOrDefault(x => x.IsActive)?.Id;
 			_dbContext.Games.Add(game);
 			return CommitedResultIsSuccessfulAsync();
 		}
@@ -942,6 +943,7 @@ namespace Diffen.Database.Clients
 			_dbContext.Games.Update(game);
 			_dbContext.Entry(game).State = EntityState.Modified;
 			_dbContext.Entry(game).Property(x => x.LineupId).IsModified = false;
+			_dbContext.Entry(game).Property(x => x.SeasonId).IsModified = false;
 			var result = await CommitedResultIsSuccessfulAsync();
 			_dbContext.Entry(game).State = EntityState.Detached;
 			return result;
@@ -996,6 +998,11 @@ namespace Diffen.Database.Clients
 		{
 			_dbContext.GameResultGuesses.Add(guess);
 			return CommitedResultIsSuccessfulAsync();
+		}
+
+		public Task<List<Season>> GetSeasonsAsync()
+		{
+			return _dbContext.Seasons.IncludeAll().ToListAsync();
 		}
 
 		private async Task<bool> CommitedResultIsSuccessfulAsync()

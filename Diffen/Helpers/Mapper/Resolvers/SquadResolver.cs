@@ -26,7 +26,8 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		ITypeConverter<Database.Entities.Squad.Title, Models.Squad.Title>,
 		ITypeConverter<Models.Squad.CRUD.GameResultGuess, Database.Entities.Squad.GameResultGuess>,
 		ITypeConverter<Database.Entities.Squad.GameResultGuess, Models.Squad.GameResultGuess>,
-		ITypeConverter<Database.Entities.Squad.Player, Models.Squad.PlayerAttributes>
+		ITypeConverter<Database.Entities.Squad.Player, Models.Squad.PlayerAttributes>,
+		ITypeConverter<Database.Entities.Squad.Season, Models.Squad.Season>
 	{
 		private readonly IDiffenDbClient _dbClient;
 
@@ -56,9 +57,15 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					Id = x.Position.Id,
 					Name = x.Position.Name
 				}),
-				InNumberOfStartingElevens = source.InLineups.Count,
-				Events = context.Mapper.Map<IEnumerable<Models.Squad.PlayerEventOnPlayer>>(source.PlayerEvents),
-				Data = GetPlayerTableData(source)
+				Statistics = new Models.Squad.PlayerStatistics
+				{
+					Events = source.PlayerEvents != null ? context.Mapper.Map<IEnumerable<Models.Squad.PlayerEventOnPlayer>>(source.PlayerEvents) : null,
+					DistinctGamesWithEvents = source.PlayerEvents != null ? context.Mapper.Map<IEnumerable<Models.Squad.Game>>(source.PlayerEvents.Select(x => x.Game).Where(y => y.OnDate < DateTime.Now.AddHours(4)).Distinct().ToList()) : null,
+					GamesWithoutEvents = context.Mapper.Map<IEnumerable<Models.Squad.Game>>(_dbClient.GetGamesWherePlayerStartedButNoEventsAsync(source.Id).Result)
+				}
+				//InNumberOfStartingElevens = source.InLineups.Count,
+				//Events = context.Mapper.Map<IEnumerable<Models.Squad.PlayerEventOnPlayer>>(source.PlayerEvents),
+				//Data = GetPlayerTableData(source)
 			};
 		}
 
@@ -208,12 +215,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Id = source.PlayerId,
 				FirstName = source.Player.FirstName,
 				LastName = source.Player.LastName,
-				KitNumber = source.Player.KitNumber,
-				IsOutOnLoan = source.Player.IsOutOnLoan,
-				IsViceCaptain = source.Player.IsViceCaptain,
-				IsHereOnLoan = source.Player.IsHereOnLoan,
-				IsCaptain = source.Player.IsCaptain,
-				IsSold = source.Player.IsSold
+				KitNumber = source.Player.KitNumber
 			};
 		}
 
@@ -250,6 +252,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Opponent = source.OpponentTeamName,
 				NumberOfGoalsScoredByOpponent = source.NumberOfGoalsScoredByOpponent,
 				NumberOfAddonMinutes = source.NumberOfAddonMinutes,
+				TablePlacementAfterGame = source.TablePlacementAfterGame,
 				Lineup = source.Lineup != null ? context.Mapper.Map<Models.Squad.Lineup>(source.Lineup) : null,
 				PlayedOn = source.OnDate.ToString("yyyy-MM-dd HH:mm"),
 				PlayerEvents = context.Mapper.Map<IEnumerable<Models.Squad.PlayerEvent>>(source.PlayerEvents)
@@ -278,6 +281,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				GameId = source.GameId,
 				GameType = source.Game.Type,
 				EventType = source.Type,
+				InMinuteOfGame = source.InMinuteOfGame,
 				Date = source.Game.OnDate.ToString("yyyy-MM-dd")
 			};
 		}
@@ -292,6 +296,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				OpponentTeamName = source.Opponent,
 				NumberOfGoalsScoredByOpponent = source.NumberOfGoalsScoredByOpponent,
 				NumberOfAddonMinutes = source.NumberOfAddonMinutes,
+				TablePlacementAfterGame = source.TablePlacementAfterGame,
 				OnDate = System.Convert.ToDateTime(source.PlayedDate)
 			};
 		}
@@ -331,6 +336,18 @@ namespace Diffen.Helpers.Mapper.Resolvers
 					Id = source.GuessedByUserId,
 					NickName = source.GuessedByUser.NickNames.Current()
 				}
+			};
+		}
+
+		public Models.Squad.Season Convert(Database.Entities.Squad.Season source, Models.Squad.Season destination,
+			ResolutionContext context)
+		{
+			return new Models.Squad.Season
+			{
+				Id = source.Id,
+				Name = source.Name,
+				IsActive = source.IsActive,
+				Games = context.Mapper.Map<IEnumerable<Models.Squad.Game>>(source.Games)
 			};
 		}
 	}
