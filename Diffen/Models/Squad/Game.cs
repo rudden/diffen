@@ -12,6 +12,7 @@ namespace Diffen.Models.Squad
 		public string Opponent { get; set; }
 		public int NumberOfGoalsScoredByOpponent { get; set; }
 		public int NumberOfAddonMinutes { get; set; }
+		public int TablePlacementAfterGame { get; set; }
 		public Lineup Lineup { get; set; }
 		public IEnumerable<PlayerEvent> PlayerEvents { get; set; }
 		public string PlayedOn { get; set; }

@@ -15,6 +15,7 @@ namespace Diffen.Models.Squad.CRUD
 		public string PlayedDate { get; set; }
 		public int NumberOfGoalsScoredByOpponent { get; set; }
 		public int NumberOfAddonMinutes { get; set; }
+		public int TablePlacementAfterGame { get; set; }
 		public IEnumerable<PlayerEvent> Events { get; set; }
 	}
 
