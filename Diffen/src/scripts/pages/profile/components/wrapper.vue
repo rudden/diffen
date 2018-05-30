@@ -121,13 +121,13 @@ export default class Wrapper extends Vue {
 				available: true,
 				active: false
 			},
-			{
-				id: 6,
-				text: 'Admin',
-				component: Admin,
-				available: this.user.inRoles.some(role => role == 'Admin' || role == 'GameAdmin') && this.user.id == this.vm.loggedInUser.id,
-				active: false
-			}
+			// {
+			// 	id: 6,
+			// 	text: 'Admin',
+			// 	component: Admin,
+			// 	available: this.user.inRoles.some(role => role == 'Admin' || role == 'GameAdmin') && this.user.id == this.vm.loggedInUser.id,
+			// 	active: false
+			// }
 		]
 		this.loading = false
 	}
