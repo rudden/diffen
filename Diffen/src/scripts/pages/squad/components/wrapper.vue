@@ -13,15 +13,25 @@
 							</modal>
 							<h4 class="mb-0">Spelartruppen</h4>
 						</li>
-						<li class="list-group-item media">
+						<li class="list-group-item media p-4">
+							<div class="form-inline flow-root" style="width: 100%" :class="{ 'div-disabled': loading }">
+								<input type="text" class="form-control" v-model="playerSearch" placeholder="Sök efter en spelare">
+								<div class="input-group float-right">
+									<v-multiselect v-model="gameType" track-by="name" label="name" placeholder="Välj en matchtyp" :options="gameTypes" :searchable="false" :allow-empty="false" selectLabel="" selectedLabel="Vald" deselectLabel="">
+										<template slot="singleLabel" slot-scope="{ option }">Visar händelser ur: <strong>{{ option.name }}</strong></template>
+									</v-multiselect>
+								</div>
+							</div>
+						</li>
+						<li class="list-group-item media p-4">
 							<template v-if="!loading">
-								<table-component :data="filteredPlayers" sort-by="data.numberOfPoints" sort-order="desc" @rowClick="rowClick">
-									<table-column label="Efternamn" :hidden="true" show="lastName"></table-column>
-									<table-column label="Namn" filter-on="fullName" sort-by="lastName" data-type="string">
+								<table-component :data="filteredPlayers" sort-by="data.numberOfPoints" sort-order="desc" @rowClick="rowClick" :show-filter="false">
+									<table-column label="Efternamn" :hidden="true" show="player.lastName"></table-column>
+									<table-column label="Namn" filter-on="player.fullName" sort-by="player.lastName" data-type="string">
 										<template slot-scope="row">
-											{{ row.fullName }}
-											<span class="badge badge-warning ml-1" v-if="row.attributes.isOutOnLoan">utlånad</span>
-											<span class="badge badge-danger ml-1" v-if="row.attributes.isSold">såld</span>
+											{{ row.player.fullName }}
+											<span class="badge badge-warning ml-1" v-if="row.player.attributes.isOutOnLoan">utlånad</span>
+											<span class="badge badge-danger ml-1" v-if="row.player.attributes.isSold">såld</span>
 										</template>
 									</table-column>
 									<table-column label="Matcher" show="data.numberOfGames" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
@@ -34,9 +44,10 @@
 									<table-column label="Mål" show="data.numberOfGoals" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
 									<table-column label="Assist" show="data.numberOfAssists" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
 									<table-column label="Poäng" show="data.numberOfPoints" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
+									<table-column label="Minut per poäng" show="data.numberOfMinutesPerPoint" data-type="numeric" :cell-class="'text-center'" :header-class="'text-center'"></table-column>
 									<template slot="tfoot">
 										<tr>
-											<td colspan="11" style="border: none">
+											<td colspan="12">
 												<div class="form-check form-check-inline m-2">
 													<input class="form-check-input" type="checkbox" id="includePlayersOutOnLoan" v-model="includePlayersOutOnLoan">
 													<label class="form-check-label" for="includePlayersOutOnLoan">Inkludera utlånade spelare</label>
@@ -45,7 +56,7 @@
 										</tr>
 									</template>
 								</table-component>
-								<modal v-for="player in filteredPlayers" :key="player.id" v-bind="{ attributes: { name: `show-player-${player.id}`, scrollable: true }, header: 'Spelarinformation', button: { } }">
+								<modal v-for="player in players" :key="player.id" v-bind="{ attributes: { name: `show-player-${player.id}`, scrollable: true }, header: 'Spelarinformation', button: { } }">
 									<template slot="body">
 										<player-component :player="player" :save="update" :editable="false" />
 									</template>
@@ -58,11 +69,11 @@
 					</ul>
 				</div>
 			</div>
-			<div class="row mt-3">
+			<!-- <div class="row mt-3">
 				<div class="col">
 					<game-result-guess-league />
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </template>
@@ -76,7 +87,7 @@ const ModuleGetter = namespace('squad', Getter)
 const ModuleAction = namespace('squad', Action)
 
 import { PageViewModel, Result, ResultType } from '../../../model/common'
-import { Player, Position, PlayerEvent, PlayerTableData } from '../../../model/squad'
+import { Player, Position, PlayerEvent, PlayerTableData, Game, PlayerStatistics, PlayerToLineup, GameEventType, GameType, PlayerEventOnPlayer, PlayerAttributes } from '../../../model/squad'
 import { Player as CrudPlayer } from '../../../model/squad/crud'
 
 import {
@@ -87,20 +98,25 @@ import {
 	UPDATE_PLAYER
 } from '../../../modules/squad/types'
 
-import GameResultGuessLeague from './game-result-guess-league.vue'
 import PlayerComponent from './player.vue'
 import Modal from '../../../components/modal.vue'
 import PlayerEvents from '../../../components/player-events.vue'
 
-interface IPlayerTableData {
+interface IPlayer {
 	id: number
 	fullName: string
+	lastName: string
+	attributes: PlayerAttributes
+}
+
+interface IPlayerStatistics {
+	player: IPlayer
 	data: PlayerTableData
 }
 
 @Component({
 	components: {
-		Modal, PlayerComponent, PlayerEvents, GameResultGuessLeague
+		Modal, PlayerComponent, PlayerEvents
 	}
 })
 export default class Wrapper extends Vue {
@@ -127,27 +143,118 @@ export default class Wrapper extends Vue {
 		}
 	}
 
-	filteredPlayers: Player[] = []
-
 	includePlayersOutOnLoan: boolean = false
+
+	gameType: any = { id: GameType.League, name: 'Allsvenskan' }
+	
+	gameTypes: any = [
+		{ id: GameType.Cup, name: 'Cupen' },
+		{ id: GameType.League, name: 'Allsvenskan' },
+		{ id: GameType.Training, name: 'Träningsmatcher' },
+		{ id: GameType.EuropaLeague, name: 'Europa league' },
+		{ id: GameType.All, name: 'Alla matchtyper' }
+	]
+
+	playerSearch: string = ''
 
 	$modal: any = (this as any).VModal
 
 	mounted() {
-		Promise.all([this.loadPlayers(), this.loadPositions()])
-			.then(() => {
-				this.filteredPlayers = this.players.filter((player: Player) => !player.attributes.isOutOnLoan)
-				this.loading = false
-			})
+		Promise.all([this.loadPlayers(), this.loadPositions()]).then(() => this.loading = false)
 	}
-
-	@Watch('includePlayersOutOnLoan')
-		onChange() {
-			this.filteredPlayers = this.includePlayersOutOnLoan ? this.players : this.players.filter((player: Player) => !player.attributes.isOutOnLoan)
-		}
 
 	get loggedInUserIsAdmin(): boolean {
         return this.vm.loggedInUser.inRoles.some(role => role == 'Admin' || role == 'GameAdmin')
+	}
+
+	get filteredPlayers() {
+		return this.includePlayersOutOnLoan 
+			? this.statistics.filter((s: IPlayerStatistics) => {
+				return s.player.fullName.toLowerCase().includes(this.playerSearch.toLowerCase())
+			}) 
+			: this.statistics.filter((s: IPlayerStatistics) => !s.player.attributes.isOutOnLoan).filter((s: IPlayerStatistics) => {
+				return s.player.fullName.toLowerCase().includes(this.playerSearch.toLowerCase())
+			})
+	}
+
+	get statistics() {
+		return this.players.map((player: Player) => {
+			return <IPlayerStatistics> {
+				player: {
+					id: player.id,
+					fullName: player.fullName,
+					lastName: player.lastName,
+					attributes: player.attributes
+				},
+				data: this.calculate(player)
+			}
+		})
+	}
+
+	calculate(player: Player) {
+		let data = new PlayerTableData()
+
+		let gamesWithoutEvents = this.gameType.id !== GameType.All ? player.statistics.gamesWithoutEvents.filter((g: Game) => g.type == this.gameType.id) : player.statistics.gamesWithoutEvents
+		let distinctGamesWithEvents = this.gameType.id !== GameType.All ? player.statistics.distinctGamesWithEvents.filter((g: Game) => g.type == this.gameType.id) : player.statistics.distinctGamesWithEvents
+		let events = this.gameType.id !== GameType.All ? player.statistics.events.filter((e: PlayerEventOnPlayer) => e.gameType == this.gameType.id) : player.statistics.events
+
+		if (gamesWithoutEvents.length > 0) {
+			for (var game of gamesWithoutEvents) {
+				data.numberOfGames++
+				data.numberOfGamesFromStart++
+				data.numberOfMinutesPlayed += 90
+			}
+		}
+
+		if (player.statistics.events.length <= 0) {
+			return data
+		}
+
+		let gamesFromStart: Game[] = distinctGamesWithEvents.filter((g: Game) => g.lineup && g.lineup.players.map((p: PlayerToLineup) => p.player.id).includes(player.id))
+
+		let gamesFromStartSubstitutedOut = gamesFromStart.filter((g: Game) => g.playerEvents.filter((e: PlayerEvent) => e.eventType == GameEventType.SubstituteOut && e.player.id == player.id))
+		let gamesFromStartNotSubstitutedOut = gamesFromStart.filter((g: Game) => !g.playerEvents.filter((e: PlayerEvent) => e.eventType == GameEventType.SubstituteOut && e.player.id == player.id).map((e: PlayerEvent) => e.player.id).includes(player.id))
+		let gamesSubstitutedIn = distinctGamesWithEvents.filter((g: Game) => g.playerEvents.filter((e: PlayerEvent) => e.eventType == GameEventType.SubstituteIn && e.player.id == player.id))
+
+		if (gamesFromStartNotSubstitutedOut.length > 0) {
+			data.numberOfMinutesPlayed += 90 * gamesFromStart.length
+		}
+		if (gamesFromStartSubstitutedOut.length > 0) {
+			for (var game of gamesFromStartSubstitutedOut) {
+				let event: PlayerEvent = game.playerEvents.filter((e: PlayerEvent) => e.eventType == GameEventType.SubstituteOut && e.player.id == player.id)[0]
+				if (event) {
+					data.numberOfMinutesPlayed += event.inMinute
+				}
+			}
+		}
+		if (gamesSubstitutedIn.length > 0) {
+			for (var game of gamesSubstitutedIn) {
+				let event: PlayerEvent = game.playerEvents.filter((e: PlayerEvent) => e.eventType == GameEventType.SubstituteIn && e.player.id == player.id)[0]
+				if (event) {
+					data.numberOfMinutesPlayed += 90 + game.numberOfAddonMinutes - event.inMinute
+				}
+			}
+		}
+
+		data.numberOfGames += distinctGamesWithEvents.length
+		data.numberOfGamesFromStart += gamesFromStart.length
+		data.numberOfGamesSubstituteIn += events.filter((e: PlayerEventOnPlayer) => e.eventType == GameEventType.SubstituteIn).length
+		data.numberOfGamesSubstituteOut += events.filter((e: PlayerEventOnPlayer) => e.eventType == GameEventType.SubstituteOut).length
+		data.numberOfGoals += this.getNumberOfEvents(events, GameEventType.Goal)
+		data.numberOfAssists += this.getNumberOfEvents(events, GameEventType.Assist)
+		data.numberOfYellowCards += this.getNumberOfEvents(events, GameEventType.YellowCard)
+		data.numberOfRedCards += this.getNumberOfEvents(events, GameEventType.RedCard)
+		data.numberOfPoints += data.numberOfGoals + data.numberOfAssists
+		let pointsPerPlayedMinute = data.numberOfMinutesPlayed / data.numberOfPoints
+		if (!isNaN(pointsPerPlayedMinute) && isFinite(pointsPerPlayedMinute)) {
+			data.numberOfMinutesPerPoint = Math.trunc(pointsPerPlayedMinute)
+		}
+
+		return data
+	}
+
+	getNumberOfEvents(events: PlayerEventOnPlayer[], eventType: GameEventType) {
+		return events.filter((e: PlayerEventOnPlayer) => e.eventType == eventType).length
 	}
 
 	update(player: CrudPlayer) {
@@ -163,7 +270,7 @@ export default class Wrapper extends Vue {
 	}
 
 	rowClick(row: any) {
-		this.$modal.show(`show-player-${row.data.id}`)
+		this.$modal.show(`show-player-${row.data.player.id}`)
 	}
 }
 </script>
@@ -171,5 +278,10 @@ export default class Wrapper extends Vue {
 <style lang="scss" scoped>
 a {
 	cursor: pointer;
+}
+@media (max-width: 768px) {
+	.input-group.float-right {
+		margin-top: 1.5rem;
+	}
 }
 </style>

@@ -65,9 +65,9 @@ Vue.use(TableComponent, {
     tableClass: 'table table-bordered table-hover table-responsive-lg table-sm mb-0',
     theadClass: 'thead-dark',
     tbodyClass: '',
-    filterPlaceholder: 'Sök',
+    filterPlaceholder: 'Sök efter en spelare',
 	filterNoResults: 'Hittade inget',
-	filterInputClass: 'form-control form-control-sm mb-3'
+	filterInputClass: 'form-control mb-3'
 })
 
 import DatePicker from 'vue-bootstrap-datetimepicker'

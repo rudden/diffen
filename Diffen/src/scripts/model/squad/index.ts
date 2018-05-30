@@ -46,22 +46,27 @@ export class Player {
     contractUntil: string
     imageUrl: string
     availablePositions: Position[]
-    inNumberOFStartingElevens: number
+    statistics: PlayerStatistics
+}
+
+export class PlayerStatistics {
     events: PlayerEventOnPlayer[]
-    data: PlayerTableData
+    gamesWithoutEvents: Game[]
+    distinctGamesWithEvents: Game[]
 }
 
 export class PlayerTableData {
-	numberOfGames: number
-	numberOfGamesFromStart: number
-	numberOfGamesSubstituteOut: number
-	numberOfGamesSubstituteIn: number
-	numberOfMinutesPlayed: number
-	numberOfGoals: number
-	numberOfAssists: number
-	numberOfYellowCards: number
-	numberOfRedCards: number
-	numberOfPoints: number
+	numberOfGames: number = 0
+	numberOfGamesFromStart: number = 0
+	numberOfGamesSubstituteOut: number = 0
+	numberOfGamesSubstituteIn: number = 0
+	numberOfMinutesPlayed: number = 0
+	numberOfGoals: number = 0
+	numberOfAssists: number = 0
+	numberOfYellowCards: number = 0
+	numberOfRedCards: number = 0
+    numberOfPoints: number = 0
+    numberOfMinutesPerPoint: number = 0
 }
 
 export class Formation {
@@ -83,6 +88,7 @@ export class Game {
     opponent: string
     numberOfGoalsScoredByOpponent: number
     numberOfAddonMinutes: number
+    tablePlacementAfterGame: number
     playedOn: string
     playerEvents: PlayerEvent[]
 }
@@ -112,7 +118,8 @@ export enum GameType {
     Cup,
     League,
     EuropaLeague,
-    Training
+    Training,
+    All
 }
 
 export enum GameEventType {
@@ -162,4 +169,11 @@ export enum PreferredFoot {
     None,
     Left,
     Right
+}
+
+export class Season {
+    id: number
+    name: string
+    isActive: boolean
+    games: Game[]
 }

@@ -38,6 +38,7 @@ export class Game {
     opponent: string
     numberOfGoalsScoredByOpponent: number
     numberOfAddonMinutes: number
+    tablePlacementAfterGame: number
     playedDate: string
     events: PlayerEvent[] = []
 }

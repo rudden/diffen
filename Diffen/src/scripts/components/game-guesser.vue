@@ -53,9 +53,16 @@
                             </template>
                         </div>
                     </div>
-                    <div class="row mt-3" v-if="!guess">
-                        <div class="col">
+                    <div class="row mt-3">
+                        <div class="col pr-1" v-if="!guess">
                             <button class="btn btn-sm btn-success btn-block" @click="createGuessGameResult">Spara</button>
+                        </div>
+                        <div class="col" :class="{ 'pl-1': !guess }">
+                            <modal v-bind="{ attributes: { name: 'guess-league', scrollable: true }, button: { classes: 'btn btn-sm btn-block btn-primary', text: 'Visa tipsligan' } }">
+                                <template slot="body">
+                                    <game-result-guess-league />
+                                </template>
+                            </modal>
                         </div>
                     </div>
                 </template>
@@ -89,12 +96,18 @@ interface IGameResultGuess {
     opponentGoals: number
 }
 
+import Modal from './modal.vue'
+import GameResultGuessLeague from './game-result-guess-league.vue'
+
 @Component({
     props: {
         guesserOnly: {
             type: Boolean,
             default: false
         }
+    },
+    components: {
+        GameResultGuessLeague, Modal
     }
 })
 export default class GameGuesser extends Vue {

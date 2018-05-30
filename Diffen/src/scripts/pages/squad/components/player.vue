@@ -1,4 +1,4 @@
-    <template>
+<template>
     <div class="row" v-if="!saving">
         <div class="col p-0">
             <div class="card card-profile br br__none" style="margin-top: -1rem; margin-bottom: -1rem" v-if="!inEdit">
@@ -45,7 +45,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="card-body pt-0" v-if="player.events.length > 0">
+                <div class="card-body pt-0" v-if="player.statistics.events.length > 0">
                     <hr />
                     <strong>Matchstatistik</strong>
                     <hr/>
@@ -174,7 +174,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="row">
-                            <div class="col pr-1">
+                            <div class="col" :class="{ 'pr-1': player }">
                                 <button class="btn btn-success btn-block btn-sm" :disabled="!canSave" v-on:click="onSave">Spara</button>
                             </div>
                             <div class="col pl-1" v-if="player">
@@ -331,7 +331,7 @@ export default class PlayerComponent extends Vue {
         ]
     }
     getNumberOfEvents(gameType: GameType, eventType: GameEventType) {
-        return this.player.events.filter((e: PlayerEventOnPlayer) => e.gameType == gameType && e.eventType == eventType).length
+        return this.player.statistics.events.filter((e: PlayerEventOnPlayer) => e.gameType == gameType && e.eventType == eventType).length
     }
     
     onSave() {

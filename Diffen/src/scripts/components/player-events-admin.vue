@@ -90,6 +90,14 @@
                                         </div>
                                     </div>
                                 </div>
+                                 <div class="form-group">
+                                    <div class="row">
+                                        <legend class="col-sm-3 col-form-label pt-0"><strong>Tabellplacering</strong></legend>
+                                        <div class="col-sm-9">
+                                            <input type="number" class="form-control form-control-sm" v-model="tablePlacementAfterGame" />
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <hr />
                                     <strong>Startelvan</strong>
@@ -215,6 +223,7 @@ export default class PlayerEventsAdmin extends Vue {
     opponentTeamName: string = ''
     numberOfGoalsScoredByOpponent: number = 0
     numberOfAddonMinutes: number = 0
+    tablePlacementAfterGame: number = 0
     preDefinedLineup?: Lineup = new Lineup()
 
     modalAttributes: any = {
@@ -304,6 +313,7 @@ export default class PlayerEventsAdmin extends Vue {
                 opponent: selectedGame.opponent,
                 numberOfGoalsScoredByOpponent: selectedGame.numberOfGoalsScoredByOpponent,
                 numberOfAddonMinutes: selectedGame.numberOfAddonMinutes,
+                tablePlacementAfterGame: selectedGame.tablePlacementAfterGame,
                 playedDate: selectedGame.playedOn,
                 events: selectedGame.playerEvents.map((e: PlayerEvent) => {
                     return <CrudPlayerEvent> {
@@ -324,6 +334,7 @@ export default class PlayerEventsAdmin extends Vue {
             this.preDefinedLineup = this.crudGame.lineup ? selectedGame.lineup : undefined
             this.numberOfGoalsScoredByOpponent = this.crudGame.numberOfGoalsScoredByOpponent
             this.numberOfAddonMinutes = this.crudGame.numberOfAddonMinutes
+            this.tablePlacementAfterGame = this.crudGame.tablePlacementAfterGame
 
             this.$modal.show(this.modalAttributes.newEvent.attributes.name)
         }
@@ -360,6 +371,7 @@ export default class PlayerEventsAdmin extends Vue {
                 opponent: this.opponentTeamName,
                 numberOfGoalsScoredByOpponent: this.numberOfGoalsScoredByOpponent,
                 numberOfAddonMinutes: this.numberOfAddonMinutes,
+                tablePlacementAfterGame: this.tablePlacementAfterGame,
                 lineup: undefined,
                 events: this.crudGame.events.map((e: CrudPlayerEvent) => {
                     delete e.guid
@@ -373,7 +385,6 @@ export default class PlayerEventsAdmin extends Vue {
             }
             if (this.crudGame.id && this.crudGame.id > 0) {
                 game.id = this.crudGame.id
-                console.log('update game:', game)
                 this.updateGame({ game: game }).then(() => resolve())
             } else {
                 this.createGame({ game: game }).then(() => resolve())
