@@ -21,6 +21,7 @@ module.exports = {
 		'poll': './src/scripts/pages/poll',
 		'region': './src/scripts/pages/region',
 		'aboutdif': './src/scripts/pages/dif',
+		'game': './src/scripts/pages/games',
 		
 		'style': './src/styles/app.scss'
 	},

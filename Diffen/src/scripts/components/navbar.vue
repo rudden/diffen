@@ -14,6 +14,9 @@
 				<li class="nav-item" :class="{ 'active': this.active('squad') }">
 					<a class="nav-link" href="/trupp">Trupp</a>
 				</li>
+				<li class="nav-item" :class="{ 'active': this.active('game') }">
+					<a class="nav-link" href="/matcher">Matcher</a>
+				</li>
 				<li class="nav-item" :class="{ 'active': this.active('chronicle') }">
 					<a class="nav-link" href="/kronika">Krönikor</a>
 				</li>
