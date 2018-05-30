@@ -18,10 +18,15 @@ namespace Diffen.Database.Entities.Squad
 		public string OpponentTeamName { get; set; }
 		public int NumberOfGoalsScoredByOpponent { get; set; }
 		public int NumberOfAddonMinutes { get; set; }
+		public int TablePlacementAfterGame { get; set; }
 
 		[ForeignKey("LineupId")]
 		public virtual Lineup Lineup { get; set; }
 		public int? LineupId { get; set; }
+
+		[ForeignKey("SeasonId")]
+		public virtual Season Season { get; set; }
+		public int? SeasonId { get; set; }
 
 		public DateTime OnDate { get; set; }
 
