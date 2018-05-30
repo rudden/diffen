@@ -10,16 +10,6 @@ namespace Diffen.Models.Squad
 		public int Id { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
-		public int KitNumber { get; set; }
-		public bool IsCaptain { get; set; }
-		public bool IsViceCaptain { get; set; }
-		public bool IsOutOnLoan { get; set; }
-		public bool IsHereOnLoan { get; set; }
-		public bool IsSold { get; set; }
-		public PlayerAttributes Attributes { get; set; }
-		public IEnumerable<Position> AvailablePositions { get; set; }
-		public IEnumerable<PlayerEventOnPlayer> Events { get; set; }
-
 		public string BirthDay { get; set; }
 		public int HeightInCentimeters { get; set; }
 		public int Weight { get; set; }
@@ -28,12 +18,21 @@ namespace Diffen.Models.Squad
 		public string ContractUntil { get; set; }
 		public string ImageUrl { get; set; }
 
-		public int InNumberOfStartingElevens { get; set; }
-
-		public PlayerTableData Data { get; set; }
-
 		public string Name => $"{FirstName[0]}. {LastName.ToUpper()}";
-
 		public string FullName => $"{FirstName.FirstUpperCase()} {LastName.FirstUpperCase()}";
+
+		public int KitNumber { get; set; }
+		public PlayerAttributes Attributes { get; set; }
+
+		public PlayerStatistics Statistics { get; set; }
+		
+		public IEnumerable<Position> AvailablePositions { get; set; }
+	}
+
+	public class PlayerStatistics
+	{
+		public IEnumerable<Game> GamesWithoutEvents { get; set; }
+		public IEnumerable<Game> DistinctGamesWithEvents { get; set; }
+		public IEnumerable<PlayerEventOnPlayer> Events { get; set; }
 	}
 }
