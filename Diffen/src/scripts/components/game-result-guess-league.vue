@@ -1,75 +1,67 @@
 <template>
-	<div>
-        <ul class="list-group media-list media-list-stream">
-            <li class="list-group-item p-4">
-                <modal v-bind="modalAttributes.new">
-                    <template slot="body">
-                        <game-guesser :guesser-only="true" />
-                    </template>
-                </modal>
-                <h4 class="mb-0">Tipsligan</h4>
-            </li>
-            <li class="list-group-item media">
-                <template v-if="!loading">
-                    <table-component :data="table" sort-by="id" sort-order="asc" :show-filter="false" @rowClick="rowClick">
-                        <table-column label="#" show="id" data-type="numeric"></table-column>
-                        <table-column label="Användare" show="user.nickName" :sortable="false"></table-column>
-                        <table-column label="Poäng" show="points" data-type="numeric"></table-column>
-                        <table-column label="Antal tippningar" show="guesses.length" data-type="numeric"></table-column>
-                        <template slot="tfoot">
-                            <tr>
-                                <td colspan="4" style="border-top: 0">
-                                    <modal v-bind="modalAttributes.info">
-                                        <template slot="body">
-                                            <ul class="list-unstyled list-spaced mb-0">
-                                                <li><strong>4 poäng</strong> - Rätt resultat</li>
-                                                <li><strong>2 poäng</strong> - Rätt tippning (1X2)</li>
-                                                <li><strong>1 poäng</strong> - Rätt antal DIF mål (endast chans på detta om man inte redan prickat helt rätt resultat)</li>
-                                                <li><strong>1 poäng</strong> - Rätt antal moståndarmål (endast chans på detta om man inte redan prickat helt rätt resultat)</li>
-                                                <li><strong>1 poäng</strong> - Rätt antal totala mål i matchen (endast chans på detta om man inte redan prickat helt rätt resultat)</li>
-                                            </ul>
-                                        </template>
-                                    </modal>
-                                </td>
-                            </tr>
-                        </template>
-                    </table-component>
-                    <modal v-for="item in table" :key="item.id" v-bind="{ attributes: { name: `show-data-${item.user.id}`, scrollable: true }, header: item.user.nickName, button: { } }">
-                        <template slot="body">
-                            <div class="row">
-                                <div class="col">
-                                    <table-component :data="userTable" sort-by="playedDate" sort-order="desc" :show-filter="false" :table-class="'table table-sm mb-0'">
-                                        <table-column label="Spelades" show="playedDate"></table-column>
-                                        <table-column label="Hemmalag" :sortable="false">
-                                            <template slot-scope="row">
-                                                <strong>{{ row.homeTeam.name }}</strong>
-                                                <br />
-                                                Gjorda mål: {{ row.homeTeam.goal.outcome }}
-                                                <br />
-                                                Gissade: {{ row.homeTeam.goal.guess }}
-                                            </template>
-                                        </table-column>
-                                        <table-column label="Bortalag" :sortable="false">
-                                            <template slot-scope="row">
-                                                <strong>{{ row.awayTeam.name }}</strong>
-                                                <br />
-                                                Gjorda mål: {{ row.awayTeam.goal.outcome }}
-                                                <br />
-                                                Gissade: {{ row.awayTeam.goal.guess }}
-                                            </template>
-                                        </table-column>
-                                        <table-column label="Poäng" show="points" data-type="numeric"></table-column>
-                                    </table-component>
+	<div class="row" style="margin: -1rem">
+        <div class="col p-0">
+            <ul class="list-group media-list media-list-stream">
+                <li class="list-group-item p-4">
+                    <button class="btn btn-sm btn-primary float-right" @click="showRules = !showRules">{{ showRules ? 'Dölj' : 'Visa' }} regler</button>
+                    <h4 class="mb-0">Tipsligan</h4>
+                </li>
+                <li class="list-group-item media p-4" v-if="showRules">
+                    <div class="alert alert-info mb-0">
+                        <ul class="list-unstyled list-spaced">
+                            <li><strong>4 poäng</strong> - Rätt resultat</li>
+                            <li><strong>2 poäng</strong> - Rätt tippning (1X2)</li>
+                            <li><strong>1 poäng</strong> - Rätt antal DIF mål (endast chans på detta om man inte redan prickat helt rätt resultat)</li>
+                            <li><strong>1 poäng</strong> - Rätt antal moståndarmål (endast chans på detta om man inte redan prickat helt rätt resultat)</li>
+                            <li><strong>1 poäng</strong> - Rätt antal totala mål i matchen (endast chans på detta om man inte redan prickat helt rätt resultat)</li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="list-group-item media p-4">
+                    <template v-if="!loading">
+                        <table-component :data="table" sort-by="id" sort-order="asc" :show-filter="false" @rowClick="rowClick">
+                            <table-column label="#" show="id" data-type="numeric"></table-column>
+                            <table-column label="Användare" show="user.nickName" :sortable="false"></table-column>
+                            <table-column label="Poäng" show="points" data-type="numeric"></table-column>
+                            <table-column label="Antal tippningar" show="guesses.length" data-type="numeric"></table-column>
+                        </table-component>
+                        <modal v-for="item in table" :key="item.id" v-bind="{ attributes: { name: `show-data-${item.user.id}`, scrollable: true }, header: item.user.nickName, button: { } }">
+                            <template slot="body">
+                                <div class="row">
+                                    <div class="col">
+                                        <table-component :data="userTable" sort-by="playedDate" sort-order="desc" :show-filter="false" :table-class="'table table-sm mb-0'">
+                                            <table-column label="Spelades" show="playedDate"></table-column>
+                                            <table-column label="Hemmalag" :sortable="false">
+                                                <template slot-scope="row">
+                                                    <strong>{{ row.homeTeam.name }}</strong>
+                                                    <br />
+                                                    Gjorda mål: {{ row.homeTeam.goal.outcome }}
+                                                    <br />
+                                                    Gissade: {{ row.homeTeam.goal.guess }}
+                                                </template>
+                                            </table-column>
+                                            <table-column label="Bortalag" :sortable="false">
+                                                <template slot-scope="row">
+                                                    <strong>{{ row.awayTeam.name }}</strong>
+                                                    <br />
+                                                    Gjorda mål: {{ row.awayTeam.goal.outcome }}
+                                                    <br />
+                                                    Gissade: {{ row.awayTeam.goal.guess }}
+                                                </template>
+                                            </table-column>
+                                            <table-column label="Poäng" show="points" data-type="numeric"></table-column>
+                                        </table-component>
+                                    </div>
                                 </div>
-                            </div>
-                        </template>
-                    </modal>
-                </template>
-                <template v-else>
-                    <loader v-bind="{ background: '#699ED0' }" />
-                </template>
-            </li>
-        </ul>
+                            </template>
+                        </modal>
+                    </template>
+                    <template v-else>
+                        <loader v-bind="{ background: '#699ED0' }" />
+                    </template>
+                </li>
+            </ul>
+        </div>
 	</div>
 </template>
 
@@ -81,10 +73,10 @@ import { Getter, Action, State, namespace } from 'vuex-class'
 const ModuleGetter = namespace('squad', Getter)
 const ModuleAction = namespace('squad', Action)
 
-import { Game, GameResultGuess, PlayerEvent, GameEventType, GameResultGuessLeagueItem, ArenaType } from '../../../model/squad'
-import { PageViewModel, Result, ResultType, IdAndNickNameUser } from '../../../model/common'
+import { Game, GameResultGuess, PlayerEvent, GameEventType, GameResultGuessLeagueItem, ArenaType } from '../model/squad'
+import { PageViewModel, Result, ResultType, IdAndNickNameUser } from '../model/common'
 
-import { FETCH_FINISHED_GAME_RESULT_GUESSES } from '../../../modules/squad/types'
+import { FETCH_FINISHED_GAME_RESULT_GUESSES } from '../modules/squad/types'
 
 interface IGuessLeagueItem {
     id?: number
@@ -119,13 +111,8 @@ interface IGuessResult {
     numberOfCorrectGameOutcomeGuesses: number
 }
 
-import Modal from '../../../components/modal.vue'
-import GameGuesser from '../../../components/game-guesser.vue'
-
 @Component({
-	components: {
-		Modal, GameGuesser
-	}
+
 })
 export default class GameGuessResultLeage extends Vue {
 	@State(state => state.vm) vm: PageViewModel
@@ -133,6 +120,8 @@ export default class GameGuessResultLeage extends Vue {
 
     loading: boolean = true
     guesses: GameResultGuessLeagueItem[] = []
+
+    showRules: boolean = false
 
     modalAttributes: any = {
 		info: {
@@ -314,3 +303,9 @@ export default class GameGuessResultLeage extends Vue {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.list-group-item {
+    border-radius: 0 !important;
+}
+</style>
