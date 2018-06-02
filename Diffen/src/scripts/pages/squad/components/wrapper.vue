@@ -217,7 +217,7 @@ export default class Wrapper extends Vue {
 		let gamesSubstitutedIn = distinctGamesWithEvents.filter((g: Game) => g.playerEvents.filter((e: PlayerEvent) => e.eventType == GameEventType.SubstituteIn && e.player.id == player.id))
 
 		if (gamesFromStartNotSubstitutedOut.length > 0) {
-			data.numberOfMinutesPlayed += 90 * gamesFromStart.length
+			data.numberOfMinutesPlayed += 90 * gamesFromStartNotSubstitutedOut.length
 		}
 		if (gamesFromStartSubstitutedOut.length > 0) {
 			for (var game of gamesFromStartSubstitutedOut) {
