@@ -25,7 +25,21 @@
                                             <small class="float-right text-muted">{{ post.parentPost.since }}</small>
                                             <h6>{{ post.parentPost.user.nickName }}</h6>
                                         </div>
-                                        <span class="message more-readable" v-html="post.parentPost.message"></span>
+                                        <template v-if="shortParentPostMessage">
+                                            <template v-if="showFullParentPostMessage">
+                                                <span class="message more-readable" v-html="post.parentPost.message"></span>
+                                            </template>
+                                            <template v-else>
+                                                <span class="message more-readable" v-html="shortParentPostMessage"></span>
+                                            </template>
+                                            <a @click="showFullParentPostMessage = !showFullParentPostMessage" class="parent-post-toggler">
+                                                {{ showFullParentPostMessage ? 'dölj det mesta' : 'visa allt' }} 
+                                                <span class="icon ml-1" :class="{ 'icon-chevron-up': showFullParentPostMessage, 'icon-chevron-down': !showFullParentPostMessage }"></span>
+                                            </a>
+                                        </template>
+                                        <template v-else>
+                                            <span class="message more-readable" v-html="post.parentPost.message"></span>
+                                        </template>
                                     </div>
                                 </div>
                             </div>
@@ -210,6 +224,8 @@ export default class PostComponent extends Vue {
     lineup: Lineup = new Lineup()
     loadingLineup: boolean = false
 
+    showFullParentPostMessage: boolean = false
+
     modalAttributes: any = {
         startingEleven: {
             attributes: {
@@ -292,13 +308,15 @@ export default class PostComponent extends Vue {
     get canBookmark(): boolean {
         return !this.vm.loggedInUser.savedPostsIds.includes(this.post.id)
     }
-
     get postMessage() {
         return this.filterMessage(this.post.message)
     }
-
-    get parentPostMessage() {
-        return this.filterMessage(this.post.parentPost.message)
+    get shortParentPostMessage() {
+        if (this.post.parentPost) {
+            if (this.post.parentPost.message.length > 100) {
+                return `${this.post.parentPost.message.slice(0, 100)} ...`
+            }
+        }
     }
 
     filterMessage(message: string) {
@@ -421,6 +439,14 @@ export default class PostComponent extends Vue {
     background-color: #f5f8fa;
     .media-body-text span {
         white-space: pre-wrap;
+    }
+}
+.parent-post-toggler {
+    cursor: pointer;
+    display: flex;
+    float: right;
+    &:hover {
+        text-decoration: underline !important;
     }
 }
 </style>
