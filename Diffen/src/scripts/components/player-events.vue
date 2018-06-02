@@ -45,8 +45,10 @@ interface Event {
     player: PlayerItem
     playedOn: string
     inMinute: number
+    opponent: string
     gameType: GameType
     eventType: GameEventType
+    arenaType: ArenaType
 }
 
 interface IPlayerEvent {
@@ -169,7 +171,9 @@ export default class PlayerEvents extends Vue {
                         playedOn: game.playedOn,
                         inMinute: playerEvent.inMinute,
                         gameType: game.type,
-                        eventType: playerEvent.eventType
+                        opponent: game.opponent,
+                        eventType: playerEvent.eventType,
+                        arenaType: game.arenaType
                     })
                 })
             })
@@ -212,7 +216,7 @@ export default class PlayerEvents extends Vue {
         let games = events.filter((event: Event) => event.gameType == gameType)
         return <IPlayerEvent> {
             type: GameType.Cup,
-            dates: games.map((e: Event) => `${e.playedOn.substring(0, 10)} (${e.inMinute}')`),
+            dates: games.map((e: Event) => `${e.opponent} (${this.getShortArenaType(e.arenaType)}) - (${e.inMinute}')`),
             amount: games.length
         }
     }
@@ -223,6 +227,17 @@ export default class PlayerEvents extends Vue {
 
     removeEvent(guid: string) {
         this.deleteGameEvent(this.crudGame.events.filter((e: CrudPlayerEvent) => e.guid == guid)[0])
+    }
+
+    getShortArenaType(arenaType: ArenaType) {
+        switch (arenaType) {
+            case ArenaType.Home:
+                return 'h'
+            case ArenaType.Away:
+                return 'b'
+            case ArenaType.NeutralGround:
+                return 'n'
+        }
     }
 }
 </script>
