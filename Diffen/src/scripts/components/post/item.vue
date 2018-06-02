@@ -33,8 +33,8 @@
                                                 <span class="message more-readable" v-html="shortParentPostMessage"></span>
                                             </template>
                                             <a @click="showFullParentPostMessage = !showFullParentPostMessage" class="parent-post-toggler">
-                                                {{ showFullParentPostMessage ? 'dölj det mesta' : 'visa allt' }} 
-                                                <span class="icon ml-1" :class="{ 'icon-chevron-up': showFullParentPostMessage, 'icon-chevron-down': !showFullParentPostMessage }"></span>
+                                                {{ showFullParentPostMessage ? 'dölj det mesta' : 'visa mer' }} 
+                                                <span class="icon" :class="{ 'icon-chevron-up': showFullParentPostMessage, 'icon-chevron-down': !showFullParentPostMessage }"></span>
                                             </a>
                                         </template>
                                         <template v-else>
@@ -443,8 +443,7 @@ export default class PostComponent extends Vue {
 }
 .parent-post-toggler {
     cursor: pointer;
-    display: flex;
-    float: right;
+    color: #3097D1 !important;
     &:hover {
         text-decoration: underline !important;
     }
