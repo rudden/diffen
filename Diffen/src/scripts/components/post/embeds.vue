@@ -48,3 +48,9 @@ export default class Embeds extends Vue {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.embeds {
+    max-width: 470px;
+}
+</style>
