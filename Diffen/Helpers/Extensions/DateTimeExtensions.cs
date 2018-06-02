@@ -6,12 +6,7 @@ namespace Diffen.Helpers.Extensions
 	{
 		public static string GetSinceStamp(this DateTime dt)
 		{
-			if (dt <= DateTime.Now.AddHours(-1))
-			{
-				return dt.ToString("yyyy-MM-dd HH:mm");
-			}
-			var minutes = (DateTime.Now - dt).Minutes;
-			return minutes <= 0 ? "alldeles nyss" : dt.ToString("yyyy-MM-dd HH:mm");
+			return dt.ToString("yyyy-MM-dd HH:mm");
 		}
 
 		public static string GetSinceStamp(this DateTime? dtn)
