@@ -60,7 +60,7 @@
 								<div class="media-body">
 									<span class="text-muted float-right">
 										<template v-if="region.users.length > 0">
-											<modal v-bind="{ attributes: { name: `${region.name}-users` }, header: `Användare i ${region.name}`, button: { badge: 'badge-primary', text: `${region.users.length} användare` } }">
+											<modal v-bind="{ attributes: { name: `${region.name}-users`, scrollable: true }, header: `Användare i ${region.name}`, button: { badge: 'badge-primary', text: `${region.users.length} användare` } }">
 												<template slot="body">
 													<ul class="list-unstyled">
 														<li v-for="user in region.users" :key="user.id">
