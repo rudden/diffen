@@ -26,6 +26,7 @@ namespace Diffen.Repositories.Contracts
 		Task<bool> UpdateUrlTipClickCountAsync(string subject, int id);
 		Task<List<Vote>> GetVotesOnPostIdAsync(int postId);
 		Task<bool> CreateVoteAsync(Models.Forum.CRUD.Vote vote);
+		Task<string> GetThreadNameAsync(int threadId);
 		Task<List<Thread>> GetThreadsAsync();
 		Task<bool> UpdateThreadsOnPostAsync(int postId, List<int> threadIds);
 	}

@@ -18,14 +18,14 @@
                     <hr class="mt-3" />
                     <div class="list-group mt-3">
                         <div class="mb-3">
-                            <input id="users" class="form-control form-control-sm" type="text" placeholder="sök på ett nick.." autocomplete="off" />
+                            <input id="users" class="form-control form-control-sm" type="text" placeholder="Visa inlägg av användare" autocomplete="off" />
                             <typeahead v-model="selectedUser" target="#users" :data="users" item-key="value" force-select />
                         </div>
                         <template v-if="includedUsers.length > 0">
                             <div class="list-group-item flex-column align-items-start" style="background-color: #efefef">
                                 <small>Visar inlägg av</small>
                             </div>
-                            <div class="list-group-item flex-column align-items-start" v-for="includedUser in includedUsers">
+                            <div class="list-group-item flex-column align-items-start" v-for="includedUser in includedUsers" :key="includedUser.key">
                                 <div class="d-flex w-100 justify-content-between">
                                     <small><strong>{{ includedUser.value }}</strong></small>
                                     <button type="button" class="close" v-on:click="removeUser(includedUser)">
@@ -38,7 +38,7 @@
                             <div class="list-group-item flex-column align-items-start" style="background-color: #efefef">
                                 <small>Filtrerar bort inlägg av</small>
                             </div>
-                            <div class="list-group-item flex-column align-items-start" v-for="excludedUser in excludedUsers">
+                            <div class="list-group-item flex-column align-items-start" v-for="excludedUser in excludedUsers" :key="excludedUser.key">
                                 <div class="d-flex w-100 justify-content-between">
                                     <small><strong>{{ excludedUser.value }}</strong></small>
                                 </div>
@@ -60,7 +60,7 @@
                         </div>
                         <div class="list-group-item flex-column align-items-start">
                             <div class="form-group mb-0">
-                                <input type="text" class="form-control form-control-sm" v-model="filter.messageWildCard" placeholder="sök på inläggsinnehåll" />
+                                <input type="text" class="form-control form-control-sm" v-model="filter.messageWildCard" placeholder="Sök på inläggsinnehåll" />
                             </div>
                         </div>
                         <div class="list-group-item flex-column align-items-start">
@@ -79,14 +79,23 @@
                                     </div>
                                 </div>
                             </template>
+                            <template v-if="excludedThreads && excludedThreads.length > 0">
+                                <hr />
+                                <div class="row col">
+                                    <strong class="mr-2">Exkluderade trådar:</strong>
+                                    <span class="mr-1" v-for="thread in excludedThreads" :key="thread.key" style="cursor: pointer" v-tooltip="`Inkludera ${thread.value}`" @click="excludedThreads = excludedThreads.filter(t => t.key != thread.key)">
+                                        {{ thread.key !== excludedThreads[excludedThreads.length - 1].key ? `${thread.value},` : thread.value }}
+                                    </span> 
+                                </div>
+                            </template>
                         </div>
                         <div class="list-group-item flex-column align-items-start">
                             <div class="row">
                                 <div class="col pr-1">
-                                    <date-picker v-model="filter.fromDate" :config="fromDPConfig" placeholder="från" :class="{ 'form-control-sm': true }" />
+                                    <date-picker v-model="filter.fromDate" :config="fromDPConfig" placeholder="från datum" :class="{ 'form-control-sm': true }" />
                                 </div>
                                 <div class="col pl-1">
-                                    <date-picker v-model="filter.toDate" :config="toDPConfig" placeholder="till" :class="{ 'form-control-sm': true }" />
+                                    <date-picker v-model="filter.toDate" :config="toDPConfig" placeholder="till datum" :class="{ 'form-control-sm': true }" />
                                 </div>
                             </div>
                             <div class="row" v-if="showDatePickerTip">
@@ -196,14 +205,20 @@ export default class FilterComponent extends Vue {
 
     users: KeyValuePair[] = []
     selectedUser: any = ''
+
+    excludedThreads: KeyValuePair[] = []
     
     mounted() {
         this.fetchUsers()
+        if (this.filter.excludedThreads) {
+            this.excludedThreads = this.filter.excludedThreads
+        }
 	}
 
 	get excludedUsers(): any {
 		return this.filter.excludedUsers
-	}
+    }
+    
 	get current(): Filter {
 		return {
             toDate: this.filter.toDate,
@@ -212,6 +227,7 @@ export default class FilterComponent extends Vue {
 			startingEleven: StartingEleven[this.startingEleven as keyof typeof StartingEleven],
 			includedUsers: this.includedUsers,
             excludedUsers: this.excludedUsers,
+            excludedThreads: this.excludedThreads,
             threadIds: this.filter.threadIds
 		}
     }
@@ -231,7 +247,14 @@ export default class FilterComponent extends Vue {
         return ThreadType.Planned
     }
     get ongoingThreads() {
-        return this.threads.filter((t: Thread) => t.type == ThreadType.Ongoing)
+        var filtered = this.threads.filter((t: Thread) => t.type == ThreadType.Ongoing)
+        if (this.excludedThreads && this.excludedThreads.length > 0) {
+            filtered = filtered.filter(t => !this.excludedThreads.map(t2 => t2.key).includes(t.id))
+        }
+        filtered.sort((a: Thread, b: Thread) => {
+            return b.numberOfPosts - a.numberOfPosts
+        })
+        return filtered
     }
     get plannedThreads() {
         return this.threads.filter((t: Thread) => t.type == ThreadType.Planned)
@@ -252,9 +275,10 @@ export default class FilterComponent extends Vue {
 
     reset() {
         this.includedUsers = []
+        this.excludedThreads = this.vm.loggedInUser.filter.excludedThreads
         this.startingEleven = StartingEleven[StartingEleven.All]
 
-        this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers, threadIds: [] } })
+        this.setFilter({ filter: { excludedUsers: this.vm.loggedInUser.filter.excludedUsers, excludedThreads: this.vm.loggedInUser.filter.excludedThreads, threadIds: [] } })
         this.loadPosts()
         this.fetchUsers()
     }

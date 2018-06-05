@@ -29,7 +29,8 @@ export class Filter {
     postsPerPage: number
     hideLeftMenu: boolean
     hideRightMenu: boolean
-	excludedUsers: KeyValuePair[] = []
+    excludedUsers: KeyValuePair[] = []
+    excludedThreads: KeyValuePair[] = []
 }
 
 export class VoteStatistics {

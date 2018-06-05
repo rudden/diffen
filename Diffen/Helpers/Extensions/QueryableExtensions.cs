@@ -58,6 +58,11 @@ namespace Diffen.Helpers.Extensions
 			return source.Where(x => x.InThreads.Any() && x.InThreads.Select(y => y.ThreadId).Intersect(threadIds).Any());
 		}
 
+		public static IQueryable<Post> NotInThreads(this IQueryable<Post> source, IEnumerable<int> threadIds)
+		{
+			return source.Where(x => x.InThreads.Any() && !x.InThreads.Select(y => y.ThreadId).Intersect(threadIds).Any() || !x.InThreads.Any());
+		}
+
 		public static IOrderedQueryable<Post> OrderByCreated(this IQueryable<Post> source)
 		{
 			return source.OrderByDescending(x => x.Created);

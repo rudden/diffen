@@ -19,7 +19,7 @@
 	"homepage": "https://github.com/rudden/diffen#readme",
 	"dependencies": {
 		"npm": "^5.8.0",
-		"babel-polyfill": "^6.26.0"
+		"babel-polyfill": "6.26.0"
 	},
 	"devDependencies": {
 		"@types/bootstrap": "^3.3.36",

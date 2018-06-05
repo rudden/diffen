@@ -43,6 +43,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> CreateVoteAsync(Vote vote);
 		Task<bool> UserHasAlreadyVotedOnPostAsync(int postId, string userId);
 		Task<List<Thread>> GetPostThreadsAsync();
+		Task<string> GetThreadNameAsync(int threadId);
 		Task<int> GetNumberOfPostsOnThreadAsync(int threadId);
 		Task<bool> AddThreadsToPostAsync(int postId, IEnumerable<int> threadIds);
 		Task<bool> CreateThreadAsync(Thread thread);

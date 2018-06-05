@@ -13,6 +13,7 @@ namespace Diffen.Database.Entities.User
 
 		// comma separated
 		public string ExcludedUserIds { get; set; }
+		public string ExcludedThreadIds { get; set; }
 
 		[ForeignKey("UserId")]
 		public AppUser User { get; set; }

@@ -19,42 +19,40 @@
                 </li>
                 <li class="list-group-item media p-4">
                     <template v-if="!loading">
-                        <table-component :data="table" sort-by="id" sort-order="asc" :show-filter="false" @rowClick="rowClick">
+                        <table-component :data="table" sort-by="id" sort-order="asc" :show-filter="false" @rowClick="rowClick" v-if="selectedUserId == 0">
                             <table-column label="#" show="id" data-type="numeric"></table-column>
                             <table-column label="Användare" show="user.nickName" :sortable="false"></table-column>
                             <table-column label="Poäng" show="points" data-type="numeric"></table-column>
-                            <table-column label="Antal tippningar" show="guesses.length" data-type="numeric"></table-column>
+                            <table-column label="Tippat ggr" show="guesses.length" data-type="numeric"></table-column>
                         </table-component>
-                        <modal v-for="item in table" :key="item.id" v-bind="{ attributes: { name: `show-data-${item.user.id}`, scrollable: true }, header: item.user.nickName, button: { } }">
-                            <template slot="body">
-                                <div class="row">
-                                    <div class="col">
-                                        <table-component :data="userTable" sort-by="playedDate" sort-order="desc" :show-filter="false" :table-class="'table table-sm mb-0'">
-                                            <table-column label="Spelades" show="playedDate"></table-column>
-                                            <table-column label="Hemmalag" :sortable="false">
-                                                <template slot-scope="row">
-                                                    <strong>{{ row.homeTeam.name }}</strong>
-                                                    <br />
-                                                    Gjorda mål: {{ row.homeTeam.goal.outcome }}
-                                                    <br />
-                                                    Gissade: {{ row.homeTeam.goal.guess }}
-                                                </template>
-                                            </table-column>
-                                            <table-column label="Bortalag" :sortable="false">
-                                                <template slot-scope="row">
-                                                    <strong>{{ row.awayTeam.name }}</strong>
-                                                    <br />
-                                                    Gjorda mål: {{ row.awayTeam.goal.outcome }}
-                                                    <br />
-                                                    Gissade: {{ row.awayTeam.goal.guess }}
-                                                </template>
-                                            </table-column>
-                                            <table-column label="Poäng" show="points" data-type="numeric"></table-column>
-                                        </table-component>
-                                    </div>
+                        <template v-else>
+                            <div class="col pl-0 pr-0">
+                                <div class="flow-root">
+                                    <span class="float-right" @click="selectedUserId = 0" style="cursor: pointer; font-weight: bold; margin-bottom: -1rem" v-tooltip="'Visa tabellen'">&times;</span>
+                                    <h6 class="float-left mb-0">{{ userTable.user.nickName }} tippningar</h6>
                                 </div>
-                            </template>
-                        </modal>
+                                <hr />
+                                <ul class="list-group mb-0">
+                                    <li class="list-group-item" v-for="guess in userTable.guesses" :key="guess.playedDate">
+                                        <div class="flow-root">
+                                            <small class="float-right text-muted">
+                                                <span class="icon icon-clock"></span>
+                                                {{ guess.playedDate }}
+                                            </small>
+                                            <h6 class="float-left">{{ guess.homeTeam.name }} - {{ guess.awayTeam.name }}</h6>
+                                        </div>
+                                        <strong>Utfall:</strong> {{ guess.homeTeam.goal.outcome }} - {{ guess.awayTeam.goal.outcome }} ({{ guess.homeTeam.goal.guess }} - {{ guess.awayTeam.goal.guess }})
+                                        <span class="badge badge-pill float-right" :class="{ 'badge-success': guess.points >= 2, 'badge-primary': guess.points == 1, 'badge-danger': guess.points == 0 }">{{ guess.points }}p</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="badge badge-pill float-right" :class="{ 'badge-success': userTable.points > 0, 'badge-danger': userTable.points == 0 }">
+                                            {{ userTable.points }}p
+                                        </span>
+                                        <strong>Totalt</strong>
+                                    </li>
+                                </ul>
+                            </div>
+                        </template>
                     </template>
                     <template v-else>
                         <loader v-bind="{ background: '#699ED0' }" />
@@ -103,6 +101,12 @@ interface IGuess {
     points: number
 }
 
+interface IUserGuesses {
+    user: IdAndNickNameUser
+    guesses: IGuess[]
+    points: number
+}
+
 interface IGuessResult {
     numberOfCorrectDifGoalGuesses: number
     numberOfCorrectOpponentGoalGuesses: number
@@ -111,9 +115,7 @@ interface IGuessResult {
     numberOfCorrectGameOutcomeGuesses: number
 }
 
-@Component({
-
-})
+@Component({})
 export default class GameGuessResultLeage extends Vue {
 	@State(state => state.vm) vm: PageViewModel
     @ModuleAction(FETCH_FINISHED_GAME_RESULT_GUESSES) loadFinishedGameResultGuesses: () => Promise<GameResultGuessLeagueItem[]>
@@ -175,7 +177,9 @@ export default class GameGuessResultLeage extends Vue {
     get userTable() {
         var item = this.guesses.filter((g: GameResultGuessLeagueItem) => g.user.id == this.selectedUserId)[0]
         if (item) {
-            return item.guesses.map((guess: GameResultGuess) => {
+            var table = <IUserGuesses> {
+                user: item.user,
+                guesses: item.guesses.map((guess: GameResultGuess) => {
                     return <IGuess> {
                         homeTeam: this.getTeamData(guess.game.arenaType == ArenaType.Home, guess),
                         awayTeam: this.getTeamData(guess.game.arenaType == ArenaType.Away, guess),
@@ -183,6 +187,9 @@ export default class GameGuessResultLeage extends Vue {
                         points: this.getPoints(this.getPointForGuess(guess))
                     }
                 })
+            }
+            table.points = table.guesses.map(g => g.points).reduce((acc, val) => { return acc + val })
+            return table
         }
     }
 
@@ -299,7 +306,6 @@ export default class GameGuessResultLeage extends Vue {
 
     rowClick(row: any) {
         this.selectedUserId = row.data.user.id
-        this.$modal.show(`show-data-${this.selectedUserId}`)
     }
 }
 </script>

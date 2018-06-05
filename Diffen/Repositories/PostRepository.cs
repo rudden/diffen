@@ -177,6 +177,11 @@ namespace Diffen.Repositories
 			return mappedThreads;
 		}
 
+		public Task<string> GetThreadNameAsync(int threadId)
+		{
+			return _dbClient.GetThreadNameAsync(threadId);
+		}
+
 		public async Task<bool> UpdateThreadsOnPostAsync(int postId, List<int> threadIds)
 		{
 			var result = await _dbClient.DeleteExistingThreadsOnPostAsync(postId);

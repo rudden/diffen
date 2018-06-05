@@ -54,6 +54,10 @@ namespace Diffen.Database.Clients
 			{
 				posts = posts.Where(x => !filter.ExcludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
 			}
+			if (filter.ExcludedThreads != null && filter.ExcludedThreads.Any())
+			{
+				posts = posts.NotInThreads(filter.ExcludedThreads.Select(x => x.Key));
+			}
 			if (filter.FromDate != null)
 			{
 				posts = posts.Where(p => p.Created.Date >= Convert.ToDateTime(filter.FromDate).Date);
@@ -335,6 +339,11 @@ namespace Diffen.Database.Clients
 		public Task<List<Thread>> GetPostThreadsAsync()
 		{
 			return _dbContext.Threads.Where(x => x.StartTime == null || DateTime.Now >= x.StartTime).OrderBy(x => x.Name).ToListAsync();
+		}
+
+		public async Task<string> GetThreadNameAsync(int threadId)
+		{
+			return (await _dbContext.Threads.FindAsync(threadId)).Name;
 		}
 
 		public Task<int> GetNumberOfPostsOnThreadAsync(int threadId)

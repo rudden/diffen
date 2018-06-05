@@ -25,15 +25,17 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		private readonly UserManager<Database.Entities.User.AppUser> _userManager;
 		private readonly IUserRepository _userRepository;
 		private readonly IPmRepository _pmRepository;
+		private readonly IPostRepository _postRepository;
 
 		private const string BasePathForAvatars = "/uploads/avatars/";
 		private readonly string _genericAvatarPath;
 
-		public UserResolver(UserManager<Database.Entities.User.AppUser> userManager, IUserRepository userRepository, IPmRepository pmRepository)
+		public UserResolver(UserManager<Database.Entities.User.AppUser> userManager, IUserRepository userRepository, IPmRepository pmRepository, IPostRepository postRepository)
 		{
 			_userManager = userManager;
 			_userRepository = userRepository;
 			_pmRepository = pmRepository;
+			_postRepository = postRepository;
 			_genericAvatarPath = string.Concat(BasePathForAvatars, "generic/logo.png");
 		}
 
@@ -119,7 +121,13 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				HideLeftMenu = source.HideLeftMenu,
 				HideRightMenu = source.HideRightMenu,
 				ExcludedUsers = !string.IsNullOrEmpty(source.ExcludedUserIds) ? source.ExcludedUserIds?.Split(",")
-					.Select(userId => new KeyValuePair<string, string>(userId, _userRepository.GetCurrentNickOnUserIdAsync(userId).Result)) : new List<KeyValuePair<string, string>>()
+					.Select(userId => new KeyValuePair<string, string>(userId, _userRepository.GetCurrentNickOnUserIdAsync(userId).Result)) : new List<KeyValuePair<string, string>>(),
+				ExcludedThreads = !string.IsNullOrEmpty(source.ExcludedThreadIds) ? source.ExcludedThreadIds?.Split(",")
+					.Select(threadId =>
+					{
+						var threadIdAsInt = System.Convert.ToInt32(threadId);
+						return new KeyValuePair<int, string>(threadIdAsInt, _postRepository.GetThreadNameAsync(threadIdAsInt).Result);
+					}) : new List<KeyValuePair<int, string>>()
 			};
 		}
 

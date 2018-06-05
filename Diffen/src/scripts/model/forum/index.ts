@@ -57,6 +57,7 @@ export class Filter {
     startingEleven?: StartingEleven = StartingEleven.All
 	includedUsers?: KeyValuePair[]
     excludedUsers?: KeyValuePair[]
+    excludedThreads?: KeyValuePair[]
     threadIds?: number[] = []
 }
 
