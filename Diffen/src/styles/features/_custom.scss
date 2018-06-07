@@ -5,6 +5,12 @@
 	}
 }
 
+img.media-object {
+	width: 60px !important;
+	height: 60px !important;
+	object-fit: cover !important;
+}
+
 .more-readable {
 	max-width: 450px;
     word-wrap: break-word;

@@ -79,7 +79,8 @@
                                     </div>
                                 </div>
                             </template>
-                            <template v-if="excludedThreads && excludedThreads.length > 0">
+                            <!-- Not in use due to poor performance in backend -->
+                            <!-- <template v-if="excludedThreads && excludedThreads.length > 0">
                                 <hr />
                                 <div class="row col">
                                     <strong class="mr-2">Exkluderade trådar:</strong>
@@ -87,7 +88,7 @@
                                         {{ thread.key !== excludedThreads[excludedThreads.length - 1].key ? `${thread.value},` : thread.value }}
                                     </span> 
                                 </div>
-                            </template>
+                            </template> -->
                         </div>
                         <div class="list-group-item flex-column align-items-start">
                             <div class="row">

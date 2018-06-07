@@ -54,7 +54,8 @@
 								</div>
 							</div>
 						</div>
-						<div class="form-group">
+						<!-- Not in use due to poor performance in backend -->
+						<!-- <div class="form-group">
 							<div class="row">
 								<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 pr-0">
 									<p class="mb-0">Filtrera bort trådar</p>
@@ -66,7 +67,7 @@
                                     </div>
 								</div>
 							</div>
-						</div>
+						</div> -->
 						<results :items="results" class="mb-3" />
 						<div class="form-group mb-0">
 							<div class="row">

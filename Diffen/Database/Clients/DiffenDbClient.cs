@@ -54,10 +54,11 @@ namespace Diffen.Database.Clients
 			{
 				posts = posts.Where(x => !filter.ExcludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
 			}
-			if (filter.ExcludedThreads != null && filter.ExcludedThreads.Any())
-			{
-				posts = posts.NotInThreads(filter.ExcludedThreads.Select(x => x.Key));
-			}
+			//Not in use due to poor performance
+			//if (filter.ExcludedThreads != null && filter.ExcludedThreads.Any())
+			//{
+			//	posts = posts.NotInThreads(filter.ExcludedThreads.Select(x => x.Key));
+			//}
 			if (filter.FromDate != null)
 			{
 				posts = posts.Where(p => p.Created.Date >= Convert.ToDateTime(filter.FromDate).Date);
