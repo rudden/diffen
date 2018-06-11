@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Net.Http;
 
+using Serilog;
 using AutoMapper;
 
 namespace Diffen.Repositories
@@ -18,6 +20,8 @@ namespace Diffen.Repositories
 	{
 		private readonly IMapper _mapper;
 		private readonly IDiffenDbClient _dbClient;
+
+		private readonly ILogger _logger = Log.ForContext<PostRepository>();
 
 		public PostRepository(IMapper mapper, IDiffenDbClient dbClient)
 		{
@@ -82,6 +86,7 @@ namespace Diffen.Repositories
 
 			if (await isCreated)
 			{
+				await NotifyAppAboutNewPost(newPost.Id);
 				await ComplementPostWithPotentialUrlTipThreadsAndLineupAsync(newPost.Id, post, results);
 			}
 
@@ -264,6 +269,26 @@ namespace Diffen.Repositories
 				Created = DateTime.Now
 			};
 			results.Update(await _dbClient.ConnectLineupToPostAsync(postToLineup), ResultMessages.CreateLineupToPost);
+		}
+
+		private async Task NotifyAppAboutNewPost(int postId)
+		{
+			try
+			{
+				using (var client = new HttpClient())
+				{
+					await client.PostAsync("https://blaranderna.difstart.nu/posts/push", new FormUrlEncodedContent(new Dictionary<string, string>
+					{
+						{
+							"id", $"{postId}"
+						}
+					}));
+				}
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, $"An unexpected error occured when trying to notify app about a new post with id {postId}");
+			}
 		}
 	}
 }
