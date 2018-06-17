@@ -630,7 +630,7 @@ namespace Diffen.Database.Clients
 
 		public Task<List<Player>> GetPlayersAsync()
 		{
-			return _dbContext.Players.IncludeAll().Where(x => !x.IsSold).OrderBy(x => x.LastName).ToListAsync();
+			return _dbContext.Players.IncludeAll().OrderBy(x => x.LastName).ToListAsync();
 		}
 
 		public Task<Player> GetPlayerOnIdAsync(int playerId)

@@ -52,6 +52,10 @@
 													<input class="form-check-input" type="checkbox" id="includePlayersOutOnLoan" v-model="includePlayersOutOnLoan">
 													<label class="form-check-label" for="includePlayersOutOnLoan">Inkludera utlånade spelare</label>
 												</div>
+												<div class="form-check form-check-inline m-2">
+													<input class="form-check-input" type="checkbox" id="includeSoldPlayers" v-model="includeSoldPlayers">
+													<label class="form-check-label" for="includeSoldPlayers">Inkludera sålda spelare</label>
+												</div>
 											</td>
 										</tr>
 									</template>
@@ -143,6 +147,7 @@ export default class Wrapper extends Vue {
 		}
 	}
 
+	includeSoldPlayers: boolean = false
 	includePlayersOutOnLoan: boolean = false
 
 	gameType: any = { id: GameType.League, name: 'Allsvenskan' }
@@ -168,13 +173,24 @@ export default class Wrapper extends Vue {
 	}
 
 	get filteredPlayers() {
-		return this.includePlayersOutOnLoan 
-			? this.statistics.filter((s: IPlayerStatistics) => {
-				return s.player.fullName.toLowerCase().includes(this.playerSearch.toLowerCase())
-			}) 
-			: this.statistics.filter((s: IPlayerStatistics) => !s.player.attributes.isOutOnLoan).filter((s: IPlayerStatistics) => {
-				return s.player.fullName.toLowerCase().includes(this.playerSearch.toLowerCase())
-			})
+		if (!this.includeSoldPlayers && !this.includePlayersOutOnLoan) {
+			return this.textFilteredPlayers.filter((s: IPlayerStatistics) => !s.player.attributes.isSold && !s.player.attributes.isOutOnLoan)
+		}
+		if (this.includeSoldPlayers && this.includePlayersOutOnLoan) {
+			return this.textFilteredPlayers
+		}
+		if (this.includeSoldPlayers && !this.includePlayersOutOnLoan) {
+			return this.textFilteredPlayers.filter((s: IPlayerStatistics) => !s.player.attributes.isOutOnLoan)
+		}
+		if (!this.includeSoldPlayers && this.includePlayersOutOnLoan) {
+			return this.textFilteredPlayers.filter((s: IPlayerStatistics) => !s.player.attributes.isSold)
+		}
+	}
+
+	get textFilteredPlayers() {
+		return this.statistics.filter((s: IPlayerStatistics) => {
+			return s.player.fullName.toLowerCase().includes(this.playerSearch.toLowerCase())
+		})
 	}
 
 	get statistics() {
