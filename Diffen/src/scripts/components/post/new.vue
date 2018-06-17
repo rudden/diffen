@@ -266,11 +266,13 @@ export default class NewPost extends Vue {
                 this.update({ post: this.newPost }).then((res) => resolve(res)).catch(() => resolve([{ type: ResultType.Failure, message: 'Kunde inte uppdatera inlägget' }]))
             }
             else {
+                console.log('newPost:', this.newPost)
                 this.create({ post: this.newPost }).then((res) => resolve(res)).catch(() => resolve([{ type: ResultType.Failure, message: 'Kunde inte svara på inlägget' }]))
             }
         }).then((res) => {
             this.results = res
             this.newPost = new CrudPost()
+            this.newPost.createdByUserId = this.vm.loggedInUser.id
             this.newThreads = []
             this.selectedThreads = []
             this.showThreadSelection = false
