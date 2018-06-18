@@ -71,8 +71,9 @@ namespace Diffen.Repositories
 		public async Task<List<Result>> CreatePlayerAsync(Models.Squad.CRUD.Player player)
 		{
 			var newPlayer = _mapper.Map<Database.Entities.Squad.Player>(player);
-			await _dbClient.UpdateAvailablePositionsForPlayerAsync(player.Id, player.AvailablePositionsIds);
-			return await new List<Result>().Get(_dbClient.CreatePlayerAsync(newPlayer), ResultMessages.CreatePlayer);
+			var results = await new List<Result>().Get(_dbClient.CreatePlayerAsync(newPlayer), ResultMessages.CreatePlayer);
+			await _dbClient.UpdateAvailablePositionsForPlayerAsync(newPlayer.Id, player.AvailablePositionsIds);
+			return results;
 		}
 
 		public async Task<List<Result>> UpdatePlayerAsync(Models.Squad.CRUD.Player player)
