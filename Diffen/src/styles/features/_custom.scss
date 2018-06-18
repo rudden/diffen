@@ -5,15 +5,12 @@
 	}
 }
 
-// .more-readable {
-// 	max-width: 450px;
-//     word-wrap: break-word;
-// }
-// @media (max-width: 768px) { 
-// 	.more-readable {
-// 		max-width: 300px;
-// 	}
-// }
+img.media-object {
+	width: 60px !important;
+	height: 60px !important;
+	object-fit: cover !important;
+}
+
 /* profile */
 .container {
 	&__profile {
