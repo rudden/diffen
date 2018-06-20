@@ -44,8 +44,8 @@ img.media-object {
 }
 .large-device {
 	display: block;
-	&__contents {
-		display: contents;
+	&__flex {
+		display: inline-flex;
 	}
 }
 @media (max-width: 768px) {

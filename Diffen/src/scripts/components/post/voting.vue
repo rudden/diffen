@@ -19,10 +19,10 @@
                     </div>
                 </template>
             </modal>
-            <a v-on:click="createVote(upvoteType)" class="large-device large-device__contents">
+            <a v-on:click="createVote(upvoteType)" class="large-device large-device__flex">
                 <span class="icon icon-thumbs-up"></span>
             </a>
-            <a v-on:click="createVote(downvoteType)" class="large-device large-device__contents">
+            <a v-on:click="createVote(downvoteType)" class="large-device large-device__flex">
                 <span class="icon icon-thumbs-down"></span>
             </a> · 
         </template>
