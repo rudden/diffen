@@ -1,7 +1,7 @@
 <template>
     <div class="wrap float-right">
         <template v-if="post.loggedInUserCanVote">
-            <modal v-bind="{ attributes: { name: `vote-up-${post.id}` }, header: 'Vill du rösta upp inlägget?', button: { classes: 'small-device small-device__contents', icon: 'icon icon-thumbs-up' } }">
+            <modal v-bind="{ attributes: { name: `vote-up-${post.id}` }, header: modalUpvoteText, button: { classes: 'small-device small-device__contents', icon: upvoteModalClasses } }">
                 <template slot="body">
                     <div class="row">
                         <div class="col">
@@ -10,7 +10,7 @@
                     </div>
                 </template>
             </modal>
-            <modal v-bind="{ attributes: { name: `vote-down-${post.id}` }, header: 'Vill du rösta ner inlägget?', button: { classes: 'small-device small-device__contents', icon: 'icon icon-thumbs-down' } }">
+            <modal v-bind="{ attributes: { name: `vote-down-${post.id}` }, header: modalDownvoteText, button: { classes: 'small-device small-device__contents', icon: downvoteModalClasses } }">
                 <template slot="body">
                     <div class="row">
                         <div class="col">
@@ -20,10 +20,10 @@
                 </template>
             </modal>
             <a v-on:click="createVote(upvoteType)" class="large-device large-device__flex">
-                <span class="icon icon-thumbs-up" :class="{ 'icon-thumbs-up__green': hasUpvoted }"></span>
+                <span class="icon icon-thumbs-up" :class="{ 'icon-thumbs-up__blue': hasUpvoted }"></span>
             </a>
             <a v-on:click="createVote(downvoteType)" class="large-device large-device__flex">
-                <span class="icon icon-thumbs-down" :class="{ 'icon-thumbs-down__red': hasDownvoted }"></span>
+                <span class="icon icon-thumbs-down" :class="{ 'icon-thumbs-down__blue': hasDownvoted }"></span>
             </a> · 
         </template>
         <template v-if="post.votes.length > 0">
@@ -104,6 +104,36 @@ export default class Voting extends Vue {
     get hasDownvoted() {
         return this.downvote !== undefined
     }
+    get modalUpvoteText() {
+        if (this.hasUpvoted) {
+            return 'Vill du ta bort din upp-tumme?'
+        } 
+        if (this.hasDownvoted) {
+            return 'Vill du ändra till en upp-tumme?'
+        }
+        return 'Vill du rösta upp inlägget?'
+    }
+    get modalDownvoteText() {
+        if (this.hasDownvoted) {
+            return 'Vill du ta bort din ner-tumme?'
+        } 
+        if (this.hasUpvoted) {
+            return 'Vill du ändra till en ner-tumme?'
+        }
+        return 'Vill du rösta ner inlägget?'
+    }
+    get upvoteModalClasses() {
+        if (this.hasUpvoted) {
+            return 'icon icon-thumbs-up icon-thumbs-up__blue'
+        }
+        return 'icon icon-thumbs-up'
+    }
+    get downvoteModalClasses() {
+        if (this.hasDownvoted) {
+            return 'icon icon-thumbs-down icon-thumbs-down__blue'
+        }
+        return 'icon icon-thumbs-down'
+    }
 
     get karma(): number {
         let karma: number = 0
@@ -148,6 +178,12 @@ export default class Voting extends Vue {
                 }
                 break
         }
+        if (type == this.upvoteType) {
+            this.$modal.hide(`vote-up-${this.post.id}`)
+        }
+        if (type == this.downvoteType) {
+            this.$modal.hide(`vote-down-${this.post.id}`)
+        }
     }
 
     deleteVote() {
@@ -163,14 +199,5 @@ export default class Voting extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.icon-thumbs-down {
-    &__red {
-        color: red !important;
-    }
-}
-.icon-thumbs-up {
-    &__green {
-        color: green !important;
-    }
-}
+
 </style>

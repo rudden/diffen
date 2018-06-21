@@ -424,6 +424,9 @@ export default class PostComponent extends Vue {
         color: #3097D1 !important;
         .icon-thumbs-up, .icon-thumbs-down {
             color: #162248;
+            &__blue {
+                color: #3097D1 !important;
+            }
         }
     }
     a.disabled {
