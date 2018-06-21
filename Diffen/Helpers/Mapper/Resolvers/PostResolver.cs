@@ -52,7 +52,8 @@ namespace Diffen.Helpers.Mapper.Resolvers
 				Since = source.Created.GetSinceStamp(),
 				Updated = source.Updated.GetSinceStamp(),
 				IsScissored = source.Scissored != null,
-				LoggedInUserCanVote = source.User.Id != _loggedInUserId && source.Votes.All(v => v.CreatedByUserId != _loggedInUserId)
+				LoggedInUserCanVote = source.User.Id != _loggedInUserId 
+				//&& source.Votes.All(v => v.CreatedByUserId != _loggedInUserId)
 			};
 		}
 
@@ -73,6 +74,7 @@ namespace Diffen.Helpers.Mapper.Resolvers
 		{
 			return new Models.Forum.Vote
 			{
+				Id = source.Id,
 				Type = source.Type,
 				ByNickName = source.User.NickNames.Current() ?? "anonymous"
 			};

@@ -37,6 +37,7 @@ export class ParentPost {
 }
 
 export class Vote {
+    id: number
     type: VoteType
     byNickName: string = ''
 }

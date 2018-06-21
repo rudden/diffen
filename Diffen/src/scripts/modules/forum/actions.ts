@@ -13,6 +13,7 @@ import {
 	CREATE_POST, 
 	UPDATE_POST, 
 	CREATE_VOTE, 
+	DELETE_VOTE,
 	BOOKMARK_POST,
 	SCISSOR_POST,
 	FETCH_KVP_USERS,
@@ -73,7 +74,7 @@ export const Actions: ActionTree<State, any> = {
 	[CREATE_VOTE]: (store: ActionContext<State, any>, payload: { vote: CrudVote }): Promise<void> => {
 		return axios.post(`${store.rootState.vm.api}/posts/vote`, payload.vote)
 			.then((res) => {
-				if (!res) return
+				if (res.data == 0) return
 				switch (payload.vote.type) {
 					case VoteType.Up:
 						store.rootState.vm.loggedInUser.voteStatistics.upVotes++
@@ -82,8 +83,14 @@ export const Actions: ActionTree<State, any> = {
 						store.rootState.vm.loggedInUser.voteStatistics.downVotes++
 						break
 				}
-				store.commit(SET_POST_AFTER_VOTE, { vote: payload.vote, nickName: store.rootState.vm.loggedInUser.nickName })
+				store.commit(SET_POST_AFTER_VOTE, { vote: payload.vote, voteId: res.data, nickName: store.rootState.vm.loggedInUser.nickName })
 			}).catch((error) => console.warn(error))
+	},
+	[DELETE_VOTE]: (store: ActionContext<State, any>, payload: { id: number }): Promise<boolean> => {
+		return new Promise<boolean>((resolve, reject) => {
+			return axios.delete(`${store.rootState.vm.api}/posts/vote/${payload.id}`)
+			.then((res) => resolve(res.data)).catch((error) => console.warn(error))
+		})
 	},
 	[BOOKMARK_POST]: (store: ActionContext<State, any>, payload: { postId: number }): Promise<void> => {
 		return axios.post(`${store.rootState.vm.api}/posts/${payload.postId}/bookmark?userId=${store.rootState.vm.loggedInUser.id}`)

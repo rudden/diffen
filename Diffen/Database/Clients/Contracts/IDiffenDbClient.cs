@@ -41,6 +41,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<bool> DeleteUrlTipAsync(int postId);
 		Task<bool> IncrementUrlTipClickCounterAsync(string subject, int postId);
 		Task<bool> CreateVoteAsync(Vote vote);
+		Task<bool> DeleteVoteAsync(int voteId);
 		Task<bool> UserHasAlreadyVotedOnPostAsync(int postId, string userId);
 		Task<List<Thread>> GetPostThreadsAsync();
 		Task<int> GetNumberOfPostsOnThreadAsync(int threadId);

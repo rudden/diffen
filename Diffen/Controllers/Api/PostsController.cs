@@ -94,10 +94,17 @@ namespace Diffen.Controllers.Api
 
 		[VerifyInputToLoggedInUserId("vote", "CreatedByUserId")]
 		[HttpPost("vote")]
-		public Task<bool> Vote([FromBody] Models.Forum.CRUD.Vote vote)
+		public Task<int> Vote([FromBody] Models.Forum.CRUD.Vote vote)
 		{
 			_logger.Debug("Requesting to vote on a post with id {postId}", vote.PostId);
 			return _postRepository.CreateVoteAsync(vote);
+		}
+
+		[HttpDelete("vote/{voteId}")]
+		public Task<bool> RemoveVote(int voteId)
+		{
+			_logger.Debug("Requesting to remove vote");
+			return _postRepository.DeleteVoteAsync(voteId);
 		}
 
 		[HttpPost("url/{subject}/{id}/click")]

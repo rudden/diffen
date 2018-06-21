@@ -327,6 +327,12 @@ namespace Diffen.Database.Clients
 			return CommitedResultIsSuccessfulAsync();
 		}
 
+		public Task<bool> DeleteVoteAsync(int voteId)
+		{
+			_dbContext.Votes.Remove(_dbContext.Votes.Find(voteId));
+			return CommitedResultIsSuccessfulAsync();
+		}
+
 		public async Task<bool> UserHasAlreadyVotedOnPostAsync(int postId, string userId)
 		{
 			return await _dbContext.Votes.CountAsync(x => x.PostId == postId && x.CreatedByUserId == userId) > 0;

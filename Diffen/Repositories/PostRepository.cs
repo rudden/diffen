@@ -161,14 +161,20 @@ namespace Diffen.Repositories
 			return _mapper.Map<List<Vote>>(votes);
 		}
 
-		public async Task<bool> CreateVoteAsync(Models.Forum.CRUD.Vote vote)
+		public async Task<int> CreateVoteAsync(Models.Forum.CRUD.Vote vote)
 		{
 			if (await _dbClient.UserHasAlreadyVotedOnPostAsync(vote.PostId, vote.CreatedByUserId))
 			{
-				return false;
+				return 0;
 			}
 			var newVote = _mapper.Map<Database.Entities.Forum.Vote>(vote);
-			return await _dbClient.CreateVoteAsync(newVote);
+			await _dbClient.CreateVoteAsync(newVote);
+			return newVote.Id;
+		}
+
+		public Task<bool> DeleteVoteAsync(int voteId)
+		{
+			return _dbClient.DeleteVoteAsync(voteId);
 		}
 
 		public async Task<List<Thread>> GetThreadsAsync()

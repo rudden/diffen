@@ -29,15 +29,15 @@ export const Mutations: MutationTree<State> = {
             total: payload.pagedPosts.total
         }
     },
-    [SET_POST_AFTER_VOTE]: (state: State, payload: { vote: CrudVote, nickName: string }) => { 
+    [SET_POST_AFTER_VOTE]: (state: State, payload: { vote: CrudVote, voteId: number, nickName: string }) => { 
         for (let i = 0; i < state.pagedPosts.data.length; i++) {
             if (state.pagedPosts.data[i].id !== payload.vote.postId)
                 continue
             state.pagedPosts.data[i].votes.push({
+                id: payload.voteId,
                 type: payload.vote.type,
                 byNickName: payload.nickName
             })
-            state.pagedPosts.data[i].loggedInUserCanVote = false
         }
     },
     [SET_IS_LOADING_POSTS]: (state: State, payload: { value: boolean }) => { 
