@@ -1008,7 +1008,7 @@ namespace Diffen.Database.Clients
 
 		public Task<List<Season>> GetSeasonsAsync()
 		{
-			return _dbContext.Seasons.IncludeAll().ToListAsync();
+			return _dbContext.Seasons.IncludeAll().OrderBy(x => x.Name).ToListAsync();
 		}
 
 		private async Task<bool> CommitedResultIsSuccessfulAsync()
