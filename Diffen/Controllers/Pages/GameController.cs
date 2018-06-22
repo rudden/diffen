@@ -10,7 +10,7 @@ namespace Diffen.Controllers.Pages
 	using Repositories.Contracts;
 
 	[Route("matcher")]
-	public class GameController : CommonController<SquadPageViewModel>
+	public class GameController : CommonController<GamePageViewModel>
 	{
 		public GameController(IConfigurationRoot configuration, IMapper mapper, IUserRepository userRepository)
 			: base(configuration, mapper, userRepository)
