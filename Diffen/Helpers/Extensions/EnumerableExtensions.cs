@@ -26,6 +26,11 @@ namespace Diffen.Helpers.Extensions
 			return source.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
 		}
 
+		public static IQueryable<T> PageAsQueryable<T>(this IEnumerable<T> source, int pageNumber, int pageSize)
+		{
+			return source.Skip(pageSize * (pageNumber - 1)).Take(pageSize).AsQueryable();
+		}
+
 		public static string Current(this IEnumerable<Database.Entities.User.NickName> nickNames)
 		{
 			return nickNames.OrderByDescending(x => x.Created).FirstOrDefault()?.Nick;

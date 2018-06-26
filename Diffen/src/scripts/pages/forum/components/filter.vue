@@ -15,7 +15,13 @@
                     </span>
                 </h6>
                 <template v-if="show">
-                    <hr class="mt-3" />
+                    <div class="alert alert-warning mt-3 mb-0">
+                        <span class="icon icon-info mr-2"></span>
+                        Tillfälligt inaktiverat filtreringsmöjligheterna på grund av prestandaproblem. Will be back soon!
+                        <br /><br />
+                        DIFFEN!
+                    </div>
+                    <!-- <hr class="mt-3" />
                     <div class="list-group mt-3">
                         <div class="mb-3">
                             <input id="users" class="form-control form-control-sm" type="text" placeholder="sök på ett nick.." autocomplete="off" />
@@ -110,7 +116,7 @@
                         <div class="col">
                             <button class="btn btn-outline-danger btn-sm btn-block" v-on:click="all">Visa allt</button>
                         </div>
-                    </div>
+                    </div> -->
                 </template>
             <!-- </template> -->
         </div>

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
+using Diffen.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,49 +43,50 @@ namespace Diffen.Database.Clients
 				.OrderByCreated().Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
 		}
 
-		public Task<List<Post>> GetPostsOnFilterAsync(Models.Forum.Filter filter)
+		public async Task<Paging<Post>> GetPostsOnFilterAsync(Models.Forum.Filter filter, int pageNumber, int pageSize)
 		{
-			var posts = _dbContext.Posts.IncludeAll().ExceptScissored();
-			if (filter == null)
-			{
-				return posts.ToListAsync();
-			}
-			if (filter.ExcludedUsers != null && filter.ExcludedUsers.Any())
-			{
-				posts = posts.Where(x => !filter.ExcludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
-			}
-			if (filter.FromDate != null)
-			{
-				posts = posts.Where(p => p.Created.Date >= Convert.ToDateTime(filter.FromDate).Date);
-			}
-			if (filter.ToDate != null)
-			{
-				posts = posts.Where(p => p.Created.Date <= Convert.ToDateTime(filter.ToDate).Date);
-			}
-			if (!string.IsNullOrEmpty(filter.MessageWildCard))
-			{
-				posts = posts.Where(p => p.Message.ToLower().Contains(filter.MessageWildCard.ToLower()));
-			}
-			switch (filter.StartingEleven)
-			{
-				case Models.Forum.StartingEleven.With:
-					posts = posts.Where(x => x.Lineups.Any());
-					break;
-				case Models.Forum.StartingEleven.Without:
-					posts = posts.Where(x => !x.Lineups.Any());
-					break;
-				case Models.Forum.StartingEleven.All:
-					break;
-			}
-			if (filter.IncludedUsers != null && filter.IncludedUsers.Any())
-			{
-				posts = posts.Where(x => filter.IncludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
-			}
-			if (filter.ThreadIds != null && filter.ThreadIds.Any())
-			{
-				posts = posts.InThreads(filter.ThreadIds);
-			}
-			return posts.OrderByCreated().ToListAsync();
+			var posts = await _dbContext.Posts.IncludeAll().ExceptScissored().ToListAsync();
+			var pagedPosts = posts.OrderByDescending(x => x.Created).Page(pageNumber, pageSize);
+			return pagedPosts.ToPaging(posts.Count, pageNumber, pageSize);
+			//if (filter == null)
+			//{
+			//}
+			//if (filter.ExcludedUsers != null && filter.ExcludedUsers.Any())
+			//{
+			//	posts = posts.Where(x => !filter.ExcludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
+			//}
+			//if (filter.FromDate != null)
+			//{
+			//	posts = posts.Where(p => p.Created.Date >= Convert.ToDateTime(filter.FromDate).Date);
+			//}
+			//if (filter.ToDate != null)
+			//{
+			//	posts = posts.Where(p => p.Created.Date <= Convert.ToDateTime(filter.ToDate).Date);
+			//}
+			//if (!string.IsNullOrEmpty(filter.MessageWildCard))
+			//{
+			//	posts = posts.Where(p => p.Message.ToLower().Contains(filter.MessageWildCard.ToLower()));
+			//}
+			//switch (filter.StartingEleven)
+			//{
+			//	case Models.Forum.StartingEleven.With:
+			//		posts = posts.Where(x => x.Lineups.Any());
+			//		break;
+			//	case Models.Forum.StartingEleven.Without:
+			//		posts = posts.Where(x => !x.Lineups.Any());
+			//		break;
+			//	case Models.Forum.StartingEleven.All:
+			//		break;
+			//}
+			//if (filter.IncludedUsers != null && filter.IncludedUsers.Any())
+			//{
+			//	posts = posts.Where(x => filter.IncludedUsers.Select(y => y.Key).Contains(x.CreatedByUserId));
+			//}
+			//if (filter.ThreadIds != null && filter.ThreadIds.Any())
+			//{
+			//	posts = posts.InThreads(filter.ThreadIds);
+			//}
+			//return posts.OrderByCreated().ToListAsync();
 		}
 
 		public Task<List<Post>> GetPostsOnUserIdAsync(string userId)

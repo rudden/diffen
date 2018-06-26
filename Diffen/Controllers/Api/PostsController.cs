@@ -54,6 +54,7 @@ namespace Diffen.Controllers.Api
 		public Task<Paging<Post>> GetPage(int pageNumber, int pageSize, string filter)
 		{
 			_logger.Debug("Requesting {pageSize} posts on page {pageNumber}", pageSize, pageNumber);
+			//return _postRepository.GetPagedPostsAsync(pageNumber, pageSize);
 			var serializedFilter = JsonConvert.DeserializeObject<Filter>(filter);
 			return serializedFilter == null
 				? _postRepository.GetPagedPostsAsync(pageNumber, pageSize)

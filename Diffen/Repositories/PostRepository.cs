@@ -49,8 +49,15 @@ namespace Diffen.Repositories
 
 		public async Task<Paging<Post>> GetPagedPostsOnFilterAsync(int pageNumber, int pageSize, Filter filter)
 		{
-			var posts = await _dbClient.GetPostsOnFilterAsync(filter);
-			return _mapper.Map<List<Post>>(posts.Page(pageNumber, pageSize)).ToPaging(posts.Count, pageNumber, pageSize);
+			var posts = await _dbClient.GetPostsOnFilterAsync(filter, pageNumber, pageSize);
+			return new Paging<Post>
+			{
+				Data = _mapper.Map<List<Post>>(posts.Data),
+				Total = posts.Total,
+				CurrentPage = pageNumber,
+				NumberOfPages = pageSize
+			};
+			//return _mapper.Map<List<Post>>(posts.Page(pageNumber, pageSize)).ToPaging(posts.Count, pageNumber, pageSize);
 		}
 
 		public async Task<Paging<Post>> GetPagedSavedPostsAsync(string userId, int pageNumber, int pageSize = 5)

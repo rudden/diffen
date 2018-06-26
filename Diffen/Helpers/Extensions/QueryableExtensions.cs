@@ -53,10 +53,10 @@ namespace Diffen.Helpers.Extensions
 			return source.Where(x => x.Scissored == null);
 		}
 
-		public static IQueryable<Post> InThreads(this IQueryable<Post> source, IEnumerable<int> threadIds)
-		{
-			return source.Where(x => x.InThreads.Any() && x.InThreads.Select(y => y.ThreadId).Intersect(threadIds).Any());
-		}
+		//public static IQueryable<Post> InThreads(this IEnumerable<Post> source, IEnumerable<int> threadIds)
+		//{
+		//	return source.Where(x => x.InThreads.Any() && x.InThreads.Select(y => y.ThreadId).Intersect(threadIds).Any());
+		//}
 
 		public static IOrderedQueryable<Post> OrderByCreated(this IQueryable<Post> source)
 		{

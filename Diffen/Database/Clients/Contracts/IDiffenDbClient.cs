@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Diffen.Database.Clients.Contracts
 {
+	using Helpers;
 	using Entities.User;
 	using Entities.Forum;
 	using Entities.Squad;
@@ -14,7 +15,7 @@ namespace Diffen.Database.Clients.Contracts
 		Task<int> CountPostsAsync();
 		Task<List<Post>> GetPostsAsync();
 		Task<List<Post>> GetPagedPostsAsync(int pageNumber, int pageSize);
-		Task<List<Post>> GetPostsOnFilterAsync(Models.Forum.Filter filter);
+		Task<Paging<Post>> GetPostsOnFilterAsync(Models.Forum.Filter filter, int pageNumber, int pageSize);
 		Task<List<Post>> GetPostsOnUserIdAsync(string userId);
 		Task<List<Post>> GetSavedPostsOnUserIdAsync(string userId);
 		Task<SavedPost> GetSavedPostsOnPostAndUserIdAsync(int postId, string userId);
